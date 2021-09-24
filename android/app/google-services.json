@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "729457766335",
+    "firebase_url": "https://seekr-live-default-rtdb.firebaseio.com",
+    "project_id": "seekr-live",
+    "storage_bucket": "seekr-live.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:729457766335:android:20a733766a89acc857fb0a",
+        "android_client_info": {
+          "package_name": "com.seekr"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "729457766335-0evnerrga1ru3ejumfd8k82llcg2iu11.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.seekr",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "729457766335-nq6e3tf33dtpm20d8fj3l10mptmjj4g5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBIGf3DrlfzKM6LWur64NCJ3Sy8FAg64IE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "729457766335-nq6e3tf33dtpm20d8fj3l10mptmjj4g5.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "729457766335-2ojrukas4p9ic15614n4j84ii8pts7tl.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.seekrinc.seekr"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

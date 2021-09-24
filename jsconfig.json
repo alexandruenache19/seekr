@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "_nav": ["src/navigation/*"],
+      "_actions": ["src/config/*"],
+      "_atoms": ["src/components/atoms/*"],
+      "_molecules": ["src/components/molecules/*"],
+      "_organisms": ["src/components/organisms/*"],
+      "_styles": ["src/styles/*"]
+    }
+  }
+}

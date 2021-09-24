@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>729457766335-2ojrukas4p9ic15614n4j84ii8pts7tl.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.729457766335-2ojrukas4p9ic15614n4j84ii8pts7tl</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAebBWq4APAabjFQmCAatf9A6FdZz7rK-k</string>
+	<key>GCM_SENDER_ID</key>
+	<string>729457766335</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.seekrinc.seekr</string>
+	<key>PROJECT_ID</key>
+	<string>seekr-live</string>
+	<key>STORAGE_BUCKET</key>
+	<string>seekr-live.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:729457766335:ios:381a817114a3028257fb0a</string>
+</dict>
+</plist>
