@@ -1,83 +1,72 @@
 import React, {PureComponent} from 'react';
 import {SafeAreaView, View, Text, StyleSheet} from 'react-native';
 import {Keyboard, Typography, Colors} from 'react-native-ui-lib';
+import moment from 'moment';
 
 import {Transitions, Service} from '_nav';
 import {InputWithLabel, ButtonWithText, ButtonWithIcon} from '_atoms';
 import {TimeDateDialog} from '_molecules';
-
-const monthName = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-];
-const dayName = [
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-  'Sunday',
-];
+import {Interactions} from '_actions';
 
 const {KeyboardAwareInsetsView} = Keyboard;
 const {pushScreen} = Transitions;
+const {createEvent} = Interactions;
+
 class Onboarding extends PureComponent {
   constructor(props) {
     super(props);
-    // const date = new Date();
 
     this.state = {
-      // day: date.getDate(),
-      // month: date.getMonth(),
-      // year: date.getFullYear(),
-      // hour: date.getHours(),
-      // minutes: date.getMinutes(),
-      // dayOfWeek: date.getDay(),
       dateString: '',
       date: new Date(),
-      time: new Date(),
+      title: '',
+      videoURL: '',
     };
 
     this.handleSelectDate = this.handleSelectDate.bind(this);
     this.handleCreateEvent = this.handleCreateEvent.bind(this);
     this.handleRecord = this.handleRecord.bind(this);
+    this.handelChangeTime = this.handelChangeTime.bind(this);
+    this.handleUpload = this.handleUpload.bind(this);
   }
 
   handleSelectDate(date, time) {
-    const day = date.getDate();
-    const dayOfWeek = dayName[date.getDay()];
-    const month = monthName[date.getMonth()];
-    const year = date.getFullYear();
-    const hour = time.getHours();
-    const minutes = time.getMinutes();
+    const eventDate = new Date();
+    eventDate.setDate(date.getDate());
+    eventDate.setTime(time.getTime());
+
+    const formatDate = moment(eventDate).format('dddd DD MMM');
+    const formatTime = moment(eventDate).format('HH:mm');
 
     this.setState({
-      date: date,
-      time: time,
-      dateString:
-        hour + ':' + minutes + ', ' + dayOfWeek + ' ' + day + ' ' + month,
+      date: eventDate,
+      dateString: formatTime + ', ' + formatDate,
     });
   }
 
-  handleCreateEvent() {}
+  handleCreateEvent() {
+    const {title, date, videoURL} = this.state;
+    console.log(title, date, videoURL);
+    // createEvent(title, date, videoURL, userId);
+  }
 
   handleRecord() {
-    pushScreen(Service.instance.getScreenId(), 'Record');
+    pushScreen(Service.instance.getScreenId(), 'Record', {
+      callback: this.handleUpload,
+    });
+  }
+
+  handelChangeTime(event) {
+    this.setState({title: event.target.values});
+  }
+
+  handleUpload(url) {
+    console.log(url);
+    this.setState({videoURL: url});
   }
 
   render() {
-    const {dateString} = this.state;
+    const {dateString, title} = this.state;
 
     return (
       <SafeAreaView style={styles.safeContainer}>
@@ -87,6 +76,8 @@ class Onboarding extends PureComponent {
           <View>
             <InputWithLabel
               label="Name Your Event"
+              value={title}
+              onChange={this.handelChangeTime}
               placeholder="write here..."
             />
 
@@ -105,7 +96,7 @@ class Onboarding extends PureComponent {
                 color: Colors.grey40,
                 marginTop: 30,
               }}>
-              Make a 15 sec clip
+              Make a 30 sec clip
             </Text>
 
             <ButtonWithIcon
@@ -128,7 +119,7 @@ class Onboarding extends PureComponent {
           <ButtonWithText
             style={styles.button}
             textStyle={{...Typography.text50, color: '#FFF'}}
-            onPress={this.createEvent}
+            onPress={this.handleCreateEvent}
             text={'Schedule'}
           />
         </View>

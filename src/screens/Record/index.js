@@ -21,7 +21,7 @@ class CameraScreen extends PureComponent {
     this.state = {
       isRecording: false,
       time: 0,
-      maxLength: 15,
+      maxLength: 30,
       recorded: false,
       recordedData: null,
       cameraType: RNCamera.Constants.Type.back,
@@ -117,6 +117,7 @@ class CameraScreen extends PureComponent {
       console.log('success');
       this.setState({uploading: false});
       console.log('Respomse URL : ' + data.Location);
+      this.props.callback(data.Location);
     });
   }
 

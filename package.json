@@ -23,6 +23,7 @@
     "base64-arraybuffer": "^1.0.1",
     "lottie-ios": "3.2.3",
     "lottie-react-native": "^4.0.3",
+    "moment": "^2.29.1",
     "react": "17.0.1",
     "react-native": "0.64.2",
     "react-native-bigheads": "^1.1.0",
