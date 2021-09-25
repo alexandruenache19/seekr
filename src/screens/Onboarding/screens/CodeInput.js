@@ -18,6 +18,8 @@ import {
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {Typography, Colors} from 'react-native-ui-lib';
 import {Transitions, Service} from '_nav';
+import {AuthActions} from '_actions';
+const {createUser} = AuthActions;
 
 const UnderlineInput = ({onChangeText}) => {
   const [value, setValue] = useState('');
@@ -72,8 +74,11 @@ class NumberInput extends PureComponent {
     const {confirmation} = this.props;
     const {code} = this.state;
     try {
-      await confirmation.confirm(code);
-      pushScreen(Service.instance.getScreenId(), 'LocationInput');
+      const userCredential = await confirmation.confirm(code);
+      createUser(userCredential);
+      pushScreen(Service.instance.getScreenId(), 'LocationInput', {
+        uid: userCredential.user.uid,
+      });
     } catch (error) {}
   }
 

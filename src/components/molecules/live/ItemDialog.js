@@ -21,11 +21,14 @@ class ItemDetailsDialog extends PureComponent {
     this.addItem = this.addItem.bind(this);
     this.renderPrice = this.renderPrice.bind(this);
     this.renderQuantity = this.renderQuantity.bind(this);
+    this.handleChangePrice = this.handleChangePrice.bind(this);
+    this.handleChangeQuantity = this.handleChangeQuantity.bind(this);
   }
 
   componentDidMount() {
     // this.priceInput.focus();
   }
+
   showDialog() {
     this.setState({showDialog: true});
   }
@@ -79,6 +82,14 @@ class ItemDetailsDialog extends PureComponent {
       </View>
     );
   }
+
+  handleChangePrice(value) {
+    console.log(value);
+  }
+  handleChangeQuantity(value) {
+    console.log(value);
+  }
+
   render() {
     const {showDialog} = this.state;
 
@@ -106,6 +117,7 @@ class ItemDetailsDialog extends PureComponent {
             </Text>
             <MaskedInput
               ref={r => (this.priceInput = r)}
+              onChangeText={this.handleChangePrice}
               renderMaskedText={this.renderPrice}
               keyboardType={'numeric'}
             />
@@ -116,6 +128,7 @@ class ItemDetailsDialog extends PureComponent {
             </Text>
             <MaskedInput
               ref={r => (this.quantityInput = r)}
+              onChangeText={this.handleChangeQuantity}
               renderMaskedText={this.renderQuantity}
               keyboardType={'numeric'}
             />

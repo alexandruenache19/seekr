@@ -1,4 +1,5 @@
 import React, {PureComponent} from 'react';
+import {connect} from 'react-redux';
 import {SafeAreaView, View, StyleSheet, Text, FlatList} from 'react-native';
 
 import {ButtonWithIcon} from '_atoms';
@@ -33,6 +34,7 @@ import {LiveButton, EventCard, HomeHeader, CreateEventCard} from '_molecules';
 //     time: '12 PM',
 //   },
 // ];
+
 const data = [];
 
 class Home extends PureComponent {
@@ -52,10 +54,11 @@ class Home extends PureComponent {
   }
 
   render() {
+    const {user} = this.props;
     return (
       <SafeAreaView style={styles.safeContainer}>
         <View style={styles.container}>
-          <HomeHeader />
+          <HomeHeader user={user} />
           <View style={{marginTop: 30}}>
             <LiveButton />
           </View>
@@ -117,4 +120,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Home;
+const mapStateToProps = state => ({
+  user: state.user,
+});
+
+const mapDispatchToProps = {};
+export default connect(mapStateToProps, mapDispatchToProps)(Home);

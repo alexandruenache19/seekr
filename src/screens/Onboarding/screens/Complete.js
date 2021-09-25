@@ -13,15 +13,23 @@ import {
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {Typography, Colors} from 'react-native-ui-lib';
 import auth from '@react-native-firebase/auth';
-
 import {Transitions, Service} from '_nav';
+import {AuthActions} from '_actions';
+
 const {goToApp} = Transitions;
+const {updateFinishOnboarding} = AuthActions;
 
 class Complete extends PureComponent {
   constructor(props) {
     super(props);
+    this.handleFinishOnboarding = this.handleFinishOnboarding.bind(this);
   }
 
+  handleFinishOnboarding() {
+    const {uid} = this.props;
+    updateFinishOnboarding(uid);
+    goToApp();
+  }
   render() {
     return (
       <SafeAreaView style={styles.safeContainer}>
@@ -33,7 +41,9 @@ class Complete extends PureComponent {
           <Text style={styles.title}>You are all set! Let's go!</Text>
 
           <View style={styles.footer}>
-            <TouchableOpacity style={styles.button} onPress={goToApp}>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={this.handleFinishOnboarding}>
               <Text style={styles.buttonText}>Done</Text>
               <FontAwesome name={'check'} color={'#FFF'} size={24} />
             </TouchableOpacity>
