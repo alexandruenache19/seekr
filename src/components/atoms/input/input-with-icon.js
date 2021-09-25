@@ -1,7 +1,7 @@
-import React from 'react'
-import { TextInput, View } from 'react-native'
-import { Icon } from '_atoms'
-import { Colors } from '_styles'
+import React from 'react';
+import {TextInput, View} from 'react-native';
+import {Icon} from '_atoms';
+import {Colors} from '_styles';
 
 const InputWithIcon = ({
   accessibilityLabel,
@@ -22,7 +22,7 @@ const InputWithIcon = ({
   iconType2,
   iconName2,
   iconColor2,
-  iconSize2
+  iconSize2,
 }) => (
   <View
     accessible
@@ -32,10 +32,9 @@ const InputWithIcon = ({
       alignItems: 'center',
       justifyContent: 'flex-start',
       flexDirection: 'row',
-      ...style
-    }}
-  >
-    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      ...style,
+    }}>
+    <View style={{flexDirection: 'row', alignItems: 'center'}}>
       <Icon
         iconType={iconType}
         iconName={iconName}
@@ -44,17 +43,25 @@ const InputWithIcon = ({
       />
       <TextInput
         placeholder={placeholder}
-        placeholderTextColor={Colors.HIGH_EMPHASIS_WHITE}
-        style={{ marginLeft: 7, lineHeight: 27, width: '80%', height: '100%', color: Colors.HIGH_EMPHASIS_WHITE, fontSize: 25, fontWeight: 'bold' }}
-        returnKeyType='done'
-        selectionColor={Colors.HIGH_EMPHASIS_WHITE}
+        // placeholderTextColor={''}
+        style={{
+          marginLeft: 7,
+          lineHeight: 27,
+          width: '80%',
+          height: '100%',
+          color: '#000',
+          fontSize: 25,
+          fontWeight: 'bold',
+        }}
+        returnKeyType="done"
+        // selectionColor={Colors.HIGH_EMPHASIS_WHITE}
         onFocus={onFocus}
         onBlur={onBlur}
         onChangeText={value => onChangeField(type.toLowerCase(), value)}
         value={value}
-        underlineColorAndroid='transparent'
+        underlineColorAndroid="transparent"
         autoCorrect={false}
-        autoCapitalize='none'
+        autoCapitalize="none"
       />
     </View>
 
@@ -67,6 +74,6 @@ const InputWithIcon = ({
       />
     )}
   </View>
-)
+);
 
-export default InputWithIcon
+export default InputWithIcon;

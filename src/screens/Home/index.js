@@ -55,6 +55,7 @@ class Home extends PureComponent {
 
   render() {
     const {user} = this.props;
+    console.log(user);
     return (
       <SafeAreaView style={styles.safeContainer}>
         <View style={styles.container}>

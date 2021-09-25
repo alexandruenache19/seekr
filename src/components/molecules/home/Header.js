@@ -6,21 +6,17 @@ import {Typography} from 'react-native-ui-lib';
 class HomeHeader extends PureComponent {
   constructor(props) {
     super(props);
-    const firstName = props.user.fullName ? props.user.fullName.firstName : '';
-    this.state = {
-      firstName: firstName,
-    };
   }
 
   render() {
     const {user} = this.props;
-    const {firstName} = this.state;
-
+    const {info} = user;
+    const {fullName} = info;
     return (
       <View style={styles.container}>
         <View>
           <Text style={Typography.text65L}>Hello,</Text>
-          <Text style={Typography.text40}>{firstName}</Text>
+          <Text style={Typography.text40}>{fullName.firstName}</Text>
         </View>
 
         <FastImage
