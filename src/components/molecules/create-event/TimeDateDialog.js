@@ -14,23 +14,6 @@ import {
   Typography,
   Colors,
 } from 'react-native-ui-lib';
-// import DateTimePicker from '@react-native-community/datetimepicker';
-
-const monthName = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-];
-const dayName = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 class CalandarDialog extends PureComponent {
   constructor(props) {
@@ -69,7 +52,6 @@ class CalandarDialog extends PureComponent {
 
   onDone() {
     const {date, time} = this.state;
-    console.log(date, time);
     this.props.onSelect(date, time);
     this.hideDialog();
   }

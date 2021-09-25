@@ -11,5 +11,5 @@ export const createEvent = async (title, date, videoURL, userId) => {
     videoURL: videoURL,
   });
 
-  usersRef.child(`${userId}/events/current`).set(newRef.key);
+  // usersRef.child(`${userId}/events/current`).set(newRef.key);
 };

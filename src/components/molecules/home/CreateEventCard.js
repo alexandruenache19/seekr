@@ -27,8 +27,9 @@ class EventCard extends PureComponent {
         enableBlur
         borderRadius={10}
         elevation={20}
-        backgroundColor={'#E9C46A'}
+        backgroundColor={'#FF4365'}
         activeScale={0.96}
+        onPress={this.createEvent}
         style={styles.container}>
         <View style={styles.innerContainer}>
           <View>
@@ -44,7 +45,7 @@ class EventCard extends PureComponent {
             style={styles.button}
             containerStyle={styles.buttonContainer}
             textStyle={Typography.text60}
-            onPress={this.createEvent}
+            // onPress={this.createEvent}
             iconType="Feather"
             iconName={'calendar'}
             iconSize={22}

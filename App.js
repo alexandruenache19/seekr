@@ -11,12 +11,14 @@ const {goToApp, goToOnboarding} = Transitions;
 class App extends PureComponent {
   async componentDidMount() {
     const user = await auth().currentUser;
+    goToApp();
     // goToOnboarding();
-    if (!user) {
-      goToOnboarding();
-    } else {
-      goToApp();
-    }
+    //
+    // if (!user) {
+    //   goToOnboarding();
+    // } else {
+    //   goToApp();
+    // }
   }
 
   render() {

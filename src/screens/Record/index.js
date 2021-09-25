@@ -5,16 +5,28 @@ import {
   Text,
   TouchableOpacity,
   View,
+  ActivityIndicator,
 } from 'react-native';
 import {RNCamera} from 'react-native-camera';
 import ProgressCircle from 'react-native-progress-circle';
 import S3 from 'aws-sdk/clients/s3';
 import fs from 'react-native-fs';
 import {decode} from 'base64-arraybuffer';
-
+import {Navigation} from 'react-native-navigation';
 import {Icon} from '_atoms';
+import {Service} from '_nav';
 
 class CameraScreen extends PureComponent {
+  static get options() {
+    return {
+      statusBar: {
+        visible: false,
+      },
+      topBar: {
+        visible: false,
+      },
+    };
+  }
   constructor(props) {
     super(props);
 
@@ -25,6 +37,7 @@ class CameraScreen extends PureComponent {
       recorded: false,
       recordedData: null,
       cameraType: RNCamera.Constants.Type.back,
+      uploading: false,
     };
 
     this.startRecording = this.startRecording.bind(this);
@@ -34,10 +47,11 @@ class CameraScreen extends PureComponent {
 
   async startRecording() {
     this.camera
-      .recordAsync({maxDuration: 15})
+      .recordAsync({maxDuration: 30})
       .then(data => {
         this.setState({
           recorded: true,
+          uploading: true,
           recordedData: data,
         });
         this.uploadVideoS3(data);
@@ -113,19 +127,31 @@ class CameraScreen extends PureComponent {
     s3bucket.upload(params, (err, data) => {
       if (err) {
         console.log('error in callback', err);
+      } else {
+        this.setState({uploading: false}, this.props.callback(data.Location));
       }
-      console.log('success');
-      this.setState({uploading: false});
-      console.log('Respomse URL : ' + data.Location);
-      this.props.callback(data.Location);
+      Navigation.pop(Service.instance.getScreenId());
     });
   }
 
   render() {
     const {isRecording, time, uploading} = this.state;
-    console.log(time);
-    // if (uploading) {
-    // }
+
+    if (uploading) {
+      return (
+        <View
+          style={{
+            ...styles.container,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <ActivityIndicator size="large" color="#FFF" />
+          <Text style={{fontWeight: 'bold', paddingTop: 10, color: '#FFF'}}>
+            Uploading video...
+          </Text>
+        </View>
+      );
+    }
     return (
       <View style={styles.container}>
         <RNCamera
@@ -161,7 +187,7 @@ class CameraScreen extends PureComponent {
             onPress={isRecording ? this.stopRecording : this.startRecording}
             style={styles.capture}>
             <ProgressCircle
-              percent={(time / 15) * 100}
+              percent={(time / 30) * 100}
               radius={40}
               borderWidth={6}
               color="red"
@@ -186,8 +212,10 @@ class CameraScreen extends PureComponent {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'column',
-    backgroundColor: 'black',
+    // flexDirection: 'column',
+    backgroundColor: '#000',
+    // justifyContent: 'center',
+    // alignItems: 'center',
   },
   preview: {
     flex: 1,
