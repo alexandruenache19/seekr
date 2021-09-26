@@ -11,7 +11,7 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import Video from 'react-native-video';
 import {Card, Typography} from 'react-native-ui-lib';
-
+import Share from 'react-native-share';
 import {ButtonWithTextIcon, ButtonWithIcon} from '_atoms';
 import {Transitions, Service} from '_nav';
 import moment from 'moment';
@@ -23,6 +23,38 @@ class EventCard extends PureComponent {
     super(props);
     this.state = {};
     this.goToLive = this.goToLive.bind(this);
+    this.shareOnFb = this.shareOnFb.bind(this);
+    this.share = this.share.bind(this);
+  }
+
+  shareOnFb() {
+    const {item} = this.props;
+    const day = moment(item.timestamp).format('DD');
+    const month = moment(item.timestamp).format('MMMM');
+
+    const options = {
+      title: item.title,
+      message: `Join me live on ${day} ${month} on Seekr`,
+      url: `https://seekr-live.herokuapp.com/e/${item.id}`,
+      social: Share.Social.FACEBOOK,
+    };
+
+    Share.shareSingle(options);
+  }
+
+  share() {
+    const {item} = this.props;
+    const day = moment(item.timestamp).format('DD');
+    const month = moment(item.timestamp).format('MMMM');
+
+    const options = {
+      title: item.title,
+      message: `Join me live on ${day} ${month}`,
+      url: `https://seekr-live.herokuapp.com/e/${item.id}`,
+      social: Share.Social.FACEBOOK,
+    };
+
+    Share.open(options);
   }
 
   async goToLive() {
@@ -121,6 +153,7 @@ class EventCard extends PureComponent {
             <View
               style={{flexDirection: 'row', justifyContent: 'space-between'}}>
               <ButtonWithTextIcon
+                onPress={this.shareOnFb}
                 text="Post on Facebook"
                 style={styles.button}
                 containerStyle={styles.buttonContainer}
@@ -133,6 +166,7 @@ class EventCard extends PureComponent {
               />
 
               <ButtonWithIcon
+                onPress={this.share}
                 style={styles.button}
                 containerStyle={styles.buttonContainer}
                 iconType="Feather"
