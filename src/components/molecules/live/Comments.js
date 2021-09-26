@@ -1,34 +1,14 @@
 import React, {PureComponent} from 'react';
-import {View, Text, StyleSheet, FlatList} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  ActivityIndicator,
+} from 'react-native';
 import {Avatar, Colors} from 'react-native-ui-lib';
 import {ButtonWithTextIcon} from '_atoms';
 import {eventsRef} from '../../../config/firebase';
-// const data = [
-//   {
-//     username: 'alexdenache',
-//     text: 'what is that what is that what is that v what is that what is that what is that',
-//     imageURL:
-//       'https://media.glamour.com/photos/5a425fd3b6bcee68da9f86f8/1:1/w_741,h_741,c_limit/best-face-oil.png',
-//   },
-//   {
-//     username: 'bbb',
-//     text: 'what is that what is that what is that v what is that what is that what is that',
-//     imageURL:
-//       'https://media.glamour.com/photos/5a425fd3b6bcee68da9f86f8/1:1/w_741,h_741,c_limit/best-face-oil.png',
-//   },
-//   {
-//     username: 'bbbdsadas',
-//     text: 'what is that what is that what is that v what is that what is that what is that',
-//     imageURL:
-//       'https://media.glamour.com/photos/5a425fd3b6bcee68da9f86f8/1:1/w_741,h_741,c_limit/best-face-oil.png',
-//   },
-//   {
-//     username: 'bdsadsabb',
-//     text: 'what is that what is that what is that v what is that what is that what is that',
-//     imageURL:
-//       'https://media.glamour.com/photos/5a425fd3b6bcee68da9f86f8/1:1/w_741,h_741,c_limit/best-face-oil.png',
-//   },
-// ];
 
 class CommentsSection extends PureComponent {
   constructor(props) {
@@ -81,16 +61,19 @@ class CommentsSection extends PureComponent {
   }
 
   render() {
-    const {comments} = this.state;
+    const {comments, loading} = this.state;
     return (
       <View style={styles.container}>
-        <FlatList
-          inverted
-          // contentContainerStyle={{flexDirection: 'column-reverse'}}
-          data={comments}
-          renderItem={this.renderItem}
-          keyExtractor={(item, index) => item.username + index}
-        />
+        {loading ? (
+          <ActivityIndicator color="#FFF" style={{paddingTop: 20}} />
+        ) : (
+          <FlatList
+            inverted
+            data={comments}
+            renderItem={this.renderItem}
+            keyExtractor={(item, index) => item.username + index}
+          />
+        )}
       </View>
     );
   }
@@ -105,6 +88,8 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 10,
     paddingHorizontal: 20,
+    // justifyContent: 'center',
+    // alignItems: 'center',
   },
   itemContainer: {
     flexDirection: 'row',
