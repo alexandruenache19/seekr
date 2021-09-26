@@ -30,6 +30,7 @@ class Complete extends PureComponent {
     updateFinishOnboarding(uid);
     goToApp();
   }
+
   render() {
     return (
       <SafeAreaView style={styles.safeContainer}>

@@ -57,11 +57,12 @@ class Home extends PureComponent {
 
   render() {
     const {user} = this.props;
-    console.log(user);
+    const {info} = user;
+
     return (
       <SafeAreaView style={styles.safeContainer}>
         <View style={styles.container}>
-          <HomeHeader user={user} />
+          <HomeHeader info={info} />
           <View style={{marginTop: 30}}>
             <LiveButton />
           </View>

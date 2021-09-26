@@ -51,10 +51,10 @@ class CommentsSection extends PureComponent {
         />
 
         <View style={{flexDirection: 'column', marginLeft: 10}}>
-          <Text style={{color: '#FFF', fontSize: 18, fontWeight: 'bold'}}>
+          <Text style={{color: '#FFF', fontSize: 16, fontWeight: 'bold'}}>
             @{item.username}
           </Text>
-          <Text style={{color: '#FFF', fontSize: 16}}>{item.text}</Text>
+          <Text style={{color: '#FFF', fontSize: 18}}>{item.text}</Text>
         </View>
       </View>
     );
@@ -88,8 +88,6 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 10,
     paddingHorizontal: 20,
-    // justifyContent: 'center',
-    // alignItems: 'center',
   },
   itemContainer: {
     flexDirection: 'row',

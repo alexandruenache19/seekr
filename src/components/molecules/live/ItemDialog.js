@@ -14,6 +14,8 @@ class ItemDetailsDialog extends PureComponent {
     super(props);
     this.state = {
       showDialog: false,
+      priceFocus: false,
+      stockFocus: false,
     };
 
     this.showDialog = this.showDialog.bind(this);
@@ -25,9 +27,7 @@ class ItemDetailsDialog extends PureComponent {
     this.handleChangeQuantity = this.handleChangeQuantity.bind(this);
   }
 
-  componentDidMount() {
-    // this.priceInput.focus();
-  }
+  componentDidMount() {}
 
   showDialog() {
     this.setState({showDialog: true});
@@ -43,6 +43,8 @@ class ItemDetailsDialog extends PureComponent {
   }
 
   renderPrice(value) {
+    const {priceFocus} = this.state;
+
     const hasValue = value && value.length > 0;
     return (
       <View
@@ -54,7 +56,8 @@ class ItemDetailsDialog extends PureComponent {
         <Text
           style={{
             ...Typography.text50,
-            color: hasValue ? '#000' : '#222',
+            color: hasValue ? '#000' : '#888',
+            fontSize: priceFocus ? 26 : 20,
           }}>
           {hasValue ? value : '00'}
         </Text>
@@ -64,6 +67,7 @@ class ItemDetailsDialog extends PureComponent {
   }
 
   renderQuantity(value) {
+    const {stockFocus} = this.state;
     const hasValue = value && value.length > 0;
     return (
       <View
@@ -75,7 +79,8 @@ class ItemDetailsDialog extends PureComponent {
         <Text
           style={{
             ...Typography.text50,
-            color: hasValue ? '#000' : '#222',
+            color: hasValue ? '#000' : '#888',
+            fontSize: stockFocus ? 26 : 20,
           }}>
           {hasValue ? value : '0'}
         </Text>
@@ -118,17 +123,21 @@ class ItemDetailsDialog extends PureComponent {
             <MaskedInput
               ref={r => (this.priceInput = r)}
               onChangeText={this.handleChangePrice}
+              onFocus={() => this.setState({priceFocus: true})}
+              onBlur={() => this.setState({priceFocus: false})}
               renderMaskedText={this.renderPrice}
               keyboardType={'numeric'}
             />
           </View>
           <View>
             <Text style={{...Typography.text40, color: Colors.grey40}}>
-              Quantity
+              Stock
             </Text>
             <MaskedInput
               ref={r => (this.quantityInput = r)}
               onChangeText={this.handleChangeQuantity}
+              onFocus={() => this.setState({stockFocus: true})}
+              onBlur={() => this.setState({stockFocus: false})}
               renderMaskedText={this.renderQuantity}
               keyboardType={'numeric'}
             />

@@ -50,7 +50,7 @@ class LoginScreen extends Component {
       'https://cdn.dribbble.com/users/744745/screenshots/5916538/new_profile_pic.jpg';
 
     updateProfileImage(uid, url);
-    pushScreen(Service.instance.getScreenId(), 'Complete');
+    pushScreen(Service.instance.getScreenId(), 'Complete', {uid: uid});
   }
 
   handleChangeImage() {

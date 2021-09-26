@@ -34,7 +34,7 @@ class NumberInput extends PureComponent {
     const {firstName, lastName} = this.state;
 
     updateName(uid, firstName, lastName);
-    pushScreen(Service.instance.getScreenId(), 'Complete', {uid: uid});
+    pushScreen(Service.instance.getScreenId(), 'UsernameInput', {uid: uid});
   }
 
   handleChangeFirstName(value) {

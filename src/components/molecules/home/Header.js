@@ -9,14 +9,12 @@ class HomeHeader extends PureComponent {
   }
 
   render() {
-    const {user} = this.props;
-    const {info} = user;
-    const {fullName} = info;
+    const {info} = this.props;
     return (
       <View style={styles.container}>
         <View>
           <Text style={Typography.text65L}>Hello,</Text>
-          <Text style={Typography.text40}>{fullName.firstName}</Text>
+          <Text style={Typography.text40}>{info.username}</Text>
         </View>
 
         <FastImage

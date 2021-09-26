@@ -1,7 +1,7 @@
 import React, {PureComponent} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import {Typography, Colors, Wizard, Card} from 'react-native-ui-lib';
-
+import Share from 'react-native-share';
 import {ButtonWithTextIcon, ButtonWithIcon, Icon} from '_atoms';
 import {ItemDetailsDialog} from '_molecules';
 
@@ -73,26 +73,34 @@ class ActionsSection extends PureComponent {
               flex: 1,
               padding: 20,
             }}>
-            <ButtonWithTextIcon
-              containerStyle={{
+            <View
+              style={{
+                flexDirection: 'row',
                 justifyContent: 'space-between',
-              }}
-              textStyle={{
-                ...Typography.text60M,
-                color: Colors.black,
-              }}
-              textContainerStyle={{
-                padding: 5,
-              }}
-              iconType="Feather"
-              iconName={copied ? 'check-square' : 'copy'}
-              iconSize={26}
-              iconColor={Colors.black}
-              iconAfterText
-              onPress={this.copy}
-              text={copied ? 'Copied' : 'www.seekr.io/maria'}
-            />
-
+                alignItems: 'center',
+                width: '100%',
+              }}>
+              <Text style={{...Typography.text50}}>Invite others</Text>
+              <ButtonWithTextIcon
+                containerStyle={{
+                  justifyContent: 'space-between',
+                }}
+                textStyle={{
+                  ...Typography.text80,
+                  color: Colors.black,
+                }}
+                textContainerStyle={{
+                  padding: 5,
+                }}
+                iconType="Feather"
+                iconName={copied ? 'check-square' : 'copy'}
+                iconSize={26}
+                iconColor={Colors.black}
+                iconAfterText
+                onPress={this.copy}
+                text={copied ? 'Copied' : 'www.seekr.io/maria'}
+              />
+            </View>
             <View
               style={{
                 flexDirection: 'row',
@@ -142,8 +150,8 @@ class ActionsSection extends PureComponent {
                 iconColor={Colors.white}
                 iconSize={24}
                 iconAfterText
-                onPress={this.copy}
-                text={'other'}
+                // onPress={this.handleShare}
+                text="more"
               />
             </View>
           </View>
@@ -168,7 +176,7 @@ class ActionsSection extends PureComponent {
         break;
       case 2:
         text = 'Get Live';
-        iconName = 'arrow-right';
+        iconName = 'video';
         break;
     }
 
@@ -177,7 +185,7 @@ class ActionsSection extends PureComponent {
         {this.renderSection()}
 
         <Card
-          useNative
+          // useNative
           enableShadow
           borderRadius={10}
           elevation={20}
@@ -202,13 +210,19 @@ class ActionsSection extends PureComponent {
 
     return (
       <View style={styles.container}>
-        <Wizard
-          containerStyle={{backgroundColor: '#FFF', borderRadius: 10}}
-          activeIndex={activeIndex}>
-          <Wizard.Step state={this.getStepState(0)} label={'Check camera'} />
-          <Wizard.Step state={this.getStepState(1)} label={'Add First Item'} />
-          <Wizard.Step state={this.getStepState(2)} label={'Share event'} />
-        </Wizard>
+        {activeIndex !== 2 && (
+          <Wizard
+            containerStyle={{backgroundColor: '#FFF', borderRadius: 10}}
+            activeIndex={activeIndex}>
+            <Wizard.Step state={this.getStepState(0)} label={'Check camera'} />
+            <Wizard.Step
+              state={this.getStepState(1)}
+              label={'Add First Item'}
+            />
+            <Wizard.Step state={this.getStepState(2)} label={'Share event'} />
+          </Wizard>
+        )}
+
         {this.renderCurrentStep()}
 
         <ItemDetailsDialog
@@ -228,7 +242,7 @@ const styles = StyleSheet.create({
     // backgroundColor: '#282B28',
     width: '100%',
     borderRadius: 10,
-    paddingTop: 20,
+    paddingVertical: 20,
     justifyContent: 'space-between',
     // alignItems: 'center',
   },
