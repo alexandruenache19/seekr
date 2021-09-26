@@ -45,6 +45,8 @@ class Home extends PureComponent {
     this.renderItem = this.renderItem.bind(this);
   }
 
+  c;
+
   renderItem({item}) {
     return (
       <View style={{marginRight: 20}}>

@@ -58,7 +58,7 @@ export default ActionsSection;
 const styles = StyleSheet.create({
   container: {
     height: '10%',
-    backgroundColor: '#F4A261',
+    backgroundColor: '#282B28',
     width: '100%',
     borderRadius: 10,
     padding: 10,
