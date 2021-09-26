@@ -1,4 +1,5 @@
 import React, {PureComponent} from 'react';
+import {connect} from 'react-redux';
 import {Live, PreviewLive} from '_organisms';
 
 class LiveScreen extends PureComponent {
@@ -17,12 +18,21 @@ class LiveScreen extends PureComponent {
 
   render() {
     const {isPreview} = this.state;
-    if (!isPreview) {
-      return <PreviewLive onGoLive={this.goLive} />;
+    const {user} = this.props;
+    const {info} = user;
+
+    if (isPreview) {
+      return <PreviewLive info={info} onGoLive={this.goLive} />;
     }
 
-    return <Live />;
+    return <Live info={info} />;
   }
 }
 
-export default LiveScreen;
+const mapStateToProps = state => ({
+  user: state.user,
+});
+
+const mapDispatchToProps = {};
+
+export default connect(mapStateToProps, mapDispatchToProps)(LiveScreen);

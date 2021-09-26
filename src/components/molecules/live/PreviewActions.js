@@ -30,12 +30,11 @@ class ActionsSection extends PureComponent {
       <Card
         useNative
         enableShadow
-        enableBlur
         borderRadius={10}
         elevation={20}
         onPress={this.addItem}
         activeScale={0.96}
-        backgroundColor="#F4A261"
+        backgroundColor="#282B28"
         style={styles.container}>
         <Text style={{...Typography.text50, color: '#FFF'}}>
           {complete ? 'Done' : 'Add First Item'}

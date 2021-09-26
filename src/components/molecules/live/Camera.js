@@ -5,6 +5,7 @@ import {NodeCameraView} from 'react-native-nodemediaclient';
 import {BlurView} from '@react-native-community/blur';
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
+import {Colors} from 'react-native-ui-lib';
 
 import {ButtonWithIcon, ButtonWithTextIcon, ButtonWithText} from '_atoms';
 import {ItemDetailsDialog} from '_molecules';
@@ -37,6 +38,8 @@ class CameraSection extends PureComponent {
 
   render() {
     const {isVideoOn} = this.state;
+    const {type, info} = this.props;
+
     // const streamKey = '7078779f-1fb2-9027-f57b-885c19260c6e';
     // const url = `rtmps://global-live.mux.com:443/app/${streamKey}`;
     const streamKey =
@@ -84,9 +87,7 @@ class CameraSection extends PureComponent {
           <View style={styles.statusContainer}>
             <View style={styles.imageContainer}>
               <FastImage
-                source={{
-                  uri: 'https://media.glamour.com/photos/5a425fd3b6bcee68da9f86f8/1:1/w_741,h_741,c_limit/best-face-oil.png',
-                }}
+                source={{uri: info.imageURL}}
                 style={styles.image}
                 resizeMode={FastImage.resizeMode.contain}
               />
@@ -97,7 +98,7 @@ class CameraSection extends PureComponent {
                 alignItems: 'flex-start',
                 marginLeft: 10,
               }}>
-              <Text style={styles.text}>alexdenache</Text>
+              <Text style={styles.text}>@{info.username}</Text>
               <View
                 style={{
                   flexDirection: 'row',
@@ -107,12 +108,13 @@ class CameraSection extends PureComponent {
                 }}>
                 <ButtonWithText
                   style={{
-                    backgroundColor: '#FC5D83',
+                    backgroundColor:
+                      isVideoOn && type === 'live' ? '#FC5D83' : Colors.grey40,
                     padding: 2,
                     paddingHorizontal: 5,
                     borderRadius: 5,
                   }}
-                  text={isVideoOn ? 'LIVE' : 'Offline'}
+                  text={isVideoOn && type === 'live' ? '● LIVE' : 'PREVIEW'}
                   textStyle={styles.text}
                   onPress={this.toggleVideo}
                 />
