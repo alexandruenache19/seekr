@@ -1,10 +1,18 @@
 import React, {PureComponent} from 'react';
-import {SafeAreaView, View, Text, StyleSheet} from 'react-native';
+import {
+  SafeAreaView,
+  View,
+  Text,
+  StyleSheet,
+  PermissionsAndroid,
+  Platform,
+} from 'react-native';
 
 import LinearGradient from 'react-native-linear-gradient';
 import Video from 'react-native-video';
-import {Card} from 'react-native-ui-lib';
+import {Card, Typography} from 'react-native-ui-lib';
 
+import {ButtonWithTextIcon, ButtonWithIcon} from '_atoms';
 import {Transitions, Service} from '_nav';
 import moment from 'moment';
 
@@ -14,11 +22,39 @@ class EventCard extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {};
-    this.goToEvent = this.goToEvent.bind(this);
+    this.goToLive = this.goToLive.bind(this);
   }
 
-  goToEvent() {
-    pushScreen(Service.instance.getScreenId(), 'Event');
+  async goToLive() {
+    try {
+      if (Platform.OS === 'android') {
+        const granted = await PermissionsAndroid.requestMultiple(
+          [
+            PermissionsAndroid.PERMISSIONS.CAMERA,
+            PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+          ],
+          {
+            title: 'Cool Photo App Camera And Microphone Permission',
+            message:
+              'Cool Photo App needs access to your camera ' +
+              'so you can take awesome pictures.',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          },
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          pushScreen(Service.instance.getScreenId(), 'Live');
+        } else {
+          pushScreen(Service.instance.getScreenId(), 'Live');
+          console.log('Camera permission denied');
+        }
+      } else {
+        pushScreen(Service.instance.getScreenId(), 'Live');
+      }
+    } catch (err) {
+      console.warn(err);
+    }
   }
 
   render() {
@@ -30,12 +66,12 @@ class EventCard extends PureComponent {
 
     return (
       <Card
-        useNative
+        // useNative
         enableShadow
         enableBlur
         borderRadius={10}
         elevation={20}
-        onPress={this.goToEvent}
+        onPress={this.goToLive}
         activeScale={0.96}
         style={styles.container}>
         <View style={styles.innerContainer}>
@@ -82,6 +118,29 @@ class EventCard extends PureComponent {
             end={{x: 0, y: 0}}
             style={styles.gradient}>
             <Text style={styles.mediumText}>{item.title}</Text>
+            <View
+              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+              <ButtonWithTextIcon
+                text="Post on Facebook"
+                style={styles.button}
+                containerStyle={styles.buttonContainer}
+                textStyle={Typography.text80H}
+                iconType="Feather"
+                iconName={'facebook'}
+                iconSize={20}
+                iconColor={'#000'}
+                iconAfterText
+              />
+
+              <ButtonWithIcon
+                style={styles.button}
+                containerStyle={styles.buttonContainer}
+                iconType="Feather"
+                iconName={'send'}
+                iconSize={20}
+                iconColor={'#000'}
+              />
+            </View>
           </LinearGradient>
         </View>
       </Card>
@@ -94,9 +153,20 @@ export default EventCard;
 const styles = StyleSheet.create({
   container: {
     overflow: 'hidden',
-    height: 300,
-    width: 200,
+    height: 400,
+    width: 260,
   },
+  button: {
+    padding: 10,
+    marginTop: 10,
+    backgroundColor: '#FFF',
+    borderRadius: 10,
+  },
+  buttonContainer: {
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+
   gradient: {
     padding: 20,
   },

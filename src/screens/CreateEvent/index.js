@@ -27,7 +27,7 @@ class Onboarding extends PureComponent {
 
     this.state = {
       dateString: '',
-      date: null,
+      date: new Date(),
       title: '',
       videoURL: '',
     };

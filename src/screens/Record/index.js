@@ -33,7 +33,7 @@ class CameraScreen extends PureComponent {
     this.state = {
       isRecording: false,
       time: 0,
-      maxLength: 30,
+      maxLength: 15,
       recorded: false,
       recordedData: null,
       cameraType: RNCamera.Constants.Type.back,
@@ -47,7 +47,7 @@ class CameraScreen extends PureComponent {
 
   async startRecording() {
     this.camera
-      .recordAsync({maxDuration: 30})
+      .recordAsync({maxDuration: 15})
       .then(data => {
         this.setState({
           recorded: true,
@@ -187,7 +187,7 @@ class CameraScreen extends PureComponent {
             onPress={isRecording ? this.stopRecording : this.startRecording}
             style={styles.capture}>
             <ProgressCircle
-              percent={(time / 30) * 100}
+              percent={(time / 15) * 100}
               radius={40}
               borderWidth={6}
               color="red"
