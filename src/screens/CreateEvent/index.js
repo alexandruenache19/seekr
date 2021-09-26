@@ -61,7 +61,8 @@ class Onboarding extends PureComponent {
 
   async handleCreateEvent() {
     const {title, date, videoURL} = this.state;
-    await createEvent(title, date, videoURL);
+    const {uid} = this.props;
+    await createEvent(title, date, videoURL, uid);
 
     Navigation.pop(Service.instance.getScreenId());
   }

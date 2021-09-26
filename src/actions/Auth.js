@@ -12,6 +12,7 @@ export const createUser = async userCredential => {
       info: {
         dateRegistered: new Date().getTime(),
         type: 'buyer',
+        uid: userCredential.user.uid,
       },
       finishOnboarding: false,
     });

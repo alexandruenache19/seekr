@@ -19,3 +19,9 @@ export const fetchUser = user => async dispatch => {
     });
   }
 };
+export const getEventInfo = async eventId => {
+  const snap = await eventsRef.child(`${eventId}/info`).once('value');
+  if (snap.exists()) return snap.val();
+
+  return null;
+};

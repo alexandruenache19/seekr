@@ -6,12 +6,14 @@ import Video from 'react-native-video';
 import {Card} from 'react-native-ui-lib';
 
 import {Transitions, Service} from '_nav';
+import moment from 'moment';
 
 const {pushScreen} = Transitions;
 
 class EventCard extends PureComponent {
   constructor(props) {
     super(props);
+    this.state = {};
     this.goToEvent = this.goToEvent.bind(this);
   }
 
@@ -21,6 +23,11 @@ class EventCard extends PureComponent {
 
   render() {
     const {item} = this.props;
+
+    const day = moment(item.timestamp).format('DD');
+    const month = moment(item.timestamp).format('MMM');
+    const formatTime = moment(item.timestamp).format('HH:mm A');
+
     return (
       <Card
         useNative
@@ -35,12 +42,8 @@ class EventCard extends PureComponent {
           <Video
             source={{
               uri: item.videoURL,
-            }} // Can be a URL or a local file.
-            ref={ref => {
-              this.player = ref;
-            }} // Store reference
-            // onBuffer={this.onBuffer} // Callback when remote video is buffering
-            // onError={this.videoError} // Callback when video cannot be loaded
+            }}
+            ref={ref => (this.player = ref)}
             style={styles.video}
             resizeMode={'cover'}
             muted={true}
@@ -58,8 +61,8 @@ class EventCard extends PureComponent {
                 alignItems: 'flex-start',
               }}>
               <View>
-                <Text style={styles.largeText}>{item.day}</Text>
-                <Text style={styles.mediumText}>{item.month}</Text>
+                <Text style={styles.largeText}>{day}</Text>
+                <Text style={styles.mediumText}>{month}</Text>
               </View>
               <View
                 style={{
@@ -68,7 +71,7 @@ class EventCard extends PureComponent {
                   padding: 10,
                 }}>
                 <Text style={{...styles.smallText, color: '#000'}}>
-                  {item.time}
+                  {formatTime}
                 </Text>
               </View>
             </View>

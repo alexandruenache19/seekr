@@ -16,7 +16,8 @@ class EventCard extends PureComponent {
   }
 
   createEvent() {
-    pushScreen(Service.instance.getScreenId(), 'CreateEvent');
+    const {uid} = this.props;
+    pushScreen(Service.instance.getScreenId(), 'CreateEvent', {uid: uid});
   }
 
   render() {
