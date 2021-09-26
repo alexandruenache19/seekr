@@ -22,6 +22,8 @@ import NumberInput from './screens/NumberInput';
 import LocationInput from './screens/LocationInput';
 import CodeInput from './screens/CodeInput';
 import NameInput from './screens/NameInput';
+import UsernameInput from './screens/UsernameInput';
+import ProfileImage from './screens/ProfileImage';
 import Complete from './screens/Complete';
 
 Navigation.registerComponent(
@@ -47,6 +49,19 @@ Navigation.registerComponent(
   () => NameInput,
   () => NameInput,
 );
+
+Navigation.registerComponent(
+  'UsernameInput',
+  () => UsernameInput,
+  () => UsernameInput,
+);
+
+Navigation.registerComponent(
+  'ProfileImage',
+  () => ProfileImage,
+  () => ProfileImage,
+);
+
 Navigation.registerComponent(
   'Complete',
   () => Complete,

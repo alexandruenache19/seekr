@@ -7,7 +7,7 @@ export {default as CreateEventCard} from './home/CreateEventCard';
 //Live
 export {default as ItemDetailsDialog} from './live/ItemDialog';
 export {default as CommentsSection} from './live/Comments';
-export {default as LiveCameraSection} from './live/LiveCamera';
+export {default as CameraSection} from './live/Camera';
 export {default as LiveActionsSection} from './live/LiveActions';
 
 //Preview

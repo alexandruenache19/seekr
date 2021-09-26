@@ -14,30 +14,57 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {Typography, Colors} from 'react-native-ui-lib';
 import auth from '@react-native-firebase/auth';
 
+import {AuthActions} from '_actions';
 import {InputWithLabel} from '_atoms';
 import {Transitions, Service} from '_nav';
 const {pushScreen} = Transitions;
+const {updateName} = AuthActions;
 
 class NumberInput extends PureComponent {
   constructor(props) {
     super(props);
-
+    this.state = {firstName: '', lastName: ''};
     this.goToComplete = this.goToComplete.bind(this);
+    this.handleChangeFirstName = this.handleChangeFirstName.bind(this);
+    this.handleChangeLastName = this.handleChangeLastName.bind(this);
   }
 
   goToComplete() {
-    pushScreen(Service.instance.getScreenId(), 'Complete');
+    const {uid} = this.props;
+    const {firstName, lastName} = this.state;
+
+    updateName(uid, firstName, lastName);
+    pushScreen(Service.instance.getScreenId(), 'UsernameInput', {uid: uid});
+  }
+
+  handleChangeFirstName(value) {
+    this.setState({firstName: value});
+  }
+
+  handleChangeLastName(value) {
+    this.setState({lastName: value});
   }
 
   render() {
+    const {firstName, lastName} = this.state;
     return (
       <SafeAreaView style={styles.safeContainer}>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={styles.keyboardContainer}>
           <Text style={styles.title}>What is your name?</Text>
-          <InputWithLabel label="First Name" placeholder="write here..." />
-          <InputWithLabel label="Last Name" placeholder="write here..." />
+          <InputWithLabel
+            value={firstName}
+            onChange={this.handleChangeFirstName}
+            label="First Name"
+            placeholder="write here..."
+          />
+          <InputWithLabel
+            value={lastName}
+            onChange={this.handleChangeLastName}
+            label="Last Name"
+            placeholder="write here..."
+          />
           <View style={styles.footer}>
             <TouchableOpacity style={styles.button} onPress={this.goToComplete}>
               <Text style={styles.buttonText}>Next</Text>

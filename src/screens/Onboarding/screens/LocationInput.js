@@ -15,9 +15,11 @@ import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
 import Geolocation from '@react-native-community/geolocation';
 
+import {AuthActions} from '_actions';
 import {Transitions, Service} from '_nav';
-const {pushScreen} = Transitions;
 
+const {pushScreen} = Transitions;
+const {updateLocation} = AuthActions;
 navigator.geolocation = require('@react-native-community/geolocation');
 
 class LocationInput extends PureComponent {
@@ -104,9 +106,15 @@ class LocationInput extends PureComponent {
   }
 
   confirmLocation() {
-    const {address} = this.state;
+    const {uid} = this.props;
+    const {address, region} = this.state;
+    const coords = {
+      lat: region.latitude,
+      long: region.longitude,
+    };
 
-    pushScreen(Service.instance.getScreenId(), 'NameInput');
+    updateLocation(uid, coords, address);
+    pushScreen(Service.instance.getScreenId(), 'NameInput', {uid: uid});
   }
 
   render() {

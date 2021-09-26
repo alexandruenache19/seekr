@@ -1,19 +1,16 @@
 import React, {PureComponent} from 'react';
 import {View, SafeAreaView, StyleSheet} from 'react-native';
-import {
-  LiveCameraSection,
-  PreviewActionsSection,
-  ShareSection,
-} from '_molecules';
+import {CameraSection, PreviewActionsSection, ShareSection} from '_molecules';
 
 class LiveScreen extends PureComponent {
   render() {
+    const {info} = this.props;
     return (
       <SafeAreaView style={styles.safeContainer}>
         <View style={styles.container}>
-          <LiveCameraSection />
-          <ShareSection />
-          <PreviewActionsSection />
+          <CameraSection type="preview" info={info} />
+          <ShareSection callback={this.props.onGoLive} />
+          {/*  <PreviewActionsSection />*/}
         </View>
       </SafeAreaView>
     );

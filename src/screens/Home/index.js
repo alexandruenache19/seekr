@@ -1,46 +1,39 @@
 import React, {PureComponent} from 'react';
-import {SafeAreaView, View, StyleSheet, Text, FlatList} from 'react-native';
+import {connect} from 'react-redux';
+import {
+  SafeAreaView,
+  ScrollView,
+  View,
+  StyleSheet,
+  Text,
+  FlatList,
+} from 'react-native';
 
 import {ButtonWithIcon} from '_atoms';
 import {LiveButton, EventCard, HomeHeader, CreateEventCard} from '_molecules';
+import {FetchingActions} from '_actions';
+import {Service, Transitions} from '_nav';
 
-// const data = [
-//   {
-//     id: 'cosmetics',
-//     title: 'Maria Cosmetics Sale',
-//     videoURL:
-//       'https://drive.google.com/u/0/uc?id=1Y1Yc-okuzvIUVkhpiRH9qgdONMOZcZv_&export=download',
-//     day: '8',
-//     month: 'June',
-//     time: '12 PM',
-//   },
-//   {
-//     id: 'clothes',
-//     title: 'Maria Cosmetics Sale',
-//     videoURL:
-//       'https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_480_1_5MG.mp4',
-//     day: '16',
-//     month: 'June',
-//     time: '12 PM',
-//   },
-//   {
-//     id: 'clothess',
-//     title: 'Maria Cosmetics Sale',
-//     videoURL:
-//       'https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_480_1_5MG.mp4',
-//     day: '22',
-//     month: 'June',
-//     time: '12 PM',
-//   },
-// ];
-const data = [];
+const {getEventInfo} = FetchingActions;
+const {pushScreen} = Transitions;
 
 class Home extends PureComponent {
   constructor(props) {
     super(props);
 
-    this.state = {};
+    this.state = {eventInfo: null, data: []};
     this.renderItem = this.renderItem.bind(this);
+    this.createEvent = this.createEvent.bind(this);
+  }
+
+  async componentDidMount() {
+    const {user} = this.props;
+    if (user && user.hasOwnProperty('events') && user.events.current) {
+      const eventInfo = await getEventInfo(user.events.current);
+      this.setState({
+        data: [eventInfo],
+      });
+    }
   }
 
   renderItem({item}) {
@@ -51,57 +44,65 @@ class Home extends PureComponent {
     );
   }
 
+  createEvent() {
+    const {user} = this.props;
+    pushScreen(Service.instance.getScreenId(), 'CreateEvent', {uid: user.uid});
+  }
+
   render() {
+    const {data} = this.state;
+    const {user} = this.props;
+    const {info} = user;
+
     return (
       <SafeAreaView style={styles.safeContainer}>
-        <View style={styles.container}>
-          <HomeHeader />
+        <ScrollView style={styles.container}>
+          <HomeHeader info={info} />
+
           <View style={{marginTop: 30}}>
             <LiveButton />
           </View>
 
-          {data.length > 0 ? (
-            <View>
-              <View
-                style={{
-                  marginTop: 20,
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}>
-                <View>
-                  <Text style={{fontSize: 14}}>Check your</Text>
-                  <Text style={{fontSize: 24, fontWeight: 'bold'}}>
-                    Live Events
-                  </Text>
-                </View>
-                <ButtonWithIcon
-                  iconType="Feather"
-                  iconName={'plus'}
-                  iconSize={20}
-                  iconColor={'#FFF'}
-                  style={{
-                    padding: 10,
-                    backgroundColor: '#000',
-                    borderRadius: 10,
-                  }}
-                  onPress={this.switchCamera}
-                />
+          <View style={{marginTop: 30}}>
+            <CreateEventCard uid={user.uid} />
+          </View>
+
+          <View style={{paddingBottom: 20}}>
+            <View
+              style={{
+                marginTop: 20,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}>
+              <View>
+                <Text style={{fontSize: 14}}>Check your</Text>
+                <Text style={{fontSize: 24, fontWeight: 'bold'}}>
+                  Live Events
+                </Text>
               </View>
-              <FlatList
-                horizontal={true}
-                data={data}
-                style={{marginTop: 20}}
-                renderItem={this.renderItem}
-                keyExtractor={item => item.id}
+              <ButtonWithIcon
+                iconType="Feather"
+                iconName={'plus'}
+                iconSize={20}
+                iconColor={'#FFF'}
+                style={{
+                  padding: 10,
+                  backgroundColor: '#000',
+                  borderRadius: 10,
+                }}
+                onPress={this.createEvent}
               />
             </View>
-          ) : (
-            <View style={{marginTop: 30}}>
-              <CreateEventCard />
-            </View>
-          )}
-        </View>
+            <FlatList
+              horizontal={true}
+              data={data}
+              style={{marginTop: 20}}
+              renderItem={this.renderItem}
+              keyExtractor={item => item.id}
+            />
+          </View>
+        </ScrollView>
       </SafeAreaView>
     );
   }
@@ -113,8 +114,14 @@ const styles = StyleSheet.create({
   },
   container: {
     padding: 20,
+
     flex: 1,
   },
 });
 
-export default Home;
+const mapStateToProps = state => ({
+  user: state.user,
+});
+
+const mapDispatchToProps = {};
+export default connect(mapStateToProps, mapDispatchToProps)(Home);

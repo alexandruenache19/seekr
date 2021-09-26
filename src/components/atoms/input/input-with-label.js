@@ -6,6 +6,7 @@ const InputWithLabel = ({
   value,
   editable,
   onPress,
+  onChange,
   style,
   label,
   placeholder,
@@ -16,6 +17,7 @@ const InputWithLabel = ({
       text60
       editable={editable || true}
       value={value || ''}
+      onChangeText={onChange}
       onPressIn={onPress}
       placeholder={placeholder}
       placeholderTextColor={Colors.grey50}

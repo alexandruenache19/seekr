@@ -19,9 +19,19 @@ class ActionsSection extends PureComponent {
   render() {
     return (
       <View style={styles.container}>
-        <View style={{}}>
-          <Text style={styles.detailsText}> 2$</Text>
-          <Text style={styles.detailsText}>22 left</Text>
+        <View
+          style={{
+            flex: 1,
+            flexDirection: 'row',
+            alignItems: 'flex-end',
+          }}>
+          <Text style={styles.detailsText}>
+            <Text style={{fontSize: 28, fontWeight: 'bold'}}>2</Text>$
+          </Text>
+          <Text style={{...styles.detailsText, paddingLeft: 20}}>
+            <Text style={{fontSize: 34, fontWeight: 'bold'}}>13</Text>
+            {' items'}
+          </Text>
         </View>
         <ButtonWithTextIcon
           style={styles.nextButton}
@@ -48,7 +58,7 @@ export default ActionsSection;
 const styles = StyleSheet.create({
   container: {
     height: '10%',
-    backgroundColor: '#F4A261',
+    backgroundColor: '#282B28',
     width: '100%',
     borderRadius: 10,
     padding: 10,
@@ -69,7 +79,8 @@ const styles = StyleSheet.create({
   },
   detailsText: {
     fontSize: 20,
-    fontWeight: 'bold',
+    paddingLeft: 10,
+
     color: '#FFF',
   },
 });

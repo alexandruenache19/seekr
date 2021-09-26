@@ -1,46 +1,117 @@
 import React, {PureComponent} from 'react';
-import {SafeAreaView, View, Text, StyleSheet} from 'react-native';
+import {
+  SafeAreaView,
+  View,
+  Text,
+  StyleSheet,
+  PermissionsAndroid,
+  Platform,
+} from 'react-native';
 
 import LinearGradient from 'react-native-linear-gradient';
 import Video from 'react-native-video';
-import {Card} from 'react-native-ui-lib';
-
+import {Card, Typography} from 'react-native-ui-lib';
+import Share from 'react-native-share';
+import {ButtonWithTextIcon, ButtonWithIcon} from '_atoms';
 import {Transitions, Service} from '_nav';
+import moment from 'moment';
 
 const {pushScreen} = Transitions;
 
 class EventCard extends PureComponent {
   constructor(props) {
     super(props);
-    this.goToEvent = this.goToEvent.bind(this);
+    this.state = {};
+    this.goToLive = this.goToLive.bind(this);
+    this.shareOnFb = this.shareOnFb.bind(this);
+    this.share = this.share.bind(this);
   }
 
-  goToEvent() {
-    pushScreen(Service.instance.getScreenId(), 'Event');
+  shareOnFb() {
+    const {item} = this.props;
+    const day = moment(item.timestamp).format('DD');
+    const month = moment(item.timestamp).format('MMMM');
+
+    const options = {
+      title: item.title,
+      message: `Join me live on ${day} ${month} on Seekr`,
+      url: `https://seekr-live.herokuapp.com/e/${item.id}`,
+      social: Share.Social.FACEBOOK,
+    };
+
+    Share.shareSingle(options);
+  }
+
+  share() {
+    const {item} = this.props;
+    const day = moment(item.timestamp).format('DD');
+    const month = moment(item.timestamp).format('MMMM');
+
+    const options = {
+      title: item.title,
+      message: `Join me live on ${day} ${month}`,
+      url: `https://seekr-live.herokuapp.com/e/${item.id}`,
+      social: Share.Social.FACEBOOK,
+    };
+
+    Share.open(options);
+  }
+
+  async goToLive() {
+    try {
+      if (Platform.OS === 'android') {
+        const granted = await PermissionsAndroid.requestMultiple(
+          [
+            PermissionsAndroid.PERMISSIONS.CAMERA,
+            PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+          ],
+          {
+            title: 'Cool Photo App Camera And Microphone Permission',
+            message:
+              'Cool Photo App needs access to your camera ' +
+              'so you can take awesome pictures.',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          },
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          pushScreen(Service.instance.getScreenId(), 'Live');
+        } else {
+          pushScreen(Service.instance.getScreenId(), 'Live');
+          console.log('Camera permission denied');
+        }
+      } else {
+        pushScreen(Service.instance.getScreenId(), 'Live');
+      }
+    } catch (err) {
+      console.warn(err);
+    }
   }
 
   render() {
     const {item} = this.props;
+
+    const day = moment(item.timestamp).format('DD');
+    const month = moment(item.timestamp).format('MMM');
+    const formatTime = moment(item.timestamp).format('HH:mm A');
+
     return (
       <Card
-        useNative
+        // useNative
         enableShadow
         enableBlur
         borderRadius={10}
         elevation={20}
-        onPress={this.goToEvent}
+        onPress={this.goToLive}
         activeScale={0.96}
         style={styles.container}>
         <View style={styles.innerContainer}>
           <Video
             source={{
               uri: item.videoURL,
-            }} // Can be a URL or a local file.
-            ref={ref => {
-              this.player = ref;
-            }} // Store reference
-            // onBuffer={this.onBuffer} // Callback when remote video is buffering
-            // onError={this.videoError} // Callback when video cannot be loaded
+            }}
+            ref={ref => (this.player = ref)}
             style={styles.video}
             resizeMode={'cover'}
             muted={true}
@@ -58,8 +129,8 @@ class EventCard extends PureComponent {
                 alignItems: 'flex-start',
               }}>
               <View>
-                <Text style={styles.largeText}>{item.day}</Text>
-                <Text style={styles.mediumText}>{item.month}</Text>
+                <Text style={styles.largeText}>{day}</Text>
+                <Text style={styles.mediumText}>{month}</Text>
               </View>
               <View
                 style={{
@@ -68,7 +139,7 @@ class EventCard extends PureComponent {
                   padding: 10,
                 }}>
                 <Text style={{...styles.smallText, color: '#000'}}>
-                  {item.time}
+                  {formatTime}
                 </Text>
               </View>
             </View>
@@ -79,6 +150,31 @@ class EventCard extends PureComponent {
             end={{x: 0, y: 0}}
             style={styles.gradient}>
             <Text style={styles.mediumText}>{item.title}</Text>
+            <View
+              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+              <ButtonWithTextIcon
+                onPress={this.shareOnFb}
+                text="Post on Facebook"
+                style={styles.button}
+                containerStyle={styles.buttonContainer}
+                textStyle={Typography.text80H}
+                iconType="Feather"
+                iconName={'facebook'}
+                iconSize={20}
+                iconColor={'#000'}
+                iconAfterText
+              />
+
+              <ButtonWithIcon
+                onPress={this.share}
+                style={styles.button}
+                containerStyle={styles.buttonContainer}
+                iconType="Feather"
+                iconName={'send'}
+                iconSize={20}
+                iconColor={'#000'}
+              />
+            </View>
           </LinearGradient>
         </View>
       </Card>
@@ -91,9 +187,20 @@ export default EventCard;
 const styles = StyleSheet.create({
   container: {
     overflow: 'hidden',
-    height: 300,
-    width: 200,
+    height: 400,
+    width: 260,
   },
+  button: {
+    padding: 10,
+    marginTop: 10,
+    backgroundColor: '#FFF',
+    borderRadius: 10,
+  },
+  buttonContainer: {
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+
   gradient: {
     padding: 20,
   },

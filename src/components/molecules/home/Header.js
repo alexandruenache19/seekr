@@ -9,18 +9,17 @@ class HomeHeader extends PureComponent {
   }
 
   render() {
+    const {info} = this.props;
     return (
       <View style={styles.container}>
         <View>
           <Text style={Typography.text65L}>Hello,</Text>
-          <Text style={Typography.text40}>Maria</Text>
+          <Text style={Typography.text40}>{info.username}</Text>
         </View>
 
         <FastImage
           style={styles.profile}
-          source={{
-            uri: 'https://scontent-otp1-1.xx.fbcdn.net/v/t1.6435-1/c0.53.320.320a/p320x320/181431130_781301786094985_8980961628504639729_n.jpg?_nc_cat=107&ccb=1-5&_nc_sid=7206a8&_nc_ohc=fHMKYYvw2hEAX_j9B-8&tn=r3p0B6ByeKfLWpz-&_nc_ht=scontent-otp1-1.xx&oh=b5b161089d6e38510384056e9f4ffddc&oe=615FAB28',
-          }}
+          source={{uri: info.imageURL}}
           resizeMode={FastImage.resizeMode.contain}
         />
       </View>
@@ -35,9 +34,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   profile: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
   },
 });
 

@@ -1,83 +1,90 @@
 import React, {PureComponent} from 'react';
-import {SafeAreaView, View, Text, StyleSheet} from 'react-native';
+import {
+  SafeAreaView,
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
 import {Keyboard, Typography, Colors} from 'react-native-ui-lib';
+import Video from 'react-native-video';
+import {Navigation} from 'react-native-navigation';
+import moment from 'moment';
 
 import {Transitions, Service} from '_nav';
 import {InputWithLabel, ButtonWithText, ButtonWithIcon} from '_atoms';
 import {TimeDateDialog} from '_molecules';
-
-const monthName = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-];
-const dayName = [
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-  'Sunday',
-];
+import {Interactions} from '_actions';
 
 const {KeyboardAwareInsetsView} = Keyboard;
 const {pushScreen} = Transitions;
+const {createEvent} = Interactions;
+
 class Onboarding extends PureComponent {
   constructor(props) {
     super(props);
-    // const date = new Date();
 
     this.state = {
-      // day: date.getDate(),
-      // month: date.getMonth(),
-      // year: date.getFullYear(),
-      // hour: date.getHours(),
-      // minutes: date.getMinutes(),
-      // dayOfWeek: date.getDay(),
       dateString: '',
       date: new Date(),
-      time: new Date(),
+      title: '',
+      videoURL: '',
     };
 
     this.handleSelectDate = this.handleSelectDate.bind(this);
     this.handleCreateEvent = this.handleCreateEvent.bind(this);
     this.handleRecord = this.handleRecord.bind(this);
+    this.handelChangeTitle = this.handelChangeTitle.bind(this);
+    this.handleUpload = this.handleUpload.bind(this);
   }
 
   handleSelectDate(date, time) {
-    const day = date.getDate();
-    const dayOfWeek = dayName[date.getDay()];
-    const month = monthName[date.getMonth()];
-    const year = date.getFullYear();
-    const hour = time.getHours();
-    const minutes = time.getMinutes();
+    var eventDate = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+      time.getHours(),
+      time.getMinutes(),
+      time.getSeconds(),
+      time.getMilliseconds(),
+    );
+
+    const formatDate = moment(eventDate).format('dddd DD MMM');
+    const formatTime = moment(eventDate).format('HH:mm');
 
     this.setState({
-      date: date,
-      time: time,
-      dateString:
-        hour + ':' + minutes + ', ' + dayOfWeek + ' ' + day + ' ' + month,
+      date: eventDate,
+      dateString: formatTime + ', ' + formatDate,
     });
   }
 
-  handleCreateEvent() {}
+  async handleCreateEvent() {
+    const {title, date, videoURL} = this.state;
+    const {uid} = this.props;
+    await createEvent(title, date, videoURL, uid);
+
+    Navigation.pop(Service.instance.getScreenId());
+  }
 
   handleRecord() {
-    pushScreen(Service.instance.getScreenId(), 'Record');
+    pushScreen(Service.instance.getScreenId(), 'Record', {
+      callback: this.handleUpload,
+    });
+  }
+
+  handelChangeTitle(value) {
+    console.log(value);
+    this.setState({title: value});
+  }
+
+  handleUpload(url) {
+    console.log(url);
+    this.setState({videoURL: url});
   }
 
   render() {
-    const {dateString} = this.state;
+    const {dateString, title, videoURL} = this.state;
 
     return (
       <SafeAreaView style={styles.safeContainer}>
@@ -87,6 +94,8 @@ class Onboarding extends PureComponent {
           <View>
             <InputWithLabel
               label="Name Your Event"
+              value={title}
+              onChange={this.handelChangeTitle}
               placeholder="write here..."
             />
 
@@ -105,30 +114,38 @@ class Onboarding extends PureComponent {
                 color: Colors.grey40,
                 marginTop: 30,
               }}>
-              Make a 15 sec clip
+              Make a 30 sec clip
             </Text>
-
-            <ButtonWithIcon
-              iconType="Feather"
-              iconName={'video'}
-              iconSize={30}
-              iconColor={'#FFF'}
-              onPress={this.handleRecord}
-              style={{
-                marginTop: 20,
-                justifyContent: 'center',
-                alignItems: 'center',
-                backgroundColor: Colors.grey40,
-                height: 100,
-                borderRadius: 10,
-              }}
-            />
+            {videoURL !== '' ? (
+              <TouchableOpacity
+                style={styles.createVideoContainer}
+                onPress={this.handleRecord}>
+                <Video
+                  source={{uri: videoURL}}
+                  ref={ref => (this.player = ref)}
+                  style={styles.video}
+                  resizeMode={'cover'}
+                  muted={true}
+                  repeat={true}
+                />
+                <ActivityIndicator size="large" color="#FFF" />
+              </TouchableOpacity>
+            ) : (
+              <ButtonWithIcon
+                iconType="Feather"
+                iconName={'video'}
+                iconSize={30}
+                iconColor={'#FFF'}
+                onPress={this.handleRecord}
+                style={styles.createVideoContainer}
+              />
+            )}
           </View>
 
           <ButtonWithText
             style={styles.button}
             textStyle={{...Typography.text50, color: '#FFF'}}
-            onPress={this.createEvent}
+            onPress={this.handleCreateEvent}
             text={'Schedule'}
           />
         </View>
@@ -172,6 +189,24 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: '#FFF',
+  },
+  video: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 5,
+    alignItems: 'stretch',
+  },
+  createVideoContainer: {
+    marginTop: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: Colors.grey40,
+    height: 100,
+    borderRadius: 10,
+    overflow: 'hidden',
   },
 });
 

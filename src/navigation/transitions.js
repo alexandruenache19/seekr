@@ -1,23 +1,18 @@
 import React from 'react';
 import {Navigation} from 'react-native-navigation';
 import {Platform} from 'react-native';
-
 import auth from '@react-native-firebase/auth';
+
 import {store} from '../redux/store';
-
-import Entypo from 'react-native-vector-icons/Entypo';
-import Feather from 'react-native-vector-icons/Feather';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Service} from '_nav';
+import {FetchingActions} from '_actions';
 
-const selectedColor = '#F5F5F5';
-const unSelectedColor = '#ADADAD';
-const iconColor = '#E7E7E7';
+const {fetchUser} = FetchingActions;
 
 export const goToApp = async (passProps = {}) => {
   const currentUser = auth().currentUser;
 
-  // await store.dispatch(fetchUser(currentUser))
+  await store.dispatch(fetchUser(currentUser));
   await Navigation.setDefaultOptions({
     layout: {
       orientation: ['portrait'],

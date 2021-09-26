@@ -63,8 +63,9 @@ class LiveButton extends PureComponent {
           enableShadow
           borderRadius={10}
           elevation={20}
-          backgroundColor={'#F85351'}
+          backgroundColor={'#840032'}
           activeScale={0.96}
+          onPress={this.goToLive}
           style={styles.container}>
           <View style={styles.innerContainer}>
             <View style={{paddingBottom: 20}}>
@@ -81,7 +82,7 @@ class LiveButton extends PureComponent {
               style={styles.button}
               containerStyle={styles.buttonContainer}
               textStyle={Typography.text60}
-              onPress={this.goToLive}
+              // onPress={this.goToLive}
               iconType="Feather"
               iconName={'video'}
               iconSize={22}
@@ -103,8 +104,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   button: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    padding: 20,
     backgroundColor: '#FFF',
     borderRadius: 10,
   },

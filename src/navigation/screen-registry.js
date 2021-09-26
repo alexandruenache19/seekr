@@ -45,8 +45,8 @@ export const registerScreens = () => {
   );
   Navigation.registerComponent(
     'Live',
-    () => ReduxProvider(Live),
-    () => Live,
+    () => gestureHandlerRootHOC(ReduxProvider(Live)),
+    () => gestureHandlerRootHOC(Live),
   );
   Navigation.registerComponent(
     'Event',

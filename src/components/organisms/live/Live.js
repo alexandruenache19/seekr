@@ -1,17 +1,14 @@
 import React, {PureComponent} from 'react';
 import {View, SafeAreaView, StyleSheet} from 'react-native';
-import {
-  CommentsSection,
-  LiveCameraSection,
-  LiveActionsSection,
-} from '_molecules';
+import {CommentsSection, CameraSection, LiveActionsSection} from '_molecules';
 
 class LiveScreen extends PureComponent {
   render() {
+    const {info} = this.props;
     return (
       <SafeAreaView style={styles.safeContainer}>
         <View style={styles.container}>
-          <LiveCameraSection />
+          <CameraSection type="live" info={info} />
           <CommentsSection />
           <LiveActionsSection />
         </View>
