@@ -12,7 +12,10 @@ import {
 import {ButtonWithIcon} from '_atoms';
 import {LiveButton, EventCard, HomeHeader, CreateEventCard} from '_molecules';
 import {FetchingActions} from '_actions';
+import {Service, Transitions} from '_nav';
+
 const {getEventInfo} = FetchingActions;
+const {pushScreen} = Transitions;
 
 class Home extends PureComponent {
   constructor(props) {
@@ -20,6 +23,7 @@ class Home extends PureComponent {
 
     this.state = {eventInfo: null, data: []};
     this.renderItem = this.renderItem.bind(this);
+    this.createEvent = this.createEvent.bind(this);
   }
 
   async componentDidMount() {
@@ -38,6 +42,11 @@ class Home extends PureComponent {
         <EventCard item={item} />
       </View>
     );
+  }
+
+  createEvent() {
+    const {user} = this.props;
+    pushScreen(Service.instance.getScreenId(), 'CreateEvent', {uid: user.uid});
   }
 
   render() {
@@ -82,7 +91,7 @@ class Home extends PureComponent {
                   backgroundColor: '#000',
                   borderRadius: 10,
                 }}
-                onPress={this.switchCamera}
+                onPress={this.createEvent}
               />
             </View>
             <FlatList
