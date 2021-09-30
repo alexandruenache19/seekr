@@ -44,8 +44,10 @@ class CommentsSection extends PureComponent {
           style={styles.image}
           source={{uri: item.imageURL}}
           label={
-            item.username.charAt(0).toUpperCase() +
-            item.username.charAt(1).toUpperCase()
+            item.username
+              ? item.username.charAt(0).toUpperCase() +
+                item.username.charAt(1).toUpperCase()
+              : ''
           }
           backgroundColor={Colors.red60}
         />

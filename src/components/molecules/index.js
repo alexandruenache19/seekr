@@ -6,13 +6,12 @@ export {default as CreateEventCard} from './home/CreateEventCard';
 
 //Live
 export {default as ItemDetailsDialog} from './live/ItemDialog';
+export {default as ShareDialog} from './live/ShareDialog';
 export {default as CommentsSection} from './live/Comments';
 export {default as CameraSection} from './live/Camera';
 export {default as LiveActionsSection} from './live/LiveActions';
 
 //Preview
-export {default as PreviewCameraSection} from './live/PreviewCamera';
 export {default as PreviewActionsSection} from './live/PreviewActions';
-export {default as ShareSection} from './live/Share';
 //Create Event
 export {default as TimeDateDialog} from './create-event/TimeDateDialog';

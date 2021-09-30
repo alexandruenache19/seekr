@@ -1,23 +1,25 @@
 import React, {PureComponent} from 'react';
 import {View, SafeAreaView, StyleSheet} from 'react-native';
-import {CameraSection, PreviewActionsSection, ShareSection} from '_molecules';
+import {CameraSection, PreviewActionsSection} from '_molecules';
 
-class LiveScreen extends PureComponent {
+class PreviewScreen extends PureComponent {
   render() {
-    const {info} = this.props;
+    const {info, eventItem} = this.props;
     return (
       <SafeAreaView style={styles.safeContainer}>
         <View style={styles.container}>
-          <CameraSection type="preview" info={info} />
-          <ShareSection callback={this.props.onGoLive} />
-          {/*  <PreviewActionsSection />*/}
+          <CameraSection isPreview info={info} />
+          <PreviewActionsSection
+            callback={this.props.onGoLive}
+            eventItem={eventItem}
+          />
         </View>
       </SafeAreaView>
     );
   }
 }
 
-export default LiveScreen;
+export default PreviewScreen;
 
 const styles = StyleSheet.create({
   safeContainer: {

@@ -112,15 +112,15 @@ class CameraScreen extends PureComponent {
       signatureVersion: 'v4',
     });
 
-    let contentType = 'video/mp4';
-    let contentDeposition = 'inline;filename="' + 'videoFIleName' + '"';
+    let contentType = 'video/mov';
+    // let contentDeposition = 'inline;filename="' + 'videoName' + '"';
     const base64 = await fs.readFile(file.uri, 'base64');
     const arrayBuffer = decode(base64);
     const params = {
       Bucket: 'event-preview',
-      Key: 'file.name',
+      Key: 'videoName.mov',
       Body: arrayBuffer,
-      ContentDisposition: contentDeposition,
+      // ContentDisposition: contentDeposition,
       ContentType: contentType,
     };
 
@@ -161,6 +161,7 @@ class CameraScreen extends PureComponent {
           style={styles.preview}
           type={RNCamera.Constants.Type.back}
           flashMode={RNCamera.Constants.FlashMode.on}
+          defaultVideoQuality={RNCamera.Constants.VideoQuality['480p']}
           androidCameraPermissionOptions={{
             title: 'Permission to use camera',
             message: 'We need your permission to use your camera',

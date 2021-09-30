@@ -4,13 +4,14 @@ import {CommentsSection, CameraSection, LiveActionsSection} from '_molecules';
 
 class LiveScreen extends PureComponent {
   render() {
-    const {info} = this.props;
+    const {info, eventItem} = this.props;
+
     return (
       <SafeAreaView style={styles.safeContainer}>
         <View style={styles.container}>
-          <CameraSection type="live" info={info} />
+          <CameraSection info={info} />
           <CommentsSection />
-          <LiveActionsSection />
+          <LiveActionsSection eventItem={eventItem} />
         </View>
       </SafeAreaView>
     );

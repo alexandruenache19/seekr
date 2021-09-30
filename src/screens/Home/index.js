@@ -8,6 +8,8 @@ import {
   Text,
   FlatList,
 } from 'react-native';
+import {Typography} from 'react-native-ui-lib';
+import database from '@react-native-firebase/database';
 
 import {ButtonWithIcon} from '_atoms';
 import {LiveButton, EventCard, HomeHeader, CreateEventCard} from '_molecules';
@@ -28,12 +30,31 @@ class Home extends PureComponent {
 
   async componentDidMount() {
     const {user} = this.props;
-    if (user && user.hasOwnProperty('events') && user.events.current) {
-      const eventInfo = await getEventInfo(user.events.current);
-      this.setState({
-        data: [eventInfo],
+    // await database().child('events').(`${eventId}/info`).once('value');
+    this.currentEventListener = await database()
+      .ref(`users/${user.uid}/events/current`)
+      .on('value', async sn => {
+        console.log('sn', sn.val());
+        if (sn.val()) {
+          const eventInfo = await getEventInfo(sn.val());
+          this.setState({
+            data: [eventInfo],
+          });
+        }
       });
-    }
+    // if (user && user.hasOwnProperty('events') && user.events.current) {
+    //   const eventInfo = await getEventInfo(user.events.current);
+    //   this.setState({
+    //     data: [eventInfo],
+    //   });
+    // }
+  }
+
+  componentWillUnmount() {
+    const {user} = this.props;
+    database()
+      .ref(`users/${user.uid}/events/current`)
+      .off('value', this.currentEventListener);
   }
 
   renderItem({item}) {
@@ -76,23 +97,21 @@ class Home extends PureComponent {
                 alignItems: 'center',
               }}>
               <View>
-                <Text style={{fontSize: 14}}>Check your</Text>
-                <Text style={{fontSize: 24, fontWeight: 'bold'}}>
-                  Live Events
-                </Text>
+                <Text style={Typography.text65L}>upcoming</Text>
+                <Text style={Typography.text40}>Live Events</Text>
               </View>
-              <ButtonWithIcon
-                iconType="Feather"
-                iconName={'plus'}
-                iconSize={20}
-                iconColor={'#FFF'}
-                style={{
-                  padding: 10,
-                  backgroundColor: '#000',
-                  borderRadius: 10,
-                }}
-                onPress={this.createEvent}
-              />
+              {/*  <ButtonWithIcon
+                  iconType="Feather"
+                  iconName={'plus'}
+                  iconSize={20}
+                  iconColor={'#FFF'}
+                  style={{
+                    padding: 10,
+                    backgroundColor: '#000',
+                    borderRadius: 10,
+                  }}
+                  onPress={this.createEvent}
+                />*/}
             </View>
             <FlatList
               horizontal={true}

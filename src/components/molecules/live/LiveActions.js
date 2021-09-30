@@ -3,13 +3,25 @@ import {View, StyleSheet, Text} from 'react-native';
 
 import {ButtonWithTextIcon} from '_atoms';
 import {ItemDetailsDialog} from '_molecules';
+import database from '@react-native-firebase/database';
 
 class ActionsSection extends PureComponent {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {productInfo: null};
 
     this.goToNextItem = this.goToNextItem.bind(this);
+  }
+
+  componentDidMount() {
+    const {eventItem} = this.props;
+    this.productInfoListener = database()
+      .ref(`events/${eventItem.id}/products/productId`)
+      .on('value', snapshot => {
+        this.setState({
+          productInfo: snapshot.val(),
+        });
+      });
   }
 
   goToNextItem() {
@@ -17,22 +29,42 @@ class ActionsSection extends PureComponent {
   }
 
   render() {
+    const {productInfo} = this.state;
     return (
       <View style={styles.container}>
-        <View
-          style={{
-            flex: 1,
-            flexDirection: 'row',
-            alignItems: 'flex-end',
-          }}>
-          <Text style={styles.detailsText}>
-            <Text style={{fontSize: 28, fontWeight: 'bold'}}>2</Text>$
-          </Text>
-          <Text style={{...styles.detailsText, paddingLeft: 20}}>
-            <Text style={{fontSize: 34, fontWeight: 'bold'}}>13</Text>
-            {' items'}
-          </Text>
-        </View>
+        {productInfo ? (
+          <View
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+              alignItems: 'flex-end',
+            }}>
+            <Text style={styles.detailsText}>
+              {productInfo.currency}
+              <Text style={{fontSize: 28, fontWeight: 'bold'}}>
+                {productInfo.price}
+              </Text>
+            </Text>
+            <Text style={{...styles.detailsText, paddingLeft: 20}}>
+              <Text style={{fontSize: 34, fontWeight: 'bold'}}>
+                {productInfo.currentStock}
+              </Text>
+              {' items'}
+            </Text>
+          </View>
+        ) : (
+          <View
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+              alignItems: 'flex-end',
+            }}>
+            <Text style={styles.detailsText}>
+              <Text style={{fontSize: 28, fontWeight: 'bold'}}>waiting...</Text>
+            </Text>
+          </View>
+        )}
+
         <ButtonWithTextIcon
           style={styles.nextButton}
           textStyle={{

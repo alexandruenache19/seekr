@@ -22,6 +22,11 @@ class CameraSection extends PureComponent {
     this.endLive = this.endLive.bind(this);
   }
 
+  componentDidMount() {
+    const {isPreview} = this.props;
+    if (!isPreview) this.vb.start();
+  }
+
   toggleVideo() {
     const {isVideoOn} = this.state;
     this.setState({isVideoOn: !isVideoOn});
@@ -38,12 +43,12 @@ class CameraSection extends PureComponent {
 
   render() {
     const {isVideoOn} = this.state;
-    const {type, info} = this.props;
+    const {isPreview, info} = this.props;
 
     // const streamKey = '7078779f-1fb2-9027-f57b-885c19260c6e';
     // const url = `rtmps://global-live.mux.com:443/app/${streamKey}`;
     const streamKey =
-      'sk_us-east-1_0stiOSrPQ3BJ_0xNBsxAq2bpqs5hCcRIV3Jt0Jev6an';
+      'sk_us-east-1_9II6k7LllISx_a6v8eAIZOEjfxV1ERJHruPdp6QZoB1';
     const url = `rtmps://a6a7debc4d73.global-contribute.live-video.net:443/app/${streamKey}`;
 
     return (
@@ -109,12 +114,12 @@ class CameraSection extends PureComponent {
                 <ButtonWithText
                   style={{
                     backgroundColor:
-                      isVideoOn && type === 'live' ? '#FC5D83' : Colors.grey40,
+                      isVideoOn && !isPreview ? '#FC5D83' : Colors.grey40,
                     padding: 2,
                     paddingHorizontal: 5,
                     borderRadius: 5,
                   }}
-                  text={isVideoOn && type === 'live' ? '● LIVE' : 'PREVIEW'}
+                  text={isVideoOn && !isPreview ? '● LIVE' : 'PREVIEW'}
                   textStyle={styles.text}
                   onPress={this.toggleVideo}
                 />
@@ -229,10 +234,11 @@ const styles = StyleSheet.create({
   imageContainer: {
     height: 40,
     width: 40,
+    borderRadius: 20,
+    overflow: 'hidden',
   },
   image: {
     ...StyleSheet.absoluteFill,
-    borderRadius: 30,
   },
   endButton: {
     padding: 10,
