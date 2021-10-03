@@ -20,7 +20,7 @@ class CommentsSection extends PureComponent {
   componentDidMount() {
     const {eventInfo} = this.props;
     this.commentsListener = eventsRef
-      .child(`event-id/comments`)
+      .child(`${eventInfo.id}/comments`)
       .orderByChild('timestamp')
       .limitToLast(20)
       .on('value', snapshot => {

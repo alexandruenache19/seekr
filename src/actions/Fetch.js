@@ -21,6 +21,7 @@ export const fetchUser = user => async dispatch => {
 };
 export const getEventInfo = async eventId => {
   const snap = await eventsRef.child(`${eventId}/info`).once('value');
+  console.log('snap.exists()', snap.exists());
   if (snap.exists()) return snap.val();
 
   return null;

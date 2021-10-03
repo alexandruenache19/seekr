@@ -4,10 +4,6 @@ import FastImage from 'react-native-fast-image';
 import {Typography} from 'react-native-ui-lib';
 
 class HomeHeader extends PureComponent {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     const {info} = this.props;
     return (
@@ -20,7 +16,7 @@ class HomeHeader extends PureComponent {
         <FastImage
           style={styles.profile}
           source={{uri: info.imageURL}}
-          resizeMode={FastImage.resizeMode.contain}
+          resizeMode={FastImage.resizeMode.cover}
         />
       </View>
     );

@@ -24,8 +24,8 @@ const {shareOnFB, share} = ShareActions;
 class ItemDetailsDialog extends Component {
   constructor(props) {
     super(props);
-    const {eventItem} = props;
-    const eventID = eventItem ? eventItem.id : '';
+    const {eventInfo} = props;
+    const eventID = eventInfo ? eventInfo.id : '';
 
     this.state = {
       showDialog: false,
@@ -40,8 +40,6 @@ class ItemDetailsDialog extends Component {
     this.shareOnFb = this.shareOnFb.bind(this);
     this.share = this.share.bind(this);
   }
-
-  componentDidMount() {}
 
   showDialog() {
     this.setState({showDialog: true});
@@ -67,14 +65,15 @@ class ItemDetailsDialog extends Component {
   }
 
   shareOnFb() {
-    const {eventItem} = this.props;
+    const {eventInfo} = this.props;
 
-    shareOnFB(eventItem);
+    shareOnFB(eventInfo);
   }
-  share() {
-    const {eventItem} = this.props;
 
-    share(eventItem);
+  share() {
+    const {eventInfo} = this.props;
+
+    share(eventInfo);
   }
 
   render() {

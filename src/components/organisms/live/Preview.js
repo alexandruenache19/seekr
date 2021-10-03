@@ -4,14 +4,15 @@ import {CameraSection, PreviewActionsSection} from '_molecules';
 
 class PreviewScreen extends PureComponent {
   render() {
-    const {info, eventItem} = this.props;
+    const {userInfo, eventInfo} = this.props;
     return (
       <SafeAreaView style={styles.safeContainer}>
         <View style={styles.container}>
-          <CameraSection isPreview info={info} />
+          <CameraSection eventInfo={eventInfo} isPreview userInfo={userInfo} />
           <PreviewActionsSection
             callback={this.props.onGoLive}
-            eventItem={eventItem}
+            userInfo={userInfo}
+            eventInfo={eventInfo}
           />
         </View>
       </SafeAreaView>

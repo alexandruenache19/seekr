@@ -58,17 +58,17 @@ class EventCard extends PureComponent {
         );
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
           pushScreen(Service.instance.getScreenId(), 'Live', {
-            eventItem: this.props.item,
+            eventInfo: this.props.item,
           });
         } else {
           pushScreen(Service.instance.getScreenId(), 'Live', {
-            eventItem: this.props.item,
+            eventInfo: this.props.item,
           });
           console.log('Camera permission denied');
         }
       } else {
         pushScreen(Service.instance.getScreenId(), 'Live', {
-          eventItem: this.props.item,
+          eventInfo: this.props.item,
         });
       }
     } catch (err) {
@@ -78,7 +78,6 @@ class EventCard extends PureComponent {
 
   render() {
     const {item} = this.props;
-
     const day = moment(item.timestamp).format('DD');
     const month = moment(item.timestamp).format('MMM');
     const formatTime = moment(item.timestamp).format('HH:mm A');
@@ -94,16 +93,19 @@ class EventCard extends PureComponent {
         activeScale={0.96}
         style={styles.container}>
         <View style={styles.innerContainer}>
-          <Video
-            source={{
-              uri: item.videoURL,
-            }}
-            ref={ref => (this.player = ref)}
-            style={styles.video}
-            resizeMode={'cover'}
-            muted={true}
-            repeat={true}
-          />
+          {item.videoURL !== '' && (
+            <Video
+              source={{
+                uri: item.videoURL,
+              }}
+              ref={ref => (this.player = ref)}
+              style={styles.video}
+              resizeMode={'cover'}
+              muted={true}
+              repeat={true}
+            />
+          )}
+
           <LinearGradient
             colors={['rgba(0,0,0,0.7)', 'rgba(0,0,0,0.4)', 'rgba(0,0,0,0)']}
             start={{x: 0, y: 0}}

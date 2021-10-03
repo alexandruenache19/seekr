@@ -18,16 +18,20 @@ class LiveScreen extends PureComponent {
 
   render() {
     const {isPreview} = this.state;
-    const {user, eventItem} = this.props;
+    const {user, eventInfo} = this.props;
     const {info} = user;
 
     if (isPreview) {
       return (
-        <PreviewLive info={info} onGoLive={this.goLive} eventItem={eventItem} />
+        <PreviewLive
+          userInfo={info}
+          onGoLive={this.goLive}
+          eventInfo={eventInfo}
+        />
       );
     }
 
-    return <Live info={info} eventItem={eventItem} />;
+    return <Live userInfo={info} eventInfo={eventInfo} />;
   }
 }
 

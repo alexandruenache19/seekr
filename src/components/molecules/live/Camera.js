@@ -10,6 +10,9 @@ import {Colors} from 'react-native-ui-lib';
 import {ButtonWithIcon, ButtonWithTextIcon, ButtonWithText} from '_atoms';
 import {ItemDetailsDialog} from '_molecules';
 
+import {Interactions} from '_actions';
+const {endEvent} = Interactions;
+
 class CameraSection extends PureComponent {
   constructor(props) {
     super(props);
@@ -29,21 +32,28 @@ class CameraSection extends PureComponent {
 
   toggleVideo() {
     const {isVideoOn} = this.state;
-    this.setState({isVideoOn: !isVideoOn});
-    isVideoOn ? this.vb.stop() : this.vb.start();
+    if (isVideoOn) {
+      this.vb.stop();
+      this.setState({isVideoOn: false});
+    } else {
+      this.vb.start();
+      this.setState({isVideoOn: true});
+    }
   }
 
   switchCamera() {
     this.vb.switchCamera();
   }
 
-  endLive() {
+  async endLive() {
+    const {eventInfo, userInfo} = this.props;
+    await endEvent(eventInfo, userInfo.uid);
     Navigation.popToRoot('HOME_STACK');
   }
 
   render() {
     const {isVideoOn} = this.state;
-    const {isPreview, info} = this.props;
+    const {isPreview, userInfo} = this.props;
 
     // const streamKey = '7078779f-1fb2-9027-f57b-885c19260c6e';
     // const url = `rtmps://global-live.mux.com:443/app/${streamKey}`;
@@ -70,7 +80,7 @@ class CameraSection extends PureComponent {
           }}
           autopreview={true}
         />
-        {/*!isVideoOn && (
+        {!isVideoOn && (
           <View
             style={{
               ...styles.absolute,
@@ -78,23 +88,17 @@ class CameraSection extends PureComponent {
               justifyContent: 'center',
               alignItems: 'center',
             }}>
-            <Text style={{fontSize: 22, zIndex: 1, color: '#000'}}>
-              You are offline
-            </Text>
-            <BlurView
-              style={styles.absolute}
-              blurType="light"
-              blurAmount={20}
-            />
+            <Text style={{fontSize: 22, zIndex: 1, color: '#000'}}>Paused</Text>
+            <BlurView style={styles.absolute} blurType="dark" blurAmount={20} />
           </View>
-        )*/}
+        )}
         <View style={styles.topActionsRow}>
           <View style={styles.statusContainer}>
             <View style={styles.imageContainer}>
               <FastImage
-                source={{uri: info.imageURL}}
+                source={{uri: userInfo.imageURL}}
                 style={styles.image}
-                resizeMode={FastImage.resizeMode.contain}
+                resizeMode={FastImage.resizeMode.cover}
               />
             </View>
             <View
@@ -103,7 +107,7 @@ class CameraSection extends PureComponent {
                 alignItems: 'flex-start',
                 marginLeft: 10,
               }}>
-              <Text style={styles.text}>@{info.username}</Text>
+              <Text style={styles.text}>@{userInfo.username}</Text>
               <View
                 style={{
                   flexDirection: 'row',
@@ -121,7 +125,7 @@ class CameraSection extends PureComponent {
                   }}
                   text={isVideoOn && !isPreview ? '● LIVE' : 'PREVIEW'}
                   textStyle={styles.text}
-                  onPress={this.toggleVideo}
+                  // onPress={this.toggleVideo}
                 />
                 <ButtonWithTextIcon
                   iconType="Feather"
@@ -137,34 +141,60 @@ class CameraSection extends PureComponent {
               </View>
             </View>
           </View>
-          {/*<ButtonWithText
-            style={styles.endButton}
-            textStyle={{color: '#000', fontWeight: 'bold', fontSize: 18}}
-            onPress={this.endLive}
-            text="End Live"
-          />*/}
         </View>
-
         <View style={styles.bottomActionsRow}>
-          <ButtonWithIcon
-            iconType="Feather"
-            iconName={isVideoOn ? 'video' : 'video-off'}
-            iconSize={20}
-            iconColor={'#000'}
-            style={styles.button}
-            onPress={this.toggleVideo}
-          />
-          <ButtonWithIcon
-            iconType="Feather"
-            iconName={'repeat'}
-            iconSize={20}
-            iconColor={'#000'}
-            style={{
-              ...styles.button,
-              marginLeft: 10,
-            }}
-            onPress={this.switchCamera}
-          />
+          <View style={{flexDirection: 'row'}}>
+            <ButtonWithTextIcon
+              iconType="Feather"
+              iconName={'x'}
+              iconSize={20}
+              iconColor={'#000'}
+              style={styles.button}
+              textStyle={{
+                color: '#000',
+                fontWeight: 'bold',
+                fontSize: 18,
+                marginLeft: 5,
+              }}
+              onPress={this.endLive}
+              text={'End Event'}
+            />
+          </View>
+          <View style={{flexDirection: 'row'}}>
+            <ButtonWithIcon
+              iconType="Feather"
+              iconName="send"
+              iconSize={20}
+              iconColor="#000"
+              style={{
+                ...styles.button,
+                marginLeft: 10,
+              }}
+              onPress={this.shareLive}
+            />
+            <ButtonWithIcon
+              iconType="Feather"
+              iconName={isVideoOn ? 'video' : 'video-off'}
+              iconSize={20}
+              iconColor={'#000'}
+              style={{
+                ...styles.button,
+                marginLeft: 10,
+              }}
+              onPress={this.toggleVideo}
+            />
+            <ButtonWithIcon
+              iconType="Feather"
+              iconName={'repeat'}
+              iconSize={20}
+              iconColor={'#000'}
+              style={{
+                ...styles.button,
+                marginLeft: 10,
+              }}
+              onPress={this.switchCamera}
+            />
+          </View>
         </View>
       </View>
     );
@@ -206,6 +236,7 @@ const styles = StyleSheet.create({
   },
   bottomActionsRow: {
     flexDirection: 'row',
+    width: '100%',
     justifyContent: 'space-between',
     alignItems: 'center',
     position: 'absolute',

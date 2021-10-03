@@ -25,29 +25,26 @@ class Home extends PureComponent {
 
     this.state = {eventInfo: null, data: []};
     this.renderItem = this.renderItem.bind(this);
-    this.createEvent = this.createEvent.bind(this);
+    this.goToCreateEvent = this.goToCreateEvent.bind(this);
   }
 
   async componentDidMount() {
     const {user} = this.props;
-    // await database().child('events').(`${eventId}/info`).once('value');
+
     this.currentEventListener = await database()
       .ref(`users/${user.uid}/events/current`)
-      .on('value', async sn => {
-        console.log('sn', sn.val());
-        if (sn.val()) {
-          const eventInfo = await getEventInfo(sn.val());
-          this.setState({
-            data: [eventInfo],
-          });
+      .on('value', async snap => {
+        if (snap.exists()) {
+          const eventId = snap.val();
+          const eventInfo = await getEventInfo(eventId);
+
+          if (eventInfo) {
+            this.setState({
+              data: [eventInfo],
+            });
+          }
         }
       });
-    // if (user && user.hasOwnProperty('events') && user.events.current) {
-    //   const eventInfo = await getEventInfo(user.events.current);
-    //   this.setState({
-    //     data: [eventInfo],
-    //   });
-    // }
   }
 
   componentWillUnmount() {
@@ -65,7 +62,7 @@ class Home extends PureComponent {
     );
   }
 
-  createEvent() {
+  goToCreateEvent() {
     const {user} = this.props;
     pushScreen(Service.instance.getScreenId(), 'CreateEvent', {uid: user.uid});
   }
@@ -81,7 +78,7 @@ class Home extends PureComponent {
           <HomeHeader info={info} />
 
           <View style={{marginTop: 30}}>
-            <LiveButton />
+            <LiveButton uid={info.uid} />
           </View>
 
           <View style={{marginTop: 30}}>
@@ -96,10 +93,13 @@ class Home extends PureComponent {
                 justifyContent: 'space-between',
                 alignItems: 'center',
               }}>
-              <View>
-                <Text style={Typography.text65L}>upcoming</Text>
-                <Text style={Typography.text40}>Live Events</Text>
-              </View>
+              {data.length > 0 && (
+                <View>
+                  <Text style={Typography.text65L}>upcoming</Text>
+                  <Text style={Typography.text40}>Live Events</Text>
+                </View>
+              )}
+
               {/*  <ButtonWithIcon
                   iconType="Feather"
                   iconName={'plus'}
@@ -118,7 +118,13 @@ class Home extends PureComponent {
               data={data}
               style={{marginTop: 20}}
               renderItem={this.renderItem}
-              keyExtractor={item => item.id}
+              keyExtractor={(item, index) => {
+                if (item) {
+                  return item.id;
+                } else {
+                  return index;
+                }
+              }}
             />
           </View>
         </ScrollView>

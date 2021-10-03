@@ -13,9 +13,10 @@ import {Card, Typography, Colors} from 'react-native-ui-lib';
 
 import {ButtonWithTextIcon} from '_atoms';
 import {Transitions, Service} from '_nav';
+import {Interactions} from '_actions';
 
 const {pushScreen} = Transitions;
-
+const {createEvent} = Interactions;
 class LiveButton extends PureComponent {
   constructor(props) {
     super(props);
@@ -23,6 +24,16 @@ class LiveButton extends PureComponent {
   }
 
   async goToLive() {
+    const {uid} = this.props;
+
+    const eventInfo = await createEvent(
+      'Live now',
+      new Date(),
+      '',
+      uid,
+      'live',
+    );
+
     try {
       if (Platform.OS === 'android') {
         const granted = await PermissionsAndroid.requestMultiple(
@@ -41,13 +52,19 @@ class LiveButton extends PureComponent {
           },
         );
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          pushScreen(Service.instance.getScreenId(), 'Live');
+          pushScreen(Service.instance.getScreenId(), 'Live', {
+            eventInfo: eventInfo,
+          });
         } else {
-          pushScreen(Service.instance.getScreenId(), 'Live');
+          pushScreen(Service.instance.getScreenId(), 'Live', {
+            eventInfo: eventInfo,
+          });
           console.log('Camera permission denied');
         }
       } else {
-        pushScreen(Service.instance.getScreenId(), 'Live');
+        pushScreen(Service.instance.getScreenId(), 'Live', {
+          eventInfo: eventInfo,
+        });
       }
     } catch (err) {
       console.warn(err);
@@ -82,7 +99,6 @@ class LiveButton extends PureComponent {
               style={styles.button}
               containerStyle={styles.buttonContainer}
               textStyle={Typography.text60}
-              // onPress={this.goToLive}
               iconType="Feather"
               iconName={'video'}
               iconSize={22}

@@ -1,25 +1,33 @@
-import React, {PureComponent} from 'react';
+import React, {Component} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 
+import {Typography} from 'react-native-ui-lib';
 import {ButtonWithTextIcon} from '_atoms';
 import {ItemDetailsDialog} from '_molecules';
-import database from '@react-native-firebase/database';
-
-class ActionsSection extends PureComponent {
+import {eventsRef} from '../../../config/firebase';
+import {Interactions} from '_actions';
+const {getProductInfo} = Interactions;
+class LiveActionsSection extends Component {
   constructor(props) {
     super(props);
-    this.state = {productInfo: null};
-
+    this.state = {
+      productInfo: null,
+    };
     this.goToNextItem = this.goToNextItem.bind(this);
   }
 
   componentDidMount() {
-    const {eventItem} = this.props;
-    this.productInfoListener = database()
-      .ref(`events/${eventItem.id}/products/productId`)
-      .on('value', snapshot => {
+    const {eventInfo} = this.props;
+    const productId = eventInfo.currentProductId;
+
+    this.productInfoListener = eventsRef
+      .child(`${eventInfo.id}/info/currentProductId`)
+      .on('value', async snapshot => {
+        const productId = snapshot.val();
+        const productInfo = await getProductInfo(eventInfo, productId);
+
         this.setState({
-          productInfo: snapshot.val(),
+          productInfo: productInfo,
         });
       });
   }
@@ -29,6 +37,7 @@ class ActionsSection extends PureComponent {
   }
 
   render() {
+    const {eventInfo} = this.props;
     const {productInfo} = this.state;
     return (
       <View style={styles.container}>
@@ -41,14 +50,10 @@ class ActionsSection extends PureComponent {
             }}>
             <Text style={styles.detailsText}>
               {productInfo.currency}
-              <Text style={{fontSize: 28, fontWeight: 'bold'}}>
-                {productInfo.price}
-              </Text>
+              <Text style={Typography.text40}>{productInfo.price}</Text>
             </Text>
             <Text style={{...styles.detailsText, paddingLeft: 20}}>
-              <Text style={{fontSize: 34, fontWeight: 'bold'}}>
-                {productInfo.currentStock}
-              </Text>
+              <Text style={Typography.text30}>{productInfo.currentStock}</Text>
               {' items'}
             </Text>
           </View>
@@ -79,13 +84,13 @@ class ActionsSection extends PureComponent {
           onPress={this.goToNextItem}
           text="Next Item"
         />
-        <ItemDetailsDialog ref={r => (this.dialog = r)} />
+        <ItemDetailsDialog eventInfo={eventInfo} ref={r => (this.dialog = r)} />
       </View>
     );
   }
 }
 
-export default ActionsSection;
+export default LiveActionsSection;
 
 const styles = StyleSheet.create({
   container: {

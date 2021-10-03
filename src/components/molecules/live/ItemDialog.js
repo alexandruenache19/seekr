@@ -14,7 +14,12 @@ import {
   Colors,
 } from 'react-native-ui-lib';
 import Toast from 'react-native-toast-message';
+
 import {ButtonWithText, ButtonWithIcon} from '_atoms';
+import {Interactions} from '_actions';
+
+const {addItem} = Interactions;
+
 class ItemDetailsDialog extends Component {
   constructor(props) {
     super(props);
@@ -28,7 +33,7 @@ class ItemDetailsDialog extends Component {
 
     this.showDialog = this.showDialog.bind(this);
     this.hideDialog = this.hideDialog.bind(this);
-    this.addItem = this.addItem.bind(this);
+    this.handleAddItem = this.handleAddItem.bind(this);
     this.renderPrice = this.renderPrice.bind(this);
     this.renderQuantity = this.renderQuantity.bind(this);
     this.handleChangePrice = this.handleChangePrice.bind(this);
@@ -45,10 +50,13 @@ class ItemDetailsDialog extends Component {
     this.setState({showDialog: false});
   }
 
-  addItem() {
+  async handleAddItem() {
+    const {eventInfo} = this.props;
     const {price, quantity} = this.state;
+
     if (price !== 0 && quantity !== 0) {
       this.hideDialog();
+      await addItem(eventInfo, price, quantity);
       this.props.callback && this.props.callback();
     } else {
       Toast.show({
@@ -113,7 +121,7 @@ class ItemDetailsDialog extends Component {
   }
 
   render() {
-    const {showDialog} = this.state;
+    const {showDialog, price, quantity} = this.state;
 
     return (
       <KeyboardAvoidingView
@@ -181,7 +189,7 @@ class ItemDetailsDialog extends Component {
             <ButtonWithText
               style={styles.button}
               textStyle={styles.buttonText}
-              onPress={this.addItem}
+              onPress={this.handleAddItem}
               text="Done"
             />
           </View>
