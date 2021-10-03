@@ -9,6 +9,7 @@ import {Colors} from 'react-native-ui-lib';
 
 import {ButtonWithIcon, ButtonWithTextIcon, ButtonWithText} from '_atoms';
 import {ItemDetailsDialog} from '_molecules';
+import {eventsRef} from '../../../config/firebase';
 
 import {Interactions} from '_actions';
 const {endEvent} = Interactions;
@@ -18,6 +19,7 @@ class CameraSection extends PureComponent {
     super(props);
     this.state = {
       isVideoOn: true,
+      viewers: 0,
     };
 
     this.toggleVideo = this.toggleVideo.bind(this);
@@ -26,7 +28,19 @@ class CameraSection extends PureComponent {
   }
 
   componentDidMount() {
-    const {isPreview} = this.props;
+    const {isPreview, eventInfo} = this.props;
+
+    this.productInfoListener = eventsRef
+      .child(`${eventInfo.id}/info/viewers`)
+      .on('value', async snapshot => {
+        if (snapshot.exists()) {
+          const viewers = snapshot.val();
+          this.setState({
+            viewers: viewers,
+          });
+        }
+      });
+
     if (!isPreview) this.vb.start();
   }
 
@@ -52,7 +66,7 @@ class CameraSection extends PureComponent {
   }
 
   render() {
-    const {isVideoOn} = this.state;
+    const {isVideoOn, viewers} = this.state;
     const {isPreview, userInfo} = this.props;
 
     // const streamKey = '7078779f-1fb2-9027-f57b-885c19260c6e';
@@ -135,7 +149,7 @@ class CameraSection extends PureComponent {
                   style={{
                     marginLeft: 10,
                   }}
-                  text={22}
+                  text={viewers}
                   textStyle={{...styles.text, marginLeft: 5}}
                 />
               </View>

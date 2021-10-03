@@ -28,10 +28,10 @@ class Home extends PureComponent {
     this.goToCreateEvent = this.goToCreateEvent.bind(this);
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     const {user} = this.props;
 
-    this.currentEventListener = await database()
+    this.currentEventListener = database()
       .ref(`users/${user.uid}/events/current`)
       .on('value', async snap => {
         if (snap.exists()) {
@@ -47,12 +47,12 @@ class Home extends PureComponent {
       });
   }
 
-  componentWillUnmount() {
-    const {user} = this.props;
-    database()
-      .ref(`users/${user.uid}/events/current`)
-      .off('value', this.currentEventListener);
-  }
+  // componentWillUnmount() {
+  //   const {user} = this.props;
+  //   database()
+  //     .ref(`users/${user.uid}/events/current`)
+  //     .off('value', this.currentEventListener);
+  // }
 
   renderItem({item}) {
     return (
