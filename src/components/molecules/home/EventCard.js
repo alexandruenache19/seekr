@@ -30,15 +30,16 @@ class EventCard extends PureComponent {
 
   shareOnFb() {
     const {item} = this.props;
-    shareOnFB(item);
+    shareOnFB(item.info);
   }
 
   share() {
     const {item} = this.props;
-    share(item);
+    share(item.info);
   }
 
   async goToLive() {
+    const {item} = this.props;
     try {
       if (Platform.OS === 'android') {
         const granted = await PermissionsAndroid.requestMultiple(
@@ -58,17 +59,17 @@ class EventCard extends PureComponent {
         );
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
           pushScreen(Service.instance.getScreenId(), 'Live', {
-            eventInfo: this.props.item,
+            eventInfo: item,
           });
         } else {
           pushScreen(Service.instance.getScreenId(), 'Live', {
-            eventInfo: this.props.item,
+            eventInfo: item,
           });
           console.log('Camera permission denied');
         }
       } else {
         pushScreen(Service.instance.getScreenId(), 'Live', {
-          eventInfo: this.props.item,
+          eventInfo: item,
         });
       }
     } catch (err) {
@@ -78,9 +79,10 @@ class EventCard extends PureComponent {
 
   render() {
     const {item} = this.props;
-    const day = moment(item.timestamp).format('DD');
-    const month = moment(item.timestamp).format('MMM');
-    const formatTime = moment(item.timestamp).format('HH:mm A');
+    const {info} = item;
+    const day = moment(info.timestamp).format('DD');
+    const month = moment(info.timestamp).format('MMM');
+    const formatTime = moment(info.timestamp).format('HH:mm A');
 
     return (
       <Card
@@ -93,10 +95,10 @@ class EventCard extends PureComponent {
         activeScale={0.96}
         style={styles.container}>
         <View style={styles.innerContainer}>
-          {item.videoURL !== '' && (
+          {info.videoURL !== '' && (
             <Video
               source={{
-                uri: item.videoURL,
+                uri: info.videoURL,
               }}
               ref={ref => (this.player = ref)}
               style={styles.video}
@@ -138,7 +140,7 @@ class EventCard extends PureComponent {
             start={{x: 0, y: 1}}
             end={{x: 0, y: 0}}
             style={styles.gradient}>
-            <Text style={styles.mediumText}>{item.title}</Text>
+            <Text style={styles.mediumText}>{info.title}</Text>
             <View
               style={{flexDirection: 'row', justifyContent: 'space-between'}}>
               <ButtonWithTextIcon

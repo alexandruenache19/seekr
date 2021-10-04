@@ -11,8 +11,9 @@ import {ButtonWithIcon, ButtonWithTextIcon, ButtonWithText} from '_atoms';
 import {ItemDetailsDialog} from '_molecules';
 import {eventsRef} from '../../../config/firebase';
 
-import {Interactions} from '_actions';
+import {Interactions, ShareActions} from '_actions';
 const {endEvent} = Interactions;
+const {share} = ShareActions;
 
 class CameraSection extends PureComponent {
   constructor(props) {
@@ -25,6 +26,7 @@ class CameraSection extends PureComponent {
     this.toggleVideo = this.toggleVideo.bind(this);
     this.switchCamera = this.switchCamera.bind(this);
     this.endLive = this.endLive.bind(this);
+    this.shareLive = this.shareLive.bind(this);
   }
 
   componentDidMount() {
@@ -63,6 +65,11 @@ class CameraSection extends PureComponent {
     const {eventInfo, userInfo} = this.props;
     await endEvent(eventInfo, userInfo.uid);
     Navigation.popToRoot('HOME_STACK');
+  }
+
+  shareLive() {
+    const {eventInfo} = this.props;
+    share(eventInfo);
   }
 
   render() {

@@ -16,7 +16,7 @@ import {LiveButton, EventCard, HomeHeader, CreateEventCard} from '_molecules';
 import {FetchingActions} from '_actions';
 import {Service, Transitions} from '_nav';
 
-const {getEventInfo} = FetchingActions;
+const {getEvent} = FetchingActions;
 const {pushScreen} = Transitions;
 
 class Home extends PureComponent {
@@ -36,7 +36,7 @@ class Home extends PureComponent {
       .on('value', async snap => {
         if (snap.exists()) {
           const eventId = snap.val();
-          const eventInfo = await getEventInfo(eventId);
+          const eventInfo = await getEvent(eventId);
 
           if (eventInfo) {
             this.setState({
