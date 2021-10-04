@@ -43,16 +43,20 @@ class Home extends PureComponent {
               data: [eventInfo],
             });
           }
+        } else {
+          this.setState({
+            data: [],
+          });
         }
       });
   }
 
-  // componentWillUnmount() {
-  //   const {user} = this.props;
-  //   database()
-  //     .ref(`users/${user.uid}/events/current`)
-  //     .off('value', this.currentEventListener);
-  // }
+  componentWillUnmount() {
+    const {user} = this.props;
+    database()
+      .ref(`users/${user.uid}/events/current`)
+      .off('value', this.currentEventListener);
+  }
 
   renderItem({item}) {
     return (
@@ -97,6 +101,19 @@ class Home extends PureComponent {
                 <View>
                   <Text style={Typography.text65L}>upcoming</Text>
                   <Text style={Typography.text40}>Live Events</Text>
+                  <FlatList
+                    horizontal={true}
+                    data={data}
+                    style={{marginTop: 20}}
+                    renderItem={this.renderItem}
+                    keyExtractor={(item, index) => {
+                      if (item) {
+                        return item.id;
+                      } else {
+                        return index;
+                      }
+                    }}
+                  />
                 </View>
               )}
 
@@ -113,19 +130,27 @@ class Home extends PureComponent {
                   onPress={this.createEvent}
                 />*/}
             </View>
-            <FlatList
-              horizontal={true}
-              data={data}
-              style={{marginTop: 20}}
-              renderItem={this.renderItem}
-              keyExtractor={(item, index) => {
-                if (item) {
-                  return item.id;
-                } else {
-                  return index;
-                }
-              }}
-            />
+
+            <View
+              style={{
+                marginTop: 20,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}>
+              {/*  <ButtonWithIcon
+                  iconType="Feather"
+                  iconName={'plus'}
+                  iconSize={20}
+                  iconColor={'#FFF'}
+                  style={{
+                    padding: 10,
+                    backgroundColor: '#000',
+                    borderRadius: 10,
+                  }}
+                  onPress={this.createEvent}
+                />*/}
+            </View>
           </View>
         </ScrollView>
       </SafeAreaView>
