@@ -12,23 +12,33 @@ class LiveActionsSection extends Component {
     super(props);
     this.state = {
       productInfo: null,
+      productId: null,
     };
     this.goToNextItem = this.goToNextItem.bind(this);
   }
 
   componentDidMount() {
     const {eventInfo} = this.props;
-    const productId = eventInfo.currentProductId;
+    const {productId} = this.state;
 
     this.productInfoListener = eventsRef
       .child(`${eventInfo.id}/info/currentProductId`)
       .on('value', async snapshot => {
         const productId = snapshot.val();
-        const productInfo = await getProductInfo(eventInfo, productId);
+        // const productInfo = await getProductInfo(eventInfo, productId);
 
-        this.setState({
-          productInfo: productInfo,
-        });
+        eventsRef
+          .child(`${eventInfo.id}/products/${productId}`)
+          .on('value', async snapshot => {
+            const productInfo = snapshot.val();
+
+            this.setState({
+              productInfo: productInfo,
+            });
+          });
+        // this.setState({
+        //   productId: productId,
+        // });
       });
   }
 
