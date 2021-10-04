@@ -64,3 +64,9 @@ export const getProductInfo = async (eventInfo, productId) => {
     .once('value');
   return snap.val();
 };
+
+export const addLiveURL = async (userInfo, eventInfo) => {
+  await eventsRef
+    .child(`${eventInfo.id}/info/liveURL`)
+    .set(userInfo.stream.playbackURL);
+};

@@ -5,7 +5,7 @@ import {NodeCameraView} from 'react-native-nodemediaclient';
 import {BlurView} from '@react-native-community/blur';
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
-import {Colors} from 'react-native-ui-lib';
+import {Colors, Typography} from 'react-native-ui-lib';
 
 import {ButtonWithIcon, ButtonWithTextIcon, ButtonWithText} from '_atoms';
 import {ItemDetailsDialog} from '_molecules';
@@ -75,12 +75,7 @@ class CameraSection extends PureComponent {
   render() {
     const {isVideoOn, viewers} = this.state;
     const {isPreview, userInfo} = this.props;
-
-    // const streamKey = '7078779f-1fb2-9027-f57b-885c19260c6e';
-    // const url = `rtmps://global-live.mux.com:443/app/${streamKey}`;
-    const streamKey =
-      'sk_us-east-1_9II6k7LllISx_a6v8eAIZOEjfxV1ERJHruPdp6QZoB1';
-    const url = `rtmps://a6a7debc4d73.global-contribute.live-video.net:443/app/${streamKey}`;
+    const url = userInfo.stream.serverURL + userInfo.stream.streamKey;
 
     return (
       <View style={styles.container}>
@@ -105,12 +100,36 @@ class CameraSection extends PureComponent {
           <View
             style={{
               ...styles.absolute,
-              backgroundColor: 'rgba(255,255,255,0.6)',
+              backgroundColor: 'rgba(0,0,0,0.5)',
               justifyContent: 'center',
               alignItems: 'center',
+              flexDirection: 'row',
             }}>
-            <Text style={{fontSize: 22, zIndex: 1, color: '#000'}}>Paused</Text>
-            <BlurView style={styles.absolute} blurType="dark" blurAmount={20} />
+            <Text
+              style={{
+                ...Typography.text30BL,
+                zIndex: 10,
+                color: '#FFF',
+                fontWeight: 'bold',
+              }}>
+              Paused
+            </Text>
+            <ButtonWithIcon
+              iconType="Feather"
+              iconName={'video-off'}
+              iconSize={40}
+              iconColor={'#FFF'}
+              style={{
+                marginLeft: 20,
+                zIndex: 10,
+              }}
+              onPress={this.toggleVideo}
+            />
+            <BlurView
+              style={styles.absolute}
+              blurType="light"
+              blurAmount={40}
+            />
           </View>
         )}
         <View style={styles.topActionsRow}>

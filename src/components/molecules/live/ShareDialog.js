@@ -31,7 +31,7 @@ class ItemDetailsDialog extends Component {
       showDialog: false,
       copied: false,
       currentPosition: 0,
-      url: `https://joinseekr.com/e/${eventID}`,
+      url: `https://seekrlive.com/e/${eventID}`,
     };
     this.copy = this.copy.bind(this);
     this.showDialog = this.showDialog.bind(this);

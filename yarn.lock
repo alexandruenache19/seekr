@@ -1091,10 +1091,6 @@
   dependencies:
     merge-options "^3.0.4"
 
-"@react-native-clipboard/clipboard@react-native-community/clipboard":
-  version "1.8.4"
-  resolved "https://codeload.github.com/react-native-community/clipboard/tar.gz/98ae9785885381ac13fcf0625a358e97d78d681e"
-
 "@react-native-community/blur@^3.6.0":
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/@react-native-community/blur/-/blur-3.6.0.tgz#31c9e0f2770519c9b5c4f99418f192246f0d4db8"

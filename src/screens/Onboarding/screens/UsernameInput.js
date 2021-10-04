@@ -34,7 +34,7 @@ class SignUpForm extends PureComponent {
     this.state = {
       username: '',
       loading: false,
-      available: 'unknown',
+      available: true,
     };
 
     this.handleChangeField = this.handleChangeField.bind(this);
@@ -48,17 +48,10 @@ class SignUpForm extends PureComponent {
 
     this.typingTimer = setTimeout(async () => {
       if (value !== '') {
-        this.setState(
-          {
-            available: 'unknown',
-          },
-          async () => {
-            available = await isUsernameAvailable(value);
-            this.setState({available: available});
-          },
-        );
+        available = await isUsernameAvailable(value);
+        this.setState({available: available});
       }
-    }, 500);
+    }, 300);
 
     this.setState({
       [keyName]: value,
@@ -142,19 +135,16 @@ class SignUpForm extends PureComponent {
             />
           </View>
 
-          <View
-            style={{
-              ...styles.footer,
-              backgroundColor:
-                available === 'unknown' || available === false
-                  ? 'rgba(255,255,255,0.7)'
-                  : '#FFF',
-            }}>
-            <TouchableOpacity style={styles.button} onPress={this.handleCreate}>
+          <View style={styles.footer}>
+            <TouchableOpacity
+              style={{
+                ...styles.button,
+                backgroundColor:
+                  available === false ? 'rgba(0,0,0,0.2)' : '#000',
+              }}
+              onPress={this.handleCreate}>
               <Text style={styles.buttonText}>
-                {available === 'unknown' || available === true
-                  ? `Next`
-                  : 'Username is Taken'}
+                {available === true ? `Next` : 'Username is Taken'}
               </Text>
               <FontAwesome name={'arrow-right'} color={'#FFF'} size={24} />
             </TouchableOpacity>
@@ -170,13 +160,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   keyboardContainer: {
-    justifyContent: 'space-between',
     flex: 1,
     alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
     padding: 20,
   },
   inputCover: {
-    marginBottom: 20,
+    marginBottom: 40,
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 15,
@@ -195,8 +186,9 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   button: {
-    backgroundColor: '#000',
+    // backgroundColor: '#000',
     padding: 20,
+
     borderRadius: 20,
     width: '100%',
     flexDirection: 'row',
@@ -209,6 +201,7 @@ const styles = StyleSheet.create({
   footer: {
     width: '100%',
     marginBottom: 50,
+    height: 100,
   },
 });
 

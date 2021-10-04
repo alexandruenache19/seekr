@@ -75,86 +75,87 @@ class Home extends PureComponent {
     const {data} = this.state;
     const {user} = this.props;
     const {info} = user;
+    if (user) {
+      return (
+        <SafeAreaView style={styles.safeContainer}>
+          <ScrollView style={styles.container}>
+            <HomeHeader info={info} />
 
-    return (
-      <SafeAreaView style={styles.safeContainer}>
-        <ScrollView style={styles.container}>
-          <HomeHeader info={info} />
+            <View style={{marginTop: 30}}>
+              <LiveButton uid={info.uid} />
+            </View>
 
-          <View style={{marginTop: 30}}>
-            <LiveButton uid={info.uid} />
-          </View>
+            <View style={{marginTop: 30}}>
+              <CreateEventCard uid={user.uid} />
+            </View>
 
-          <View style={{marginTop: 30}}>
-            <CreateEventCard uid={user.uid} />
-          </View>
+            <View style={{paddingBottom: 20}}>
+              <View
+                style={{
+                  marginTop: 20,
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}>
+                {data.length > 0 && (
+                  <View>
+                    <Text style={Typography.text65L}>upcoming</Text>
+                    <Text style={Typography.text40}>Live Events</Text>
+                    <FlatList
+                      horizontal={true}
+                      data={data}
+                      style={{marginTop: 20}}
+                      renderItem={this.renderItem}
+                      keyExtractor={(item, index) => {
+                        if (item) {
+                          return item.id;
+                        } else {
+                          return index;
+                        }
+                      }}
+                    />
+                  </View>
+                )}
 
-          <View style={{paddingBottom: 20}}>
-            <View
-              style={{
-                marginTop: 20,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}>
-              {data.length > 0 && (
-                <View>
-                  <Text style={Typography.text65L}>upcoming</Text>
-                  <Text style={Typography.text40}>Live Events</Text>
-                  <FlatList
-                    horizontal={true}
-                    data={data}
-                    style={{marginTop: 20}}
-                    renderItem={this.renderItem}
-                    keyExtractor={(item, index) => {
-                      if (item) {
-                        return item.id;
-                      } else {
-                        return index;
-                      }
+                {/*  <ButtonWithIcon
+                    iconType="Feather"
+                    iconName={'plus'}
+                    iconSize={20}
+                    iconColor={'#FFF'}
+                    style={{
+                      padding: 10,
+                      backgroundColor: '#000',
+                      borderRadius: 10,
                     }}
-                  />
-                </View>
-              )}
+                    onPress={this.createEvent}
+                  />*/}
+              </View>
 
-              {/*  <ButtonWithIcon
-                  iconType="Feather"
-                  iconName={'plus'}
-                  iconSize={20}
-                  iconColor={'#FFF'}
-                  style={{
-                    padding: 10,
-                    backgroundColor: '#000',
-                    borderRadius: 10,
-                  }}
-                  onPress={this.createEvent}
-                />*/}
+              <View
+                style={{
+                  marginTop: 20,
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}>
+                {/*  <ButtonWithIcon
+                    iconType="Feather"
+                    iconName={'plus'}
+                    iconSize={20}
+                    iconColor={'#FFF'}
+                    style={{
+                      padding: 10,
+                      backgroundColor: '#000',
+                      borderRadius: 10,
+                    }}
+                    onPress={this.createEvent}
+                  />*/}
+              </View>
             </View>
-
-            <View
-              style={{
-                marginTop: 20,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}>
-              {/*  <ButtonWithIcon
-                  iconType="Feather"
-                  iconName={'plus'}
-                  iconSize={20}
-                  iconColor={'#FFF'}
-                  style={{
-                    padding: 10,
-                    backgroundColor: '#000',
-                    borderRadius: 10,
-                  }}
-                  onPress={this.createEvent}
-                />*/}
-            </View>
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    );
+          </ScrollView>
+        </SafeAreaView>
+      );
+    }
   }
 }
 

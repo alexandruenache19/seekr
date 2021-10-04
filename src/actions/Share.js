@@ -1,5 +1,6 @@
 import Share from 'react-native-share';
 import moment from 'moment';
+
 export const shareOnFB = async item => {
   const day = moment(item.timestamp).format('DD');
   const month = moment(item.timestamp).format('MMMM');
@@ -7,7 +8,7 @@ export const shareOnFB = async item => {
   const options = {
     title: item.title,
     message: `Join me live on ${day} ${month} on Seekr`,
-    url: `https://seekr-live.herokuapp.com/e/${item.id}`,
+    url: `https://seekrlive.com/e/${item.id}`,
     social: Share.Social.FACEBOOK,
   };
 
@@ -21,8 +22,7 @@ export const share = async item => {
   const options = {
     title: item.title,
     message: `Join me live on ${day} ${month}`,
-    url: `https://seekr-live.herokuapp.com/e/${item.id}`,
-    social: Share.Social.FACEBOOK,
+    url: `https://seekrlive.com/e/${item.id}`,
   };
 
   Share.open(options);
