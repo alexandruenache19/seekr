@@ -88,10 +88,10 @@ class CameraSection extends PureComponent {
           camera={{cameraId: 1, cameraFrontMirror: true}}
           audio={{bitrate: 32000, profile: 1, samplerate: 44100}}
           video={{
-            preset: 12,
+            preset: 5,
             bitrate: 400000,
             profile: 1,
-            fps: 15,
+            fps: 24,
             videoFrontMirror: false,
           }}
           autopreview={true}
