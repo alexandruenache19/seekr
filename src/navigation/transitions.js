@@ -10,7 +10,7 @@ import {FetchingActions} from '_actions';
 const {fetchUser} = FetchingActions;
 
 export const goToApp = async (passProps = {}) => {
-  const currentUser = auth().currentUser;
+  const currentUser = await auth().currentUser;
 
   await store.dispatch(fetchUser(currentUser));
   await Navigation.setDefaultOptions({
