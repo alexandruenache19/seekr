@@ -96,7 +96,8 @@ class CameraSection extends PureComponent {
           }}
           autopreview={true}
         />
-        {!isVideoOn && (
+
+        {/*!isVideoOn && (
           <View
             style={{
               ...styles.absolute,
@@ -131,7 +132,7 @@ class CameraSection extends PureComponent {
               blurAmount={40}
             />
           </View>
-        )}
+        )*/}
         <View style={styles.topActionsRow}>
           <View style={styles.statusContainer}>
             <View style={styles.imageContainer}>
@@ -181,6 +182,17 @@ class CameraSection extends PureComponent {
               </View>
             </View>
           </View>
+
+          <ButtonWithIcon
+            iconType="Feather"
+            iconName="send"
+            iconSize={20}
+            iconColor="#000"
+            style={{
+              ...styles.button,
+            }}
+            onPress={this.shareLive}
+          />
         </View>
         <View style={styles.bottomActionsRow}>
           <View style={{flexDirection: 'row'}}>
@@ -201,18 +213,7 @@ class CameraSection extends PureComponent {
             />
           </View>
           <View style={{flexDirection: 'row'}}>
-            <ButtonWithIcon
-              iconType="Feather"
-              iconName="send"
-              iconSize={20}
-              iconColor="#000"
-              style={{
-                ...styles.button,
-                marginLeft: 10,
-              }}
-              onPress={this.shareLive}
-            />
-            <ButtonWithIcon
+            {/*<ButtonWithIcon
               iconType="Feather"
               iconName={isVideoOn ? 'video' : 'video-off'}
               iconSize={20}
@@ -222,7 +223,8 @@ class CameraSection extends PureComponent {
                 marginLeft: 10,
               }}
               onPress={this.toggleVideo}
-            />
+            />*/}
+
             <ButtonWithIcon
               iconType="Feather"
               iconName={'repeat'}
@@ -259,7 +261,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
   statusContainer: {
     backgroundColor: 'rgba(0,0,0,0.5)',

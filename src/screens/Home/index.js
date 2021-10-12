@@ -75,7 +75,7 @@ class Home extends PureComponent {
     const {data} = this.state;
     const {user} = this.props;
     const {info} = user;
-    if (user) {
+    if (user && user.info) {
       return (
         <SafeAreaView style={styles.safeContainer}>
           <ScrollView style={styles.container}>
@@ -155,6 +155,8 @@ class Home extends PureComponent {
           </ScrollView>
         </SafeAreaView>
       );
+    } else {
+      return <View />;
     }
   }
 }

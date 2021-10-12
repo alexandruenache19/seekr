@@ -27,7 +27,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.729457766335-2ojrukas4p9ic15614n4j84ii8pts7tl</string>
+				<string>com.googleusercontent.apps.729457766335-ppova3o9amojunesc0ath3cv237hrmtt</string>
 			</array>
 		</dict>
 	</array>
@@ -48,9 +48,9 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>Seekr requires access to your phone’s camera.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Seekr requires access to your location.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Seekr requires access to your location.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Seekr requires access to your location.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Seekr requires access to your phone’s Microphone.</string>

@@ -203,6 +203,7 @@ class LocationInput extends PureComponent {
 const styles = StyleSheet.create({
   safeContainer: {
     flex: 1,
+    backgroundColor: '#FFF',
   },
   container: {
     flex: 1,

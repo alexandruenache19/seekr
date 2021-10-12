@@ -17,6 +17,7 @@ export const goToApp = async (passProps = {}) => {
     layout: {
       orientation: ['portrait'],
       backgroundColor: '#FFF',
+      componentBackgroundColor: '#FFF',
     },
     statusBar: {
       style: 'dark',
@@ -49,6 +50,7 @@ export const goToOnboarding = async (passProps = {}) => {
     layout: {
       orientation: ['portrait'],
       backgroundColor: '#FFF',
+      componentBackgroundColor: '#FFF',
     },
     statusBar: {
       style: 'dark',

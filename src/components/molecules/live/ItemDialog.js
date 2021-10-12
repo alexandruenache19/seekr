@@ -12,6 +12,7 @@ import {
   MaskedInput,
   Typography,
   Colors,
+  Incubator,
 } from 'react-native-ui-lib';
 import Toast from 'react-native-toast-message';
 
@@ -19,6 +20,7 @@ import {ButtonWithText, ButtonWithIcon} from '_atoms';
 import {Interactions} from '_actions';
 
 const {addItem} = Interactions;
+const {WheelPicker} = Incubator;
 
 class ItemDetailsDialog extends Component {
   constructor(props) {
@@ -28,7 +30,8 @@ class ItemDetailsDialog extends Component {
       priceFocus: false,
       stockFocus: false,
       price: 0,
-      quantity: 0,
+      quantity: 1,
+      selectedValue: 0,
     };
 
     this.showDialog = this.showDialog.bind(this);
@@ -38,10 +41,8 @@ class ItemDetailsDialog extends Component {
     this.renderQuantity = this.renderQuantity.bind(this);
     this.handleChangePrice = this.handleChangePrice.bind(this);
     this.handleChangeQuantity = this.handleChangeQuantity.bind(this);
+    this.handleChangeCurrency = this.handleChangeCurrency.bind(this);
   }
-
-  componentDidMount() {}
-
   showDialog() {
     this.setState({showDialog: true});
   }
@@ -68,32 +69,40 @@ class ItemDetailsDialog extends Component {
     }
   }
 
+  handleChangeCurrency(item) {
+    this.setState({selectedValue: item});
+  }
+
   renderPrice(value) {
-    const {priceFocus} = this.state;
+    const {priceFocus, selectedValue} = this.state;
     const hasValue = value && value.length > 0;
+
     return (
       <View
         style={{
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'center',
+          // backgroundColor: '#000',
         }}>
         <Text
           style={{
             ...Typography.text50,
             color: hasValue ? '#000' : '#888',
-            fontSize: priceFocus ? 26 : 20,
+            fontSize: priceFocus ? 32 : 24,
+            lineHeight: 34,
           }}>
           {hasValue ? value : '00'}
         </Text>
-        <Text style={{color: '#000'}}>$</Text>
+
+        {/*  <Text style={{color: '#000'}}>$</Text>*/}
       </View>
     );
   }
 
   renderQuantity(value) {
-    const {stockFocus} = this.state;
-    const hasValue = value && value.length > 0;
+    const {stockFocus, quantity} = this.state;
+    const hasValue = value > 0;
     return (
       <View
         style={{
@@ -105,9 +114,13 @@ class ItemDetailsDialog extends Component {
           style={{
             ...Typography.text50,
             color: hasValue ? '#000' : '#888',
-            fontSize: stockFocus ? 26 : 20,
+            fontSize: stockFocus ? 32 : 24,
+            lineHeight: 34,
           }}>
           {hasValue ? value : '0'}
+        </Text>
+        <Text style={{...Typography.text60, paddingRight: 15, marginLeft: 10}}>
+          {value > 1 ? 'items' : 'item'}
         </Text>
       </View>
     );
@@ -121,7 +134,7 @@ class ItemDetailsDialog extends Component {
   }
 
   render() {
-    const {showDialog, price, quantity} = this.state;
+    const {showDialog, price, quantity, selectedValue} = this.state;
 
     return (
       <KeyboardAvoidingView
@@ -132,9 +145,9 @@ class ItemDetailsDialog extends Component {
           useSafeArea
           ignoreBackgroundPress
           key={'dialog-key'}
-          // bottom={true}
+          top={true}
           height={400}
-          panDirection={PanningProvider.Directions.DOWN}
+          panDirection={PanningProvider.Directions.TOP}
           containerStyle={styles.container}
           visible={showDialog}
           onDismiss={this.hideDialog}
@@ -158,25 +171,64 @@ class ItemDetailsDialog extends Component {
               </View>
             );
           }}>
-          <View style={{margin: 20, justifyContent: 'space-between', flex: 1}}>
-            <View>
+          <View
+            style={{
+              margin: 20,
+              justifyContent: 'space-between',
+              flex: 1,
+              minHeight: 100,
+            }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}>
               <Text style={{...Typography.text40, color: Colors.grey40}}>
-                Price
+                Price:
               </Text>
-              <MaskedInput
-                ref={r => (this.priceInput = r)}
-                onChangeText={this.handleChangePrice}
-                onFocus={() => this.setState({priceFocus: true})}
-                onBlur={() => this.setState({priceFocus: false})}
-                renderMaskedText={this.renderPrice}
-                keyboardType={'numeric'}
-              />
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}>
+                <MaskedInput
+                  ref={r => (this.priceInput = r)}
+                  onChangeText={this.handleChangePrice}
+                  onFocus={() => this.setState({priceFocus: true})}
+                  onBlur={() => this.setState({priceFocus: false})}
+                  renderMaskedText={this.renderPrice}
+                  keyboardType={'numeric'}
+                />
+                <WheelPicker
+                  items={[
+                    {value: 0, label: 'USD'},
+                    {value: 1, label: 'EUR'},
+                    {value: 2, label: 'RON'},
+                  ]}
+                  numberOfVisibleRows={3}
+                  style={{marginLeft: 10}}
+                  onChange={this.handleChangeCurrency}
+                  selectedValue={selectedValue}
+                  activeTextColor={'#000'}
+                  inactiveTextColor={Colors.grey50}
+                  textStyle={Typography.text60}
+                  align={WheelPicker.CENTER}
+                />
+              </View>
             </View>
-            <View>
+
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}>
               <Text style={{...Typography.text40, color: Colors.grey40}}>
-                Stock
+                Stock:
               </Text>
               <MaskedInput
+                value={quantity}
                 ref={r => (this.quantityInput = r)}
                 onChangeText={this.handleChangeQuantity}
                 onFocus={() => this.setState({stockFocus: true})}

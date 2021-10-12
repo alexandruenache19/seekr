@@ -95,7 +95,7 @@ class NumberInput extends PureComponent {
           style={styles.container}>
           <View>
             <Text style={styles.title}>
-              Enter the 4-digit code sent to you at
+              Enter the 6-digit code sent to you at
             </Text>
             <Text style={styles.number}>{number}</Text>
             <UnderlineInput onChangeText={this.onChangeText} />
@@ -115,6 +115,7 @@ class NumberInput extends PureComponent {
 const styles = StyleSheet.create({
   safeContainer: {
     flex: 1,
+    backgroundColor: '#FFF',
   },
   container: {
     justifyContent: 'space-between',

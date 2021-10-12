@@ -1,7 +1,7 @@
 import React from 'react';
 import {TextInput, View} from 'react-native';
 import {Icon} from '_atoms';
-import {Colors} from '_styles';
+import {Colors} from 'react-native-ui-lib';
 
 const InputWithIcon = ({
   accessibilityLabel,
@@ -43,7 +43,7 @@ const InputWithIcon = ({
 
     <TextInput
       placeholder={placeholder}
-      // placeholderTextColor={''}
+      placeholderTextColor={Colors.grey50}
       style={{
         marginLeft: 7,
         lineHeight: 27,

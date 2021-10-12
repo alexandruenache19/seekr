@@ -72,6 +72,7 @@ class CommentsSection extends PureComponent {
           <FlatList
             inverted
             data={comments}
+            showsVerticalScrollIndicator={false}
             renderItem={this.renderItem}
             keyExtractor={(item, index) => item.username + index}
           />
@@ -95,7 +96,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
-    marginBottom: 10,
+    marginTop: 5,
+    marginBottom: 5,
   },
   image: {
     height: 30,
