@@ -24,3 +24,13 @@ export const getEvent = async eventId => {
 
   return null;
 };
+
+export const getProductInfo = async (eventId, productId) => {
+  const snap = await eventsRef
+    .child(`${eventId}/products/${productId}`)
+    .once('value');
+
+  if (snap.exists()) return snap.val();
+
+  return null;
+};

@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import {Typography} from 'react-native-ui-lib';
 import database from '@react-native-firebase/database';
-
+import Toast from 'react-native-toast-message';
 import {ButtonWithIcon} from '_atoms';
 import {LiveButton, EventCard, HomeHeader, CreateEventCard} from '_molecules';
 import {Service, Transitions} from '_nav';
@@ -195,6 +195,7 @@ class Home extends PureComponent {
                     )}*/}
             </View>
           </ScrollView>
+          <Toast ref={ref => Toast.setRef(ref)} />
         </SafeAreaView>
       );
     } else {
