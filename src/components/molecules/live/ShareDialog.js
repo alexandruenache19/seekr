@@ -86,7 +86,7 @@ class ShareDialog extends Component {
         ignoreBackgroundPress
         key={'dialog-key'}
         bottom={true}
-        height={'50%'}
+        height={'30%'}
         panDirection={PanningProvider.Directions.DOWN}
         containerStyle={styles.container}
         visible={showDialog}
@@ -115,78 +115,54 @@ class ShareDialog extends Component {
           </View>
         </View>
 
-        <View>
-          <View
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            borderRadius: 10,
+          }}>
+          <ButtonWithTextIcon
             style={{
-              flexDirection: 'row',
               justifyContent: 'space-between',
-              alignItems: 'center',
-              backgroundColor: '#000',
+              backgroundColor: '#777',
+              padding: 10,
               borderRadius: 10,
-              // padding: 10,
-              marginBottom: 10,
-            }}>
-            <Text
-              numberOfLines={1}
-              ellipsizeMode="tail"
-              style={{
-                flexShrink: 1,
-                color: '#FFF',
-                ...Typography.text80,
-                paddingHorizontal: 10,
-                paddingVertical: 5,
-              }}>
-              {url}
-            </Text>
-          </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              // paddingBottom: 20,
-            }}>
-            <ButtonWithTextIcon
-              style={{
-                backgroundColor: '#000',
-                padding: 10,
-                borderRadius: 10,
-                justifyContent: 'center',
-                alignItems: 'center',
-                flexDirection: 'row',
-                flex: 1,
-                marginRight: 10,
-              }}
-              textStyle={{
-                marginRight: 10,
-                color: '#FFF',
-                ...Typography.text60,
-              }}
-              iconType={'FontAwesome'}
-              iconName={'facebook'}
-              iconColor={'#FFF'}
-              iconSize={30}
-              iconAfterText
-              text={'Post on Faceook'}
-              onPress={this.shareOnFb}
-            />
+            }}
+            textStyle={{
+              ...Typography.text70BL,
+              color: Colors.white,
+            }}
+            textContainerStyle={{
+              padding: 5,
+            }}
+            iconType="Feather"
+            iconName={copied ? 'check-square' : 'copy'}
+            iconSize={26}
+            iconColor={Colors.white}
+            iconAfterText
+            onPress={this.copy}
+            text={`${'seekrlive.com/e/... '}${copied ? '' : 'Copy'}`}
+          />
 
-            <ButtonWithIcon
-              style={{
-                backgroundColor: '#000',
-                padding: 10,
-                borderRadius: 10,
-                justifyContent: 'center',
-                alignItems: 'center',
-                flexDirection: 'row',
-              }}
-              iconType={'Feather'}
-              iconName={'more-horizontal'}
-              iconColor={'#FFF'}
-              iconSize={30}
-              onPress={this.share}
-            />
-          </View>
+          <ButtonWithIcon
+            style={{
+              backgroundColor: '#000',
+              padding: 10,
+              borderRadius: 10,
+              justifyContent: 'center',
+              alignItems: 'center',
+              flexDirection: 'row',
+              marginLeft: 10,
+            }}
+            iconType={'Feather'}
+            iconName={'more-horizontal'}
+            iconColor={'#FFF'}
+            iconSize={30}
+            onPress={this.share}
+          />
         </View>
+
         <Toast ref={ref => Toast.setRef(ref)} />
       </Dialog>
     );

@@ -96,42 +96,6 @@ class CameraSection extends PureComponent {
           autopreview={true}
         />
 
-        {/*!isVideoOn && (
-          <View
-            style={{
-              ...styles.absolute,
-              backgroundColor: 'rgba(0,0,0,0.5)',
-              justifyContent: 'center',
-              alignItems: 'center',
-              flexDirection: 'row',
-            }}>
-            <Text
-              style={{
-                ...Typography.text30BL,
-                zIndex: 10,
-                color: '#FFF',
-                fontWeight: 'bold',
-              }}>
-              Paused
-            </Text>
-            <ButtonWithIcon
-              iconType="Feather"
-              iconName={'video-off'}
-              iconSize={40}
-              iconColor={'#FFF'}
-              style={{
-                marginLeft: 20,
-                zIndex: 10,
-              }}
-              onPress={this.toggleVideo}
-            />
-            <BlurView
-              style={styles.absolute}
-              blurType="light"
-              blurAmount={40}
-            />
-          </View>
-        )*/}
         <View style={styles.topActionsRow}>
           <View style={styles.statusContainer}>
             <View style={styles.imageContainer}>
