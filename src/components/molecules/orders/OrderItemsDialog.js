@@ -1,5 +1,12 @@
 import React, {Component} from 'react';
-import {View, Text, SafeAreaView, StyleSheet, FlatList} from 'react-native';
+import {
+  View,
+  Text,
+  SafeAreaView,
+  StyleSheet,
+  FlatList,
+  Linking,
+} from 'react-native';
 import {Dialog, PanningProvider, Typography, Colors} from 'react-native-ui-lib';
 
 import {ButtonWithText, ButtonWithIcon, ButtonWithTextIcon} from '_atoms';
@@ -23,6 +30,7 @@ class OrderItemsDialog extends Component {
     this.renderItem = this.renderItem.bind(this);
     this.renderOrderInfo = this.renderOrderInfo.bind(this);
     this.complete = this.complete.bind(this);
+    this.makeCall = this.makeCall.bind(this);
   }
 
   showDialog(order, eventId) {
@@ -43,6 +51,11 @@ class OrderItemsDialog extends Component {
 
   hideDialog() {
     this.setState({showDialog: false});
+  }
+
+  makeCall() {
+    const {orderInfo} = this.state;
+    Linking.openURL(`tel:${orderInfo.phoneNumber}`);
   }
 
   complete() {
@@ -74,7 +87,7 @@ class OrderItemsDialog extends Component {
             iconName={'phone'}
             iconColor={'#000'}
             iconSize={30}
-            // onPress={this.hideDialog}
+            onPress={this.makeCall}
           />
           <View style={{paddingLeft: 10}}>
             <Text style={{...Typography.text60}}>{orderInfo.name}</Text>

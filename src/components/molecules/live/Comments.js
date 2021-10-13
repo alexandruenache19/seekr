@@ -77,9 +77,17 @@ class CommentsSection extends PureComponent {
             keyExtractor={(item, index) => item.username + index}
           />
         ) : (
-          <Text style={{...Typography.text70, color: Colors.white}}>
-            Questions will appear here
-          </Text>
+          <View
+            style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+            <Text
+              style={{
+                ...Typography.text70,
+                color: Colors.white,
+                textAlign: 'center',
+              }}>
+              Questions will appear here
+            </Text>
+          </View>
         )}
       </View>
     );
@@ -95,15 +103,15 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 10,
     paddingHorizontal: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
+    // justifyContent: 'center',
+    // alignItems: 'center',
   },
   itemContainer: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
     marginTop: 5,
-    marginBottom: 5,
+    marginBottom: 10,
   },
   image: {
     height: 30,
