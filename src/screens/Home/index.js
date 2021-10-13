@@ -1,52 +1,47 @@
-import React, {PureComponent} from 'react';
-import {connect} from 'react-redux';
+import React, { PureComponent } from 'react'
+import { connect } from 'react-redux'
 import {
   SafeAreaView,
   ScrollView,
   View,
   StyleSheet,
   Text,
-  FlatList,
-} from 'react-native';
-import {Typography} from 'react-native-ui-lib';
-import database from '@react-native-firebase/database';
+  FlatList
+} from 'react-native'
+import { Typography } from 'react-native-ui-lib'
+import database from '@react-native-firebase/database'
 
-import {ButtonWithIcon} from '_atoms';
-import {LiveButton, EventCard, HomeHeader, CreateEventCard} from '_molecules';
-import {Service, Transitions} from '_nav';
+import { LiveButton, EventCard, HomeHeader, CreateEventCard } from '_molecules'
+import { Service, Transitions } from '_nav'
 
-const {pushScreen} = Transitions;
+const { pushScreen } = Transitions
 
 class Home extends PureComponent {
   constructor(props) {
-    super(props);
+    super(props)
 
-    this.state = {cuurentEventId: null, eventIds: []};
-    this.renderItem = this.renderItem.bind(this);
-    this.goToCreateEvent = this.goToCreateEvent.bind(this);
+    this.state = {
+      currentEventId: null,
+      eventIds: []
+    }
+    this.renderItem = this.renderItem.bind(this)
+    this.goToCreateEvent = this.goToCreateEvent.bind(this)
   }
 
   componentDidMount() {
-    const {user} = this.props;
-    const eventIds = [];
+    const { user } = this.props
+    const eventIds = []
 
     this.currentEventListener = database()
       .ref(`users/${user.uid}/events/current`)
       .on('value', async snap => {
-        if (snap.exists()) {
-          const currentEventId = snap.val();
+        const currentEventId = snap.val()
 
-          if (currentEventId) {
-            this.setState({
-              cuurentEventId: currentEventId,
-            });
-          }
-        } else {
-          this.setState({
-            cuurentEventId: null,
-          });
-        }
-      });
+        console.log('current', currentEventId)
+        this.setState({
+          currentEventId: snap.val()
+        })
+      })
 
     this.pastEventsListener = database()
       .ref(`users/${user.uid}/events/past`)
@@ -54,86 +49,88 @@ class Home extends PureComponent {
       .limitToLast(20)
       .on('value', snapshot => {
         snapshot.forEach(eventIdSnap => {
-          const eventId = eventIdSnap.key;
-          eventIds.push(eventId);
-        });
+          const eventId = eventIdSnap.key
+          eventIds.push(eventId)
+        })
 
         this.setState({
-          eventIds: eventIds.reverse(),
-        });
-      });
+          eventIds: eventIds.reverse()
+        })
+      })
   }
 
   componentWillUnmount() {
-    const {user} = this.props;
+    const { user } = this.props
     database()
       .ref(`users/${user.uid}/events/current`)
-      .off('value', this.currentEventListener);
+      .off('value', this.currentEventListener)
   }
 
-  renderItem({item}) {
+  renderItem({ item }) {
     return (
-      <View style={{marginRight: 20}}>
+      <View style={{ marginRight: 20 }}>
         <EventCard eventId={item} />
       </View>
-    );
+    )
   }
 
   goToCreateEvent() {
-    const {user} = this.props;
-    pushScreen(Service.instance.getScreenId(), 'CreateEvent', {uid: user.uid});
+    const { user } = this.props
+    pushScreen(Service.instance.getScreenId(), 'CreateEvent', { uid: user.uid })
   }
 
   render() {
-    const {cuurentEventId, eventIds} = this.state;
-    const {user} = this.props;
-    const {info} = user;
+    const { currentEventId, eventIds } = this.state
+    const { user } = this.props
+    const { info } = user
     if (user && user.info) {
       return (
         <SafeAreaView style={styles.safeContainer}>
           <ScrollView
             showsVerticalScrollIndicator={false}
-            style={styles.container}>
+            style={styles.container}
+          >
             <HomeHeader info={info} />
 
-            <View style={{marginTop: 30}}>
+            <View style={{ marginTop: 30 }}>
               <LiveButton uid={info.uid} />
             </View>
 
-            <View style={{marginTop: 30}}>
+            <View style={{ marginTop: 30 }}>
               <CreateEventCard uid={user.uid} />
             </View>
 
-            <View style={{paddingBottom: 20}}>
+            <View style={{ paddingBottom: 20 }}>
               <View
                 style={{
                   marginTop: 20,
                   flexDirection: 'row',
                   justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}>
-                {eventIds.length > 0 && (
+                  alignItems: 'center'
+                }}
+              >
+                {(eventIds.length > 0 || currentEventId) && (
                   <View>
-                    <Text style={Typography.text65L}>your</Text>
-                    <Text style={Typography.text40}>Events</Text>
+                    <Text style={Typography.text65L}>Your</Text>
+                    <Text style={{ ...Typography.text40, marginTop: 3 }}>Events</Text>
                     <FlatList
-                      horizontal={true}
+                      horizontal
                       showsHorizontalScrollIndicator={false}
                       ListHeaderComponent={
-                        cuurentEventId
+                        currentEventId
                           ? this.renderItem({
-                              item: cuurentEventId,
-                            })
+                            item: currentEventId
+                          })
                           : null
                       }
                       data={eventIds}
-                      style={{marginTop: 20}}
+                      style={{ marginTop: 20 }}
                       renderItem={this.renderItem}
                       keyExtractor={(item, index) => {
                         if (item) {
-                          return item;
+                          return item
                         } else {
-                          return index;
+                          return index
                         }
                       }}
                     />
@@ -151,7 +148,7 @@ class Home extends PureComponent {
                       borderRadius: 10,
                     }}
                     onPress={this.createEvent}
-                  />*/}
+                  /> */}
               </View>
 
               <View
@@ -159,8 +156,9 @@ class Home extends PureComponent {
                   marginTop: 20,
                   flexDirection: 'row',
                   justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}>
+                  alignItems: 'center'
+                }}
+              >
                 {/*  <ButtonWithIcon
                     iconType="Feather"
                     iconName={'plus'}
@@ -172,7 +170,7 @@ class Home extends PureComponent {
                       borderRadius: 10,
                     }}
                     onPress={this.createEvent}
-                  />*/}
+                  /> */}
               </View>
               {/*      {eventIds.length > 0 && (
                       <View>
@@ -192,31 +190,31 @@ class Home extends PureComponent {
                           }}
                         />
                       </View>
-                    )}*/}
+                    )} */}
             </View>
           </ScrollView>
         </SafeAreaView>
-      );
+      )
     } else {
-      return <View />;
+      return <View />
     }
   }
 }
 
 const styles = StyleSheet.create({
   safeContainer: {
-    flex: 1,
+    flex: 1
   },
   container: {
     padding: 20,
 
-    flex: 1,
-  },
-});
+    flex: 1
+  }
+})
 
 const mapStateToProps = state => ({
-  user: state.user,
-});
+  user: state.user
+})
 
-const mapDispatchToProps = {};
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+const mapDispatchToProps = {}
+export default connect(mapStateToProps, mapDispatchToProps)(Home)

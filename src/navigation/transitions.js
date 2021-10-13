@@ -1,32 +1,32 @@
-import React from 'react';
-import {Navigation} from 'react-native-navigation';
-import {Platform} from 'react-native';
-import auth from '@react-native-firebase/auth';
+import React from 'react'
+import { Navigation } from 'react-native-navigation'
+import { Platform } from 'react-native'
+import auth from '@react-native-firebase/auth'
 
-import {store} from '../redux/store';
-import {Service} from '_nav';
-import {FetchingActions} from '_actions';
+import { store } from '../redux/store'
+import { Service } from '_nav'
+import { FetchingActions } from '_actions'
 
-const {fetchUser} = FetchingActions;
+const { fetchUser } = FetchingActions
 
 export const goToApp = async (passProps = {}) => {
-  const currentUser = await auth().currentUser;
+  const currentUser = await auth().currentUser
 
-  await store.dispatch(fetchUser(currentUser));
+  await store.dispatch(fetchUser(currentUser))
   await Navigation.setDefaultOptions({
     layout: {
       orientation: ['portrait'],
       backgroundColor: '#FFF',
-      componentBackgroundColor: '#FFF',
+      componentBackgroundColor: '#FFF'
     },
     statusBar: {
       style: 'dark',
-      backgroundColor: '#FFF',
+      backgroundColor: '#FFF'
     },
     topBar: {
-      visible: false,
-    },
-  });
+      visible: false
+    }
+  })
 
   Navigation.setRoot({
     root: {
@@ -36,13 +36,13 @@ export const goToApp = async (passProps = {}) => {
           {
             component: {
               id: 'home',
-              name: 'Home',
-            },
-          },
-        ],
-      },
-    },
-  });
+              name: 'Home'
+            }
+          }
+        ]
+      }
+    }
+  })
 };
 
 export const goToOnboarding = async (passProps = {}) => {
@@ -50,16 +50,16 @@ export const goToOnboarding = async (passProps = {}) => {
     layout: {
       orientation: ['portrait'],
       backgroundColor: '#FFF',
-      componentBackgroundColor: '#FFF',
+      componentBackgroundColor: '#FFF'
     },
     statusBar: {
       style: 'dark',
-      backgroundColor: '#FFF',
+      backgroundColor: '#FFF'
     },
     topBar: {
-      visible: false,
-    },
-  });
+      visible: false
+    }
+  })
   Navigation.setRoot({
     root: {
       stack: {
@@ -68,13 +68,13 @@ export const goToOnboarding = async (passProps = {}) => {
           {
             component: {
               id: 'onboarding',
-              name: 'Onboarding',
-            },
-          },
-        ],
-      },
-    },
-  });
+              name: 'Onboarding'
+            }
+          }
+        ]
+      }
+    }
+  })
 };
 
 export const goToOffline = () =>
@@ -82,26 +82,26 @@ export const goToOffline = () =>
     root: {
       component: {
         id: 'offline',
-        name: 'Offline',
-      },
-    },
-  });
+        name: 'Offline'
+      }
+    }
+  })
 
 export const pushScreen = async (
   stackId,
   componentId,
   props,
-  otherOptions = {},
+  otherOptions = {}
 ) => {
   Navigation.push(stackId, {
     component: {
       name: componentId,
       passProps: props,
       options: {
-        ...otherOptions,
-      },
-    },
-  });
+        ...otherOptions
+      }
+    }
+  })
 };
 
 // export const showOverlay = async (stackId, componentId, props, otherOptions = {}) => {
@@ -117,26 +117,25 @@ export const pushScreen = async (
 //   })
 // }
 
-// export const openModal = (
-//   componentId,
-//   componentName,
-//   passProps,
-//   otherOptions = {}
-// ) => Navigation.showModal({
-//   component: {
-//     id: componentId,
-//     name: componentName,
-//     passProps: passProps,
-//     options: {
-//       layout: {
-//         orientation: ['portrait']
-//       },
-//       // statusBar: {
-//       //   drawBehind: true,
-//       //   visible: false
-//       // },
-//       ...otherOptions
-//     }
-//   }
-// })
-//
+export const openModal = (
+  componentId,
+  componentName,
+  passProps,
+  otherOptions = {}
+) => Navigation.showModal({
+  component: {
+    id: componentId,
+    name: componentName,
+    passProps: passProps,
+    options: {
+      layout: {
+        orientation: ['portrait']
+      },
+      // statusBar: {
+      //   drawBehind: true,
+      //   visible: false
+      // },
+      ...otherOptions
+    }
+  }
+})

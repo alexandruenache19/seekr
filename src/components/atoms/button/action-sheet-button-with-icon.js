@@ -1,11 +1,11 @@
-import React, {Component} from 'react';
-import {TouchableOpacity, ActionSheetIOS} from 'react-native';
+import React, { Component } from 'react'
+import { TouchableOpacity, ActionSheetIOS } from 'react-native'
 // import { connectActionSheet } from '@expo/react-native-action-sheet'
-import {Constants} from '_styles';
-import {Icon} from '_atoms';
+import { Constants } from '_styles'
+import { Icon } from '_atoms'
 
 class ButtonWithIcon extends Component {
-  render() {
+  render () {
     const {
       accessibilityLabel,
       iconType,
@@ -14,8 +14,8 @@ class ButtonWithIcon extends Component {
       iconSize,
       style,
       onPress,
-      onLongPress,
-    } = this.props;
+      onLongPress
+    } = this.props
 
     return (
       <TouchableOpacity
@@ -26,23 +26,24 @@ class ButtonWithIcon extends Component {
         delayPressIn={75}
         style={style}
         onPress={() => {
-          const self = this;
+          const self = this
 
-          const options = ['Logout', 'Cancel'];
-          const destructiveButtonIndex = 0;
-          const cancelButtonIndex = 1;
+          const options = ['Logout', 'Cancel']
+          const destructiveButtonIndex = 0
+          const cancelButtonIndex = 1
 
           ActionSheetIOS.showActionSheetWithOptions(
             {
               options,
               cancelButtonIndex,
-              destructiveButtonIndex,
+              destructiveButtonIndex
             },
             buttonIndex => {
-              onPress(buttonIndex);
-            },
-          );
-        }}>
+              onPress(buttonIndex)
+            }
+          )
+        }}
+      >
         <Icon
           iconType={iconType}
           iconName={iconName}
@@ -50,10 +51,10 @@ class ButtonWithIcon extends Component {
           iconSize={iconSize}
         />
       </TouchableOpacity>
-    );
+    )
   }
 }
 
 // const ConnectedButton = connectActionSheet(ButtonWithIcon);
 
-export default ButtonWithIcon;
+export default ButtonWithIcon

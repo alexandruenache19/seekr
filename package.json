@@ -36,6 +36,7 @@
     "react-native-gesture-handler": "^1.10.3",
     "react-native-google-places-autocomplete": "^2.4.1",
     "react-native-image-crop-picker": "^0.36.3",
+    "react-native-image-resizer": "^1.4.5",
     "react-native-indicators": "^0.17.0",
     "react-native-linear-gradient": "^2.5.6",
     "react-native-maps": "^0.29.3",
