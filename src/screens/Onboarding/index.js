@@ -167,6 +167,8 @@ class Onboarding extends PureComponent {
         <Carousel
           ref={c => (this._carousel = c)}
           data={data}
+          enableSnap
+          enableMomentum
           renderItem={this._renderItem}
           inactiveSlideScale={0.6}
           activeAnimationType={'decay'}

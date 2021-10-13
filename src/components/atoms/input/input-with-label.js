@@ -15,7 +15,7 @@ const InputWithLabel = ({
     <Text style={styles.text}>{label}</Text>
     <TextField
       text60
-      editable={editable || true}
+      editable={editable !== null ? editable : true}
       value={value || ''}
       onChangeText={onChange}
       onPressIn={onPress}

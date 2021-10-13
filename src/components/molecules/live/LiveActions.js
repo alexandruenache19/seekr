@@ -1,15 +1,45 @@
-import React, {PureComponent} from 'react';
+import React, {Component} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 
+import {Typography} from 'react-native-ui-lib';
 import {ButtonWithTextIcon} from '_atoms';
 import {ItemDetailsDialog} from '_molecules';
-
-class ActionsSection extends PureComponent {
+import {eventsRef} from '../../../config/firebase';
+import {Interactions} from '_actions';
+const {getProductInfo} = Interactions;
+class LiveActionsSection extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
-
+    this.state = {
+      productInfo: null,
+      productId: null,
+    };
     this.goToNextItem = this.goToNextItem.bind(this);
+  }
+
+  componentDidMount() {
+    const {eventInfo} = this.props;
+    const {productId} = this.state;
+
+    this.productInfoListener = eventsRef
+      .child(`${eventInfo.id}/info/currentProductId`)
+      .on('value', async snapshot => {
+        const productId = snapshot.val();
+        // const productInfo = await getProductInfo(eventInfo, productId);
+
+        eventsRef
+          .child(`${eventInfo.id}/products/${productId}`)
+          .on('value', async snapshot => {
+            const productInfo = snapshot.val();
+
+            this.setState({
+              productInfo: productInfo,
+            });
+          });
+        // this.setState({
+        //   productId: productId,
+        // });
+      });
   }
 
   goToNextItem() {
@@ -17,22 +47,39 @@ class ActionsSection extends PureComponent {
   }
 
   render() {
+    const {eventInfo} = this.props;
+    const {productInfo} = this.state;
     return (
       <View style={styles.container}>
-        <View
-          style={{
-            flex: 1,
-            flexDirection: 'row',
-            alignItems: 'flex-end',
-          }}>
-          <Text style={styles.detailsText}>
-            <Text style={{fontSize: 28, fontWeight: 'bold'}}>2</Text>$
-          </Text>
-          <Text style={{...styles.detailsText, paddingLeft: 20}}>
-            <Text style={{fontSize: 34, fontWeight: 'bold'}}>13</Text>
-            {' items'}
-          </Text>
-        </View>
+        {productInfo ? (
+          <View
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+              alignItems: 'flex-end',
+            }}>
+            <Text style={styles.detailsText}>
+              {productInfo.currency}
+              <Text style={Typography.text40}>{productInfo.price}</Text>
+            </Text>
+            <Text style={{...styles.detailsText, paddingLeft: 20}}>
+              <Text style={Typography.text30}>{productInfo.currentStock}</Text>
+              {' items'}
+            </Text>
+          </View>
+        ) : (
+          <View
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+              alignItems: 'flex-end',
+            }}>
+            <Text style={styles.detailsText}>
+              <Text style={{fontSize: 28, fontWeight: 'bold'}}>waiting...</Text>
+            </Text>
+          </View>
+        )}
+
         <ButtonWithTextIcon
           style={styles.nextButton}
           textStyle={{
@@ -47,13 +94,13 @@ class ActionsSection extends PureComponent {
           onPress={this.goToNextItem}
           text="Next Item"
         />
-        <ItemDetailsDialog ref={r => (this.dialog = r)} />
+        <ItemDetailsDialog eventInfo={eventInfo} ref={r => (this.dialog = r)} />
       </View>
     );
   }
 }
 
-export default ActionsSection;
+export default LiveActionsSection;
 
 const styles = StyleSheet.create({
   container: {

@@ -5,46 +5,76 @@ import {NodeCameraView} from 'react-native-nodemediaclient';
 import {BlurView} from '@react-native-community/blur';
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
-import {Colors} from 'react-native-ui-lib';
+import {Colors, Typography} from 'react-native-ui-lib';
 
 import {ButtonWithIcon, ButtonWithTextIcon, ButtonWithText} from '_atoms';
-import {ItemDetailsDialog} from '_molecules';
+import {eventsRef} from '../../../config/firebase';
+
+import {Interactions, ShareActions} from '_actions';
+const {endEvent} = Interactions;
+const {share} = ShareActions;
 
 class CameraSection extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
       isVideoOn: true,
+      viewers: 0,
     };
 
     this.toggleVideo = this.toggleVideo.bind(this);
     this.switchCamera = this.switchCamera.bind(this);
     this.endLive = this.endLive.bind(this);
+    this.shareLive = this.shareLive.bind(this);
+  }
+
+  componentDidMount() {
+    const {isPreview, eventInfo} = this.props;
+
+    this.productInfoListener = eventsRef
+      .child(`${eventInfo.id}/info/viewers`)
+      .on('value', async snapshot => {
+        if (snapshot.exists()) {
+          const viewers = snapshot.val();
+          this.setState({
+            viewers: viewers,
+          });
+        }
+      });
+
+    if (!isPreview) this.vb.start();
   }
 
   toggleVideo() {
     const {isVideoOn} = this.state;
-    this.setState({isVideoOn: !isVideoOn});
-    isVideoOn ? this.vb.stop() : this.vb.start();
+    if (isVideoOn) {
+      this.vb.stop();
+      this.setState({isVideoOn: false});
+    } else {
+      this.vb.start();
+      this.setState({isVideoOn: true});
+    }
   }
 
   switchCamera() {
     this.vb.switchCamera();
   }
 
-  endLive() {
+  async endLive() {
+    const {eventInfo, userInfo} = this.props;
+    await endEvent(eventInfo, userInfo.uid);
     Navigation.popToRoot('HOME_STACK');
   }
 
-  render() {
-    const {isVideoOn} = this.state;
-    const {type, info} = this.props;
+  shareLive() {
+    const {eventInfo} = this.props;
+    share(eventInfo);
+  }
 
-    // const streamKey = '7078779f-1fb2-9027-f57b-885c19260c6e';
-    // const url = `rtmps://global-live.mux.com:443/app/${streamKey}`;
-    const streamKey =
-      'sk_us-east-1_0stiOSrPQ3BJ_0xNBsxAq2bpqs5hCcRIV3Jt0Jev6an';
-    const url = `rtmps://a6a7debc4d73.global-contribute.live-video.net:443/app/${streamKey}`;
+  render() {
+    const {isVideoOn, viewers} = this.state;
+    const {isPreview, userInfo} = this.props;
+    const url = userInfo.stream.serverURL + userInfo.stream.streamKey;
 
     return (
       <View style={styles.container}>
@@ -57,29 +87,48 @@ class CameraSection extends PureComponent {
           camera={{cameraId: 1, cameraFrontMirror: true}}
           audio={{bitrate: 32000, profile: 1, samplerate: 44100}}
           video={{
-            preset: 12,
+            preset: 5,
             bitrate: 400000,
             profile: 1,
-            fps: 15,
+            fps: 24,
             videoFrontMirror: false,
           }}
           autopreview={true}
         />
+
         {/*!isVideoOn && (
           <View
             style={{
               ...styles.absolute,
-              backgroundColor: 'rgba(255,255,255,0.6)',
+              backgroundColor: 'rgba(0,0,0,0.5)',
               justifyContent: 'center',
               alignItems: 'center',
+              flexDirection: 'row',
             }}>
-            <Text style={{fontSize: 22, zIndex: 1, color: '#000'}}>
-              You are offline
+            <Text
+              style={{
+                ...Typography.text30BL,
+                zIndex: 10,
+                color: '#FFF',
+                fontWeight: 'bold',
+              }}>
+              Paused
             </Text>
+            <ButtonWithIcon
+              iconType="Feather"
+              iconName={'video-off'}
+              iconSize={40}
+              iconColor={'#FFF'}
+              style={{
+                marginLeft: 20,
+                zIndex: 10,
+              }}
+              onPress={this.toggleVideo}
+            />
             <BlurView
               style={styles.absolute}
               blurType="light"
-              blurAmount={20}
+              blurAmount={40}
             />
           </View>
         )*/}
@@ -87,9 +136,9 @@ class CameraSection extends PureComponent {
           <View style={styles.statusContainer}>
             <View style={styles.imageContainer}>
               <FastImage
-                source={{uri: info.imageURL}}
+                source={{uri: userInfo.imageURL}}
                 style={styles.image}
-                resizeMode={FastImage.resizeMode.contain}
+                resizeMode={FastImage.resizeMode.cover}
               />
             </View>
             <View
@@ -98,7 +147,7 @@ class CameraSection extends PureComponent {
                 alignItems: 'flex-start',
                 marginLeft: 10,
               }}>
-              <Text style={styles.text}>@{info.username}</Text>
+              <Text style={styles.text}>@{userInfo.username}</Text>
               <View
                 style={{
                   flexDirection: 'row',
@@ -109,14 +158,14 @@ class CameraSection extends PureComponent {
                 <ButtonWithText
                   style={{
                     backgroundColor:
-                      isVideoOn && type === 'live' ? '#FC5D83' : Colors.grey40,
+                      isVideoOn && !isPreview ? '#FC5D83' : Colors.grey40,
                     padding: 2,
                     paddingHorizontal: 5,
                     borderRadius: 5,
                   }}
-                  text={isVideoOn && type === 'live' ? '● LIVE' : 'PREVIEW'}
+                  text={isVideoOn && !isPreview ? '● LIVE' : 'PREVIEW'}
                   textStyle={styles.text}
-                  onPress={this.toggleVideo}
+                  // onPress={this.toggleVideo}
                 />
                 <ButtonWithTextIcon
                   iconType="Feather"
@@ -126,40 +175,67 @@ class CameraSection extends PureComponent {
                   style={{
                     marginLeft: 10,
                   }}
-                  text={22}
+                  text={viewers}
                   textStyle={{...styles.text, marginLeft: 5}}
                 />
               </View>
             </View>
           </View>
-          {/*<ButtonWithText
-            style={styles.endButton}
-            textStyle={{color: '#000', fontWeight: 'bold', fontSize: 18}}
-            onPress={this.endLive}
-            text="End Live"
-          />*/}
-        </View>
 
-        <View style={styles.bottomActionsRow}>
           <ButtonWithIcon
             iconType="Feather"
-            iconName={isVideoOn ? 'video' : 'video-off'}
+            iconName="send"
             iconSize={20}
-            iconColor={'#000'}
-            style={styles.button}
-            onPress={this.toggleVideo}
-          />
-          <ButtonWithIcon
-            iconType="Feather"
-            iconName={'repeat'}
-            iconSize={20}
-            iconColor={'#000'}
+            iconColor="#000"
             style={{
               ...styles.button,
-              marginLeft: 10,
             }}
-            onPress={this.switchCamera}
+            onPress={this.shareLive}
           />
+        </View>
+        <View style={styles.bottomActionsRow}>
+          <View style={{flexDirection: 'row'}}>
+            <ButtonWithTextIcon
+              iconType="Feather"
+              iconName={'x'}
+              iconSize={20}
+              iconColor={'#000'}
+              style={styles.button}
+              textStyle={{
+                color: '#000',
+                fontWeight: 'bold',
+                fontSize: 18,
+                marginLeft: 5,
+              }}
+              onPress={this.endLive}
+              text={'End Event'}
+            />
+          </View>
+          <View style={{flexDirection: 'row'}}>
+            {/*<ButtonWithIcon
+              iconType="Feather"
+              iconName={isVideoOn ? 'video' : 'video-off'}
+              iconSize={20}
+              iconColor={'#000'}
+              style={{
+                ...styles.button,
+                marginLeft: 10,
+              }}
+              onPress={this.toggleVideo}
+            />*/}
+
+            <ButtonWithIcon
+              iconType="Feather"
+              iconName={'repeat'}
+              iconSize={20}
+              iconColor={'#000'}
+              style={{
+                ...styles.button,
+                marginLeft: 10,
+              }}
+              onPress={this.switchCamera}
+            />
+          </View>
         </View>
       </View>
     );
@@ -184,7 +260,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
   statusContainer: {
     backgroundColor: 'rgba(0,0,0,0.5)',
@@ -201,6 +277,7 @@ const styles = StyleSheet.create({
   },
   bottomActionsRow: {
     flexDirection: 'row',
+    width: '100%',
     justifyContent: 'space-between',
     alignItems: 'center',
     position: 'absolute',
@@ -229,10 +306,11 @@ const styles = StyleSheet.create({
   imageContainer: {
     height: 40,
     width: 40,
+    borderRadius: 20,
+    overflow: 'hidden',
   },
   image: {
     ...StyleSheet.absoluteFill,
-    borderRadius: 30,
   },
   endButton: {
     padding: 10,

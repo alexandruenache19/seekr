@@ -3,9 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>729457766335-2ojrukas4p9ic15614n4j84ii8pts7tl.apps.googleusercontent.com</string>
+	<string>729457766335-ppova3o9amojunesc0ath3cv237hrmtt.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.729457766335-2ojrukas4p9ic15614n4j84ii8pts7tl</string>
+	<string>com.googleusercontent.apps.729457766335-ppova3o9amojunesc0ath3cv237hrmtt</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>729457766335-0evnerrga1ru3ejumfd8k82llcg2iu11.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
 	<string>AIzaSyAebBWq4APAabjFQmCAatf9A6FdZz7rK-k</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.seekrinc.seekr</string>
+	<string>com.seekrinc.seekrlive</string>
 	<key>PROJECT_ID</key>
 	<string>seekr-live</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,6 +31,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:729457766335:ios:381a817114a3028257fb0a</string>
+	<string>1:729457766335:ios:0375852247d7dece57fb0a</string>
+	<key>DATABASE_URL</key>
+	<string>https://seekr-live-default-rtdb.firebaseio.com</string>
 </dict>
 </plist>

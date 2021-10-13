@@ -1,70 +1,197 @@
-import React, {PureComponent} from 'react';
-import {View, StyleSheet, Text} from 'react-native';
-import {Card, Typography} from 'react-native-ui-lib';
+import React, {Component} from 'react';
+import {View, StyleSheet, Text, KeyboardAvoidingView} from 'react-native';
+import {Typography, Wizard, Card} from 'react-native-ui-lib';
 
 import {Icon} from '_atoms';
-import {ItemDetailsDialog} from '_molecules';
+import {ItemDetailsDialog, ShareDialog} from '_molecules';
 
-class ActionsSection extends PureComponent {
+class PreviewActionsSection extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      activeIndex: 0,
       complete: false,
     };
 
-    this.addItem = this.addItem.bind(this);
+    this.goToNextStep = this.goToNextStep.bind(this);
     this.completeAddItem = this.completeAddItem.bind(this);
+    this.renderCurrentStep = this.renderCurrentStep.bind(this);
+    this.getStepState = this.getStepState.bind(this);
   }
 
-  addItem() {
-    this.dialog.showDialog();
+  getStepState(index) {
+    const {activeIndex, complete} = this.state;
+    let state = Wizard.States.ENABLED;
+
+    if (activeIndex > index - 1 || complete) {
+      state = Wizard.States.COMPLETED;
+    }
+
+    return state;
+  }
+
+  goToNextStep() {
+    const {userInfo} = this.props;
+    const {activeIndex} = this.state;
+
+    switch (activeIndex) {
+      case 0:
+        this.setState({activeIndex: activeIndex + 1});
+        break;
+      case 1:
+        this.dialog.showDialog();
+        break;
+      case 2:
+        this.shareDialog.showDialog();
+        break;
+      case 3:
+        this.props.callback();
+        break;
+    }
   }
 
   completeAddItem() {
-    this.setState({complete: true});
+    const {activeIndex} = this.state;
+    if (activeIndex == 2) {
+      this.setState({complete: true, activeIndex: 3});
+    } else {
+      this.setState({activeIndex: activeIndex + 1});
+    }
   }
 
-  render() {
-    const {complete} = this.state;
+  renderCurrentStep() {
+    const {activeIndex, complete} = this.state;
+
+    let text = 'Next';
+    let iconName = 'arrow-right';
+
+    if (complete) {
+      text = 'Go live';
+      iconName = 'video';
+    } else {
+      switch (activeIndex) {
+        case 0:
+          text = 'All Good';
+          iconName = 'arrow-right';
+          break;
+        case 1:
+          text = 'Add Item';
+          iconName = 'plus';
+          break;
+        case 2:
+          text = 'Invite others';
+          iconName = 'send';
+          break;
+      }
+    }
+
     return (
-      <Card
-        useNative
-        enableShadow
-        borderRadius={10}
-        elevation={20}
-        onPress={this.addItem}
-        activeScale={0.96}
-        backgroundColor="#282B28"
-        style={styles.container}>
-        <Text style={{...Typography.text50, color: '#FFF'}}>
-          {complete ? 'Done' : 'Add First Item'}
-        </Text>
+      <Card onPress={this.goToNextStep} style={styles.cardContainer}>
+        <Text style={styles.buttonText}>{text}</Text>
         <Icon
           iconType={'Feather'}
-          iconName={'plus-square'}
-          iconColor={'#FFF'}
+          iconName={iconName}
+          iconColor={'#000'}
           iconSize={30}
-        />
-        <ItemDetailsDialog
-          callback={this.completeAddItem}
-          ref={r => (this.dialog = r)}
         />
       </Card>
     );
   }
+
+  render() {
+    const {copied, activeIndex} = this.state;
+    const {eventInfo} = this.props;
+
+    return (
+      <View style={styles.container}>
+        <KeyboardAvoidingView>
+          <ItemDetailsDialog
+            eventInfo={eventInfo}
+            callback={this.completeAddItem}
+            ref={r => (this.dialog = r)}
+          />
+
+          <ShareDialog
+            eventInfo={eventInfo}
+            callback={this.completeAddItem}
+            ref={r => (this.shareDialog = r)}
+          />
+        </KeyboardAvoidingView>
+
+        <Wizard
+          containerStyle={{
+            backgroundColor: '#FFF',
+            borderRadius: 10,
+            flex: 1,
+          }}
+          activeConfig={{
+            color: '#000',
+            circleColor: '#000',
+          }}
+          activeIndex={activeIndex}>
+          <Wizard.Step
+            circleColor="#FFF"
+            color="#FFF"
+            circleSize={30}
+            circleBackgroundColor="#000"
+            indexLabelStyle={{...Typography.text60, color: '#FFF'}}
+            labelStyle={Typography.text60}
+            state={this.getStepState(0)}
+            label={'Check camera'}
+          />
+          <Wizard.Step
+            circleColor="#FFF"
+            color="#FFF"
+            circleSize={30}
+            circleBackgroundColor="#000"
+            indexLabelStyle={{...Typography.text60, color: '#FFF'}}
+            labelStyle={Typography.text60}
+            state={this.getStepState(1)}
+            label={'Add First Item'}
+          />
+          <Wizard.Step
+            circleColor="#FFF"
+            color="#FFF"
+            circleSize={30}
+            circleBackgroundColor="#000"
+            indexLabelStyle={{...Typography.text60, color: '#FFF'}}
+            labelStyle={Typography.text60}
+            state={this.getStepState(2)}
+            label={'Invite others'}
+          />
+        </Wizard>
+
+        {this.renderCurrentStep()}
+      </View>
+    );
+  }
 }
 
-export default ActionsSection;
+export default PreviewActionsSection;
 
 const styles = StyleSheet.create({
   container: {
-    height: '10%',
+    flex: 1,
+    backgroundColor: '#282B28',
     width: '100%',
     borderRadius: 10,
     padding: 20,
+    marginTop: 10,
+    justifyContent: 'space-between',
+    // alignItems: 'center',
+  },
+  buttonText: {
+    ...Typography.text40,
+    color: '#000',
+  },
+  cardContainer: {
+    borderRadius: 10,
+    padding: 20,
+    marginTop: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    backgroundColor: '#FFF',
   },
   button: {
     padding: 15,

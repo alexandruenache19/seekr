@@ -10,13 +10,14 @@ import {FetchingActions} from '_actions';
 const {fetchUser} = FetchingActions;
 
 export const goToApp = async (passProps = {}) => {
-  const currentUser = auth().currentUser;
+  const currentUser = await auth().currentUser;
 
   await store.dispatch(fetchUser(currentUser));
   await Navigation.setDefaultOptions({
     layout: {
       orientation: ['portrait'],
       backgroundColor: '#FFF',
+      componentBackgroundColor: '#FFF',
     },
     statusBar: {
       style: 'dark',
@@ -49,6 +50,7 @@ export const goToOnboarding = async (passProps = {}) => {
     layout: {
       orientation: ['portrait'],
       backgroundColor: '#FFF',
+      componentBackgroundColor: '#FFF',
     },
     statusBar: {
       style: 'dark',

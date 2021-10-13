@@ -12,10 +12,10 @@ const {pushScreen} = Transitions;
 class EventCard extends PureComponent {
   constructor(props) {
     super(props);
-    this.createEvent = this.createEvent.bind(this);
+    this.goToCreateEvent = this.goToCreateEvent.bind(this);
   }
 
-  createEvent() {
+  goToCreateEvent() {
     const {uid} = this.props;
     pushScreen(Service.instance.getScreenId(), 'CreateEvent', {uid: uid});
   }
@@ -30,7 +30,7 @@ class EventCard extends PureComponent {
         elevation={20}
         backgroundColor={'#FF4365'}
         activeScale={0.96}
-        onPress={this.createEvent}
+        onPress={this.goToCreateEvent}
         style={styles.container}>
         <View style={styles.innerContainer}>
           <View>
@@ -46,7 +46,6 @@ class EventCard extends PureComponent {
             style={styles.button}
             containerStyle={styles.buttonContainer}
             textStyle={Typography.text60}
-            // onPress={this.createEvent}
             iconType="Feather"
             iconName={'calendar'}
             iconSize={22}

@@ -1,7 +1,7 @@
 import React from 'react';
 import {TextInput, View} from 'react-native';
 import {Icon} from '_atoms';
-import {Colors} from '_styles';
+import {Colors} from 'react-native-ui-lib';
 
 const InputWithIcon = ({
   accessibilityLabel,
@@ -29,41 +29,39 @@ const InputWithIcon = ({
     accessibilityLabel={accessibilityLabel}
     accessibilityHint={accessibilityHint}
     style={{
+      ...style,
       alignItems: 'center',
       justifyContent: 'flex-start',
       flexDirection: 'row',
-      ...style,
     }}>
-    <View style={{flexDirection: 'row', alignItems: 'center'}}>
-      <Icon
-        iconType={iconType}
-        iconName={iconName}
-        iconColor={iconColor}
-        iconSize={iconSize}
-      />
-      <TextInput
-        placeholder={placeholder}
-        // placeholderTextColor={''}
-        style={{
-          marginLeft: 7,
-          lineHeight: 27,
-          width: '80%',
-          height: '100%',
-          color: '#000',
-          fontSize: 25,
-          fontWeight: 'bold',
-        }}
-        returnKeyType="done"
-        // selectionColor={Colors.HIGH_EMPHASIS_WHITE}
-        onFocus={onFocus}
-        onBlur={onBlur}
-        onChangeText={value => onChangeField(type.toLowerCase(), value)}
-        value={value}
-        underlineColorAndroid="transparent"
-        autoCorrect={false}
-        autoCapitalize="none"
-      />
-    </View>
+    <Icon
+      iconType={iconType}
+      iconName={iconName}
+      iconColor={iconColor}
+      iconSize={iconSize}
+    />
+
+    <TextInput
+      placeholder={placeholder}
+      placeholderTextColor={Colors.grey50}
+      style={{
+        marginLeft: 7,
+        lineHeight: 27,
+        width: '80%',
+        height: '100%',
+        color: '#000',
+        fontSize: 25,
+        fontWeight: 'bold',
+      }}
+      returnKeyType="done"
+      onFocus={onFocus}
+      onBlur={onBlur}
+      onChangeText={value => onChangeField(type.toLowerCase(), value)}
+      value={value}
+      underlineColorAndroid="transparent"
+      autoCorrect={false}
+      autoCapitalize="none"
+    />
 
     {iconName2 && (
       <Icon

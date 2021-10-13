@@ -11,9 +11,10 @@ import App from '../../App';
 import Home from '../screens/Home';
 import Onboarding from '../screens/Onboarding';
 import Live from '../screens/Live';
-import Event from '../screens/Event';
 import CreateEvent from '../screens/CreateEvent';
 import Record from '../screens/Record';
+import Orders from '../screens/Orders';
+
 export const ReduxProvider = Component => {
   return props => (
     <Provider store={store}>
@@ -49,11 +50,6 @@ export const registerScreens = () => {
     () => gestureHandlerRootHOC(Live),
   );
   Navigation.registerComponent(
-    'Event',
-    () => ReduxProvider(Event),
-    () => Event,
-  );
-  Navigation.registerComponent(
     'CreateEvent',
     () => ReduxProvider(CreateEvent),
     () => CreateEvent,
@@ -62,5 +58,11 @@ export const registerScreens = () => {
     'Record',
     () => gestureHandlerRootHOC(ReduxProvider(Record)),
     () => gestureHandlerRootHOC(Record),
+  );
+
+  Navigation.registerComponent(
+    'Orders',
+    () => gestureHandlerRootHOC(ReduxProvider(Orders)),
+    () => gestureHandlerRootHOC(Orders),
   );
 };

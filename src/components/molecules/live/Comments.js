@@ -20,7 +20,7 @@ class CommentsSection extends PureComponent {
   componentDidMount() {
     const {eventInfo} = this.props;
     this.commentsListener = eventsRef
-      .child(`event-id/comments`)
+      .child(`${eventInfo.id}/comments`)
       .orderByChild('timestamp')
       .limitToLast(20)
       .on('value', snapshot => {
@@ -44,8 +44,10 @@ class CommentsSection extends PureComponent {
           style={styles.image}
           source={{uri: item.imageURL}}
           label={
-            item.username.charAt(0).toUpperCase() +
-            item.username.charAt(1).toUpperCase()
+            item.username
+              ? item.username.charAt(0).toUpperCase() +
+                item.username.charAt(1).toUpperCase()
+              : ''
           }
           backgroundColor={Colors.red60}
         />
@@ -70,6 +72,7 @@ class CommentsSection extends PureComponent {
           <FlatList
             inverted
             data={comments}
+            showsVerticalScrollIndicator={false}
             renderItem={this.renderItem}
             keyExtractor={(item, index) => item.username + index}
           />
@@ -93,7 +96,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
-    marginBottom: 10,
+    marginTop: 5,
+    marginBottom: 5,
   },
   image: {
     height: 30,

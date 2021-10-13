@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
+  KeyboardAvoidingView,
 } from 'react-native';
 import {Keyboard, Typography, Colors} from 'react-native-ui-lib';
 import Video from 'react-native-video';
@@ -17,7 +18,6 @@ import {InputWithLabel, ButtonWithText, ButtonWithIcon} from '_atoms';
 import {TimeDateDialog} from '_molecules';
 import {Interactions} from '_actions';
 
-const {KeyboardAwareInsetsView} = Keyboard;
 const {pushScreen} = Transitions;
 const {createEvent} = Interactions;
 
@@ -37,6 +37,7 @@ class Onboarding extends PureComponent {
     this.handleRecord = this.handleRecord.bind(this);
     this.handelChangeTitle = this.handelChangeTitle.bind(this);
     this.handleUpload = this.handleUpload.bind(this);
+    this.goBack = this.goBack.bind(this);
   }
 
   handleSelectDate(date, time) {
@@ -62,9 +63,12 @@ class Onboarding extends PureComponent {
   async handleCreateEvent() {
     const {title, date, videoURL} = this.state;
     const {uid} = this.props;
-    await createEvent(title, date, videoURL, uid);
 
-    Navigation.pop(Service.instance.getScreenId());
+    if (title !== '' && videoURL !== '') {
+      await createEvent(title, date, videoURL, uid);
+
+      Navigation.pop(Service.instance.getScreenId());
+    }
   }
 
   handleRecord() {
@@ -74,13 +78,15 @@ class Onboarding extends PureComponent {
   }
 
   handelChangeTitle(value) {
-    console.log(value);
     this.setState({title: value});
   }
 
   handleUpload(url) {
-    console.log(url);
     this.setState({videoURL: url});
+  }
+
+  goBack() {
+    Navigation.pop(Service.instance.getScreenId());
   }
 
   render() {
@@ -88,73 +94,86 @@ class Onboarding extends PureComponent {
 
     return (
       <SafeAreaView style={styles.safeContainer}>
-        <View style={styles.container}>
-          <Text style={styles.title}>New event</Text>
-
-          <View>
-            <InputWithLabel
-              label="Name Your Event"
-              value={title}
-              onChange={this.handelChangeTitle}
-              placeholder="write here..."
-            />
-
-            <InputWithLabel
-              style={{marginTop: 30}}
-              label="When is it happning?"
-              placeholder="select date and time"
-              value={dateString}
-              editable={false}
-              onPress={() => this.timeDialog.showDialog()}
-            />
-
-            <Text
-              style={{
-                ...Typography.text50,
-                color: Colors.grey40,
-                marginTop: 30,
-              }}>
-              Make a 30 sec clip
-            </Text>
-            {videoURL !== '' ? (
-              <TouchableOpacity
-                style={styles.createVideoContainer}
-                onPress={this.handleRecord}>
-                <Video
-                  source={{uri: videoURL}}
-                  ref={ref => (this.player = ref)}
-                  style={styles.video}
-                  resizeMode={'cover'}
-                  muted={true}
-                  repeat={true}
-                />
-                <ActivityIndicator size="large" color="#FFF" />
-              </TouchableOpacity>
-            ) : (
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={{flex: 1}}>
+          <View style={styles.container}>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
               <ButtonWithIcon
-                iconType="Feather"
-                iconName={'video'}
+                style={{paddingRight: 20}}
+                iconType={'Feather'}
+                iconName={'arrow-left'}
+                iconColor={'#000'}
                 iconSize={30}
-                iconColor={'#FFF'}
-                onPress={this.handleRecord}
-                style={styles.createVideoContainer}
+                onPress={this.goBack}
               />
-            )}
+              <Text style={styles.title}>New event</Text>
+            </View>
+
+            <View>
+              <InputWithLabel
+                label="Name Your Event"
+                value={title}
+                onChange={this.handelChangeTitle}
+                placeholder="write here..."
+              />
+
+              <InputWithLabel
+                style={{marginTop: 30}}
+                label="When is it happening?"
+                placeholder="select date and time"
+                value={dateString}
+                editable={false}
+                onPress={() => this.timeDialog.showDialog()}
+              />
+
+              <Text
+                style={{
+                  ...Typography.text50,
+                  color: Colors.grey40,
+                  marginTop: 30,
+                }}>
+                Make a 15 sec clip
+              </Text>
+              {videoURL !== '' ? (
+                <TouchableOpacity
+                  style={styles.createVideoContainer}
+                  onPress={this.handleRecord}>
+                  <Video
+                    source={{uri: videoURL}}
+                    ref={ref => (this.player = ref)}
+                    style={styles.video}
+                    resizeMode={'cover'}
+                    muted={true}
+                    repeat={true}
+                  />
+                  <ActivityIndicator size="large" color="#FFF" />
+                </TouchableOpacity>
+              ) : (
+                <ButtonWithIcon
+                  iconType="Feather"
+                  iconName={'video'}
+                  iconSize={30}
+                  iconColor={'#FFF'}
+                  onPress={this.handleRecord}
+                  style={styles.createVideoContainer}
+                />
+              )}
+            </View>
+
+            <ButtonWithText
+              style={styles.button}
+              textStyle={{...Typography.text50, color: '#FFF'}}
+              onPress={this.handleCreateEvent}
+              text={'Schedule'}
+            />
           </View>
 
-          <ButtonWithText
-            style={styles.button}
-            textStyle={{...Typography.text50, color: '#FFF'}}
-            onPress={this.handleCreateEvent}
-            text={'Schedule'}
+          <TimeDateDialog
+            ref={ref => (this.timeDialog = ref)}
+            onSelect={this.handleSelectDate}
           />
-        </View>
-
-        <KeyboardAwareInsetsView />
-        <TimeDateDialog
-          ref={ref => (this.timeDialog = ref)}
-          onSelect={this.handleSelectDate}
-        />
+        </KeyboardAvoidingView>
       </SafeAreaView>
     );
   }

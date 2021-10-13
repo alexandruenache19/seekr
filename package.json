@@ -12,6 +12,7 @@
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.15.5",
     "@react-native-community/blur": "^3.6.0",
+    "@react-native-community/clipboard": "^1.5.1",
     "@react-native-community/datetimepicker": "^3.5.2",
     "@react-native-community/geolocation": "^2.0.2",
     "@react-native-community/netinfo": "^6.0.1",
@@ -47,7 +48,9 @@
     "react-native-reanimated": "^2.2.0",
     "react-native-share": "^7.1.0",
     "react-native-snap-carousel": "^3.9.1",
+    "react-native-step-indicator": "^1.0.3",
     "react-native-svg": "^12.1.1",
+    "react-native-toast-message": "^1.6.0",
     "react-native-ui-lib": "^6.0.0",
     "react-native-vector-icons": "^8.1.0",
     "react-native-video": "^5.1.1",

@@ -2,6 +2,8 @@ import React, {PureComponent} from 'react';
 import {connect} from 'react-redux';
 import {Live, PreviewLive} from '_organisms';
 
+import {Interactions} from '_actions';
+const {addLiveURL} = Interactions;
 class LiveScreen extends PureComponent {
   constructor(props) {
     super(props);
@@ -13,19 +15,27 @@ class LiveScreen extends PureComponent {
   }
 
   goLive() {
+    const {user, eventInfo} = this.props;
+    addLiveURL(user.info, eventInfo);
     this.setState({isPreview: false});
   }
 
   render() {
     const {isPreview} = this.state;
-    const {user} = this.props;
+    const {user, eventInfo} = this.props;
     const {info} = user;
 
     if (isPreview) {
-      return <PreviewLive info={info} onGoLive={this.goLive} />;
+      return (
+        <PreviewLive
+          userInfo={info}
+          onGoLive={this.goLive}
+          eventInfo={eventInfo}
+        />
+      );
     }
 
-    return <Live info={info} />;
+    return <Live userInfo={info} eventInfo={eventInfo} />;
   }
 }
 
