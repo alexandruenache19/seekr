@@ -155,8 +155,11 @@ class Onboarding extends PureComponent {
             renderItem={this.renderItem}
             keyExtractor={(item, index) => item + index}
           />
-          <Text style={Typography.text40}>
-            Total: {totalRevenue} {orderCurrency}
+          <Text style={{...Typography.text60L, lineHeight: 30}}>
+            {'Total Earned '}
+            <Text style={Typography.text40}>
+              {totalRevenue} {orderCurrency}
+            </Text>
           </Text>
         </View>
         <OrderItems ref={ref => (this.dialog = ref)} />

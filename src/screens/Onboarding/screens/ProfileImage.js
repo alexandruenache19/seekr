@@ -18,11 +18,12 @@ import {Typography, Colors} from 'react-native-ui-lib';
 
 import {LoaderView, Label, Icon, ButtonWithTextIcon} from '_atoms';
 import {Transitions, Service} from '_nav';
-import {AuthActions} from '_actions';
+import {AuthActions, Interactions} from '_actions';
 import {Constants} from '_styles';
 
 const {pushScreen} = Transitions;
 const {updateProfileImage} = AuthActions;
+const {uploadImageToS3} = Interactions;
 
 class LoginScreen extends Component {
   constructor(props) {
@@ -54,6 +55,7 @@ class LoginScreen extends Component {
   }
 
   handleChangeImage() {
+    const {uid} = this.props;
     ImagePicker.openPicker({
       width: 400,
       height: 400,
@@ -62,9 +64,15 @@ class LoginScreen extends Component {
     })
       .then(async image => {
         if (image.path) {
+          const imageURL = await uploadImageToS3(
+            image.path,
+            'seekr-product-images',
+            uid,
+            'profile-images',
+          );
           this.setState({
             loadingImage: true,
-            photoURL: image.path,
+            photoURL: imageURL,
           });
         }
       })

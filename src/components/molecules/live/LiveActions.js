@@ -60,11 +60,11 @@ class LiveActionsSection extends Component {
             }}>
             <Text style={styles.detailsText}>
               {productInfo.currency}
-              <Text style={Typography.text40}>{productInfo.price}</Text>
+              <Text style={Typography.text50}>{productInfo.price}</Text>
             </Text>
-            <Text style={{...styles.detailsText, paddingLeft: 20}}>
-              <Text style={Typography.text30}>{productInfo.currentStock}</Text>
+            <Text style={{...styles.detailsText, paddingLeft: 10}}>
               {' items'}
+              <Text style={Typography.text50}>{productInfo.currentStock}</Text>
             </Text>
           </View>
         ) : (
@@ -125,9 +125,8 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   detailsText: {
-    fontSize: 20,
-    paddingLeft: 10,
-
+    fontSize: 16,
+    paddingLeft: 5,
     color: '#FFF',
   },
 });

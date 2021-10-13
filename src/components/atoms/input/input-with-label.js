@@ -20,6 +20,7 @@ const InputWithLabel = ({
       onChangeText={onChange}
       onPressIn={onPress}
       placeholder={placeholder}
+      style={{color: '#000'}}
       placeholderTextColor={Colors.grey50}
       underlineColor={{
         focus: Colors.grey50,

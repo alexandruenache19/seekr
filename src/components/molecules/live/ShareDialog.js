@@ -138,30 +138,6 @@ class ShareDialog extends Component {
               }}>
               {url}
             </Text>
-            <ButtonWithTextIcon
-              style={{
-                justifyContent: 'space-between',
-                backgroundColor: '#777',
-                borderTopRightRadius: 10,
-                paddingRight: 10,
-                paddingVertical: 5,
-                borderBottomRightRadius: 10,
-              }}
-              textStyle={{
-                ...Typography.text60,
-                color: Colors.white,
-              }}
-              textContainerStyle={{
-                padding: 5,
-              }}
-              iconType="Feather"
-              iconName={copied ? 'check-square' : 'copy'}
-              iconSize={26}
-              iconColor={Colors.white}
-              iconAfterText
-              onPress={this.copy}
-              text={copied ? 'Copied' : 'Copy link'}
-            />
           </View>
           <View
             style={{

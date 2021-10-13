@@ -6,7 +6,7 @@ import {
   FlatList,
   ActivityIndicator,
 } from 'react-native';
-import {Avatar, Colors} from 'react-native-ui-lib';
+import {Avatar, Colors, Typography} from 'react-native-ui-lib';
 import {ButtonWithTextIcon} from '_atoms';
 import {eventsRef} from '../../../config/firebase';
 
@@ -68,7 +68,7 @@ class CommentsSection extends PureComponent {
       <View style={styles.container}>
         {loading ? (
           <ActivityIndicator color="#FFF" style={{paddingTop: 20}} />
-        ) : (
+        ) : comments.length > 0 ? (
           <FlatList
             inverted
             data={comments}
@@ -76,6 +76,10 @@ class CommentsSection extends PureComponent {
             renderItem={this.renderItem}
             keyExtractor={(item, index) => item.username + index}
           />
+        ) : (
+          <Text style={{...Typography.text70, color: Colors.white}}>
+            Questions will appear here
+          </Text>
         )}
       </View>
     );
@@ -91,6 +95,8 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 10,
     paddingHorizontal: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   itemContainer: {
     flexDirection: 'row',

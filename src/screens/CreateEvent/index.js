@@ -119,7 +119,7 @@ class Onboarding extends PureComponent {
               />
 
               <InputWithLabel
-                style={{marginTop: 30}}
+                style={{marginTop: 30, color: '#000'}}
                 label="When is it happening?"
                 placeholder="select date and time"
                 value={dateString}
