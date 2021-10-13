@@ -19,3 +19,4 @@ export {default as TimeDateDialog} from './create-event/TimeDateDialog';
 
 //Orders
 export {default as OrderItems} from './orders/OrderItemsDialog';
+export {default as ProductCard} from './orders/ProductCard';

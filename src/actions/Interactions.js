@@ -130,3 +130,20 @@ export const addLiveURL = async (userInfo, eventInfo) => {
     .child(`${eventInfo.id}/info/liveURL`)
     .set(userInfo.stream.playbackURL)
 }
+
+export const updateOrderStatus = async (eventId, orderId) => {
+  await eventsRef
+    .child(`${eventId}/orders/${orderId}/info/status`)
+    .set('complete')
+}
+
+export const updateOrderProductStatus = async (
+  eventId,
+  orderId,
+  orderProductId,
+  status
+) => {
+  await eventsRef
+    .child(`${eventId}/orders/${orderId}/products/${orderProductId}/isPacked`)
+    .set(status)
+}

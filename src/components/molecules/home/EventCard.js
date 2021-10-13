@@ -12,10 +12,12 @@ import LinearGradient from 'react-native-linear-gradient'
 import Video from 'react-native-video'
 import { Card, Typography } from 'react-native-ui-lib'
 
-import { ButtonWithTextIcon, ButtonWithIcon } from '_atoms'
+import { ButtonWithTextIcon, ButtonWithIcon, ButtonWithText } from '_atoms'
 import { Transitions, Service } from '_nav'
-import { ShareActions, FetchingActions } from '_actions';
+import { ShareActions, FetchingActions } from '_actions'
 
+import Clipboard from '@react-native-community/clipboard'
+import Toast from 'react-native-toast-message'
 
 const { getEvent } = FetchingActions
 const { pushScreen } = Transitions
@@ -32,6 +34,7 @@ class EventCard extends PureComponent {
     this.goToOrders = this.goToOrders.bind(this)
     this.shareOnFb = this.shareOnFb.bind(this)
     this.share = this.share.bind(this)
+    this.copy = this.copy.bind(this)
   }
 
   async componentDidMount() {
@@ -104,6 +107,18 @@ class EventCard extends PureComponent {
     }
   }
 
+  copy() {
+    const { eventInfo } = this.state
+    // this.setState({copied: true});
+    Clipboard.setString(`https://seekrlive.com/e/${eventInfo.id}`)
+    Toast.show({
+      type: 'success',
+      text1: 'Copied',
+      text2: 'Coppied to your clipboard',
+      position: 'bottom'
+    })
+  }
+
   render() {
     const { eventInfo, loading } = this.state
 
@@ -147,7 +162,7 @@ class EventCard extends PureComponent {
               }}
               ref={ref => (this.player = ref)}
               style={styles.video}
-              resizeMode="cover"
+              resizeMode='cover'
               muted
               repeat
             />
@@ -195,15 +210,19 @@ class EventCard extends PureComponent {
                 style={{ flexDirection: 'row', justifyContent: 'space-between' }}
               >
                 <ButtonWithTextIcon
-                  onPress={this.shareOnFb}
-                  text='Post on Facebook'
-                  style={styles.button}
+                  onPress={this.copy}
+                  text='Copy link'
+                  style={{
+                    ...styles.button,
+                    flex: 1,
+                    marginRight: 10
+                  }}
                   containerStyle={styles.buttonContainer}
                   textStyle={Typography.text80H}
                   iconType='Feather'
-                  iconName="facebook"
-                  iconSize={20}
-                  iconColor="#000"
+                  iconName='link'
+                  iconSize={17}
+                  iconColor='#000'
                   iconAfterText
                 />
 
@@ -212,9 +231,9 @@ class EventCard extends PureComponent {
                   style={styles.button}
                   containerStyle={styles.buttonContainer}
                   iconType='Feather'
-                  iconName="send"
+                  iconName='send'
                   iconSize={20}
-                  iconColor="#000"
+                  iconColor='#000'
                 />
               </View>
             )}

@@ -3,6 +3,10 @@ import {View, Text, SafeAreaView, StyleSheet, FlatList} from 'react-native';
 import {Dialog, PanningProvider, Typography, Colors} from 'react-native-ui-lib';
 
 import {ButtonWithText, ButtonWithIcon, ButtonWithTextIcon} from '_atoms';
+import {ProductCard} from '_molecules';
+
+import {Interactions} from '_actions';
+const {updateOrderStatus} = Interactions;
 
 class OrderItemsDialog extends Component {
   constructor(props) {
@@ -11,22 +15,87 @@ class OrderItemsDialog extends Component {
       showDialog: false,
       products: [],
       orderInfo: {},
+      eventId: '',
     };
 
     this.showDialog = this.showDialog.bind(this);
     this.hideDialog = this.hideDialog.bind(this);
     this.renderItem = this.renderItem.bind(this);
     this.renderOrderInfo = this.renderOrderInfo.bind(this);
+    this.complete = this.complete.bind(this);
+  }
+
+  showDialog(order, eventId) {
+    if (order.hasOwnProperty('products')) {
+      const {products, info} = order;
+      const productsArr = Object.values(products);
+
+      this.setState({
+        products: productsArr,
+        orderInfo: info,
+        eventId: eventId,
+      });
+    }
+    this.setState({
+      showDialog: true,
+    });
+  }
+
+  hideDialog() {
+    this.setState({showDialog: false});
+  }
+
+  complete() {
+    const {eventId, orderInfo} = this.state;
+    this.hideDialog();
+    updateOrderStatus(eventId, orderInfo.id);
   }
 
   renderOrderInfo() {
     const {orderInfo} = this.state;
 
     return (
-      <View style={{paddingBottom: 30, justifyContent: 'space-between'}}>
-        <Text style={{...Typography.text70BL, color: Colors.grey40}}>
-          {orderInfo.name}
-        </Text>
+      <View style={{paddingBottom: 10, justifyContent: 'space-between'}}>
+        <View
+          style={{
+            flexDirection: 'row',
+            // justifyContent: 'space-between',
+            alignItems: 'center',
+          }}>
+          <ButtonWithIcon
+            style={{
+              padding: 10,
+              backgroundColor: Colors.grey60,
+              borderRadius: 10,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+            iconType={'Feather'}
+            iconName={'phone'}
+            iconColor={'#000'}
+            iconSize={30}
+            // onPress={this.hideDialog}
+          />
+          <View style={{paddingLeft: 10}}>
+            <Text style={{...Typography.text60}}>{orderInfo.name}</Text>
+            <ButtonWithText
+              style={{
+                paddingTop: 5,
+              }}
+              text={orderInfo.phoneNumber}
+              textStyle={{
+                ...Typography.text70,
+                color: Colors.black,
+                // paddingLeft: 10,
+              }}
+              iconType={'Feather'}
+              iconName={'phone'}
+              iconColor={'#000'}
+              iconSize={22}
+              // onPress={this.hideDialog}
+            />
+          </View>
+        </View>
 
         <ButtonWithTextIcon
           style={{paddingTop: 15}}
@@ -43,51 +112,18 @@ class OrderItemsDialog extends Component {
           // onPress={this.hideDialog}
         />
 
-        <ButtonWithTextIcon
-          style={{paddingTop: 15}}
-          text={orderInfo.phoneNumber}
-          textStyle={{
-            ...Typography.text70BL,
-            color: Colors.black,
-            paddingLeft: 10,
-          }}
-          iconType={'Feather'}
-          iconName={'phone'}
-          iconColor={'#000'}
-          iconSize={22}
-          // onPress={this.hideDialog}
-        />
-
-        <Text style={{...Typography.text60, paddingTop: 10}}>Items</Text>
+        <Text
+          style={{...Typography.text40, color: Colors.grey40, paddingTop: 30}}>
+          Items
+        </Text>
       </View>
     );
   }
 
-  showDialog(order) {
-    if (order.hasOwnProperty('products')) {
-      const {products, info} = order;
-      const productsArr = Object.values(products);
-
-      this.setState({
-        products: productsArr,
-        orderInfo: info,
-      });
-    }
-    this.setState({
-      showDialog: true,
-    });
-  }
-
-  hideDialog() {
-    this.setState({showDialog: false});
-    this.props.callback && this.props.callback();
-  }
-
   renderItem({item}) {
+    const {orderInfo, eventId} = this.state;
     return (
-      <View>
-        <Text>{item.priceToPay}</Text>
-      </View>
+      <ProductCard eventId={eventId} orderId={orderInfo.id} product={item} />
     );
   }
 
@@ -128,7 +164,7 @@ class OrderItemsDialog extends Component {
                   iconSize={30}
                   onPress={this.hideDialog}
                 />
-                <Text style={Typography.text40}>Order details</Text>
+                <Text style={Typography.text70}>Order details</Text>
               </View>
             </View>
           );
@@ -146,12 +182,6 @@ class OrderItemsDialog extends Component {
             showsVerticalScrollIndicator={false}
             renderItem={this.renderItem}
             keyExtractor={(item, index) => item + index}
-          />
-          <ButtonWithText
-            style={styles.button}
-            textStyle={styles.buttonText}
-            onPress={this.handleAddItem}
-            text="Done"
           />
         </View>
       </Dialog>

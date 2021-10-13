@@ -12,9 +12,9 @@ import {
 import {Keyboard, Typography, Colors, Card} from 'react-native-ui-lib';
 import Video from 'react-native-video';
 import {Navigation} from 'react-native-navigation';
-
+import database from '@react-native-firebase/database';
 import {Transitions, Service} from '_nav';
-import {ButtonWithIcon} from '_atoms';
+import {ButtonWithIcon, ButtonWithText} from '_atoms';
 import {OrderItems} from '_molecules';
 
 class Onboarding extends PureComponent {
@@ -22,6 +22,8 @@ class Onboarding extends PureComponent {
     super(props);
     this.state = {
       orders: [],
+      totalRevenue: 0,
+      orderCurrency: '',
     };
     this.goBack = this.goBack.bind(this);
     this.renderItem = this.renderItem.bind(this);
@@ -30,12 +32,54 @@ class Onboarding extends PureComponent {
 
   componentDidMount() {
     const {eventInfo} = this.props;
-    if (eventInfo && eventInfo.hasOwnProperty('orders')) {
-      const ordersObj = eventInfo.orders;
-      const ordersArr = Object.values(ordersObj);
 
-      this.setState({orders: ordersArr});
-    }
+    this.ordersListener = database()
+      .ref(`events/${eventInfo.id}/orders`)
+      .on('value', snapshot => {
+        let currentOrders = [];
+        let totalRevenue = 0;
+        let orderCurrency = '';
+        snapshot.forEach(orderSnap => {
+          const order = orderSnap.val();
+          let revenue = 0;
+          let productsPacked = 0;
+          let totalProducts = 0;
+          let currency = '';
+          const {products} = order;
+
+          for (const key in products) {
+            const product = products[key];
+            if (product.isPacked) {
+              productsPacked++;
+            }
+            totalProducts++;
+            revenue += product.priceToPay || 0;
+            currency = product.currency;
+          }
+
+          order.revenue = revenue;
+          order.productsPacked = productsPacked;
+          order.totalProducts = totalProducts;
+          order.currency = currency;
+          orderCurrency = currency;
+          totalRevenue += revenue;
+          currentOrders.push(order);
+        });
+
+        this.setState({
+          orders: currentOrders,
+          totalRevenue: totalRevenue,
+          orderCurrency: orderCurrency,
+        });
+      });
+  }
+
+  componentWillUnmount() {
+    const {eventInfo} = this.props;
+
+    database()
+      .ref(`events/${eventInfo.id}/orders`)
+      .off('value', this.ordersListener);
   }
 
   goBack() {
@@ -43,10 +87,13 @@ class Onboarding extends PureComponent {
   }
 
   goToUserOrder(item) {
-    this.dialog.showDialog(item);
+    const {eventInfo} = this.props;
+    this.dialog.showDialog(item, eventInfo.id);
   }
 
   renderItem({item}) {
+    const {info, products} = item;
+
     return (
       <Card
         useNative
@@ -59,16 +106,24 @@ class Onboarding extends PureComponent {
         onPress={() => this.goToUserOrder(item)}
         style={{...styles.container, marginTop: 20}}>
         <View style={styles.innerContainer}>
-          <Text style={{...Typography.text50, color: Colors.white}}>
-            {item.info.name}
-          </Text>
+          <View>
+            <Text style={{...Typography.text60, color: Colors.white}}>
+              {info.name}
+            </Text>
 
-          <ButtonWithIcon
+            <Text style={{...Typography.text70, color: Colors.white}}>
+              Total: {item.revenue} {item.currency}
+            </Text>
+          </View>
+
+          <ButtonWithText
             style={{...styles.button, backgroundColor: '#FFF'}}
-            iconType="Feather"
-            iconName={'arrow-right'}
-            iconSize={22}
-            iconColor={'#000'}
+            text={`${item.productsPacked} / ${item.totalProducts}`}
+            textStyle={Typography.text70BL}
+            // iconType="Feather"
+            // iconName={info.status === 'pending' ? '' : 'check'}
+            // iconSize={22}
+            // iconColor={'#000'}
             onPress={() => this.goToUserOrder(item)}
           />
         </View>
@@ -77,7 +132,8 @@ class Onboarding extends PureComponent {
   }
 
   render() {
-    const {orders} = this.state;
+    const {orders, totalRevenue, orderCurrency} = this.state;
+
     return (
       <SafeAreaView style={styles.safeContainer}>
         <View style={styles.container}>
@@ -99,7 +155,9 @@ class Onboarding extends PureComponent {
             renderItem={this.renderItem}
             keyExtractor={(item, index) => item + index}
           />
-          <Text style={Typography.text40}>Total: 330 RON</Text>
+          <Text style={Typography.text40}>
+            Total: {totalRevenue} {orderCurrency}
+          </Text>
         </View>
         <OrderItems ref={ref => (this.dialog = ref)} />
       </SafeAreaView>
