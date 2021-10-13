@@ -21,6 +21,11 @@ import {Interactions} from '_actions';
 
 const {addItem} = Interactions;
 const {WheelPicker} = Incubator;
+const currencyList = [
+  {value: 'USD', label: 'USD'},
+  {value: 'EUR', label: 'EUR'},
+  {value: 'RON', label: 'RON'},
+];
 
 class ItemDetailsDialog extends Component {
   constructor(props) {
@@ -31,7 +36,7 @@ class ItemDetailsDialog extends Component {
       stockFocus: false,
       price: 0,
       quantity: 1,
-      selectedValue: 0,
+      currency: 'USD',
     };
 
     this.showDialog = this.showDialog.bind(this);
@@ -53,11 +58,11 @@ class ItemDetailsDialog extends Component {
 
   async handleAddItem() {
     const {eventInfo} = this.props;
-    const {price, quantity} = this.state;
+    const {price, quantity, currency} = this.state;
 
     if (price !== 0 && quantity !== 0) {
       this.hideDialog();
-      await addItem(eventInfo, price, quantity);
+      await addItem(eventInfo, price, quantity, currency);
       this.props.callback && this.props.callback();
     } else {
       Toast.show({
@@ -70,11 +75,11 @@ class ItemDetailsDialog extends Component {
   }
 
   handleChangeCurrency(item) {
-    this.setState({selectedValue: item});
+    this.setState({currency: item});
   }
 
   renderPrice(value) {
-    const {priceFocus, selectedValue} = this.state;
+    const {priceFocus, currency} = this.state;
     const hasValue = value && value.length > 0;
 
     return (
@@ -134,7 +139,7 @@ class ItemDetailsDialog extends Component {
   }
 
   render() {
-    const {showDialog, price, quantity, selectedValue} = this.state;
+    const {showDialog, price, quantity, currency} = this.state;
 
     return (
       <KeyboardAvoidingView
@@ -201,15 +206,11 @@ class ItemDetailsDialog extends Component {
                   keyboardType={'numeric'}
                 />
                 <WheelPicker
-                  items={[
-                    {value: 0, label: 'USD'},
-                    {value: 1, label: 'EUR'},
-                    {value: 2, label: 'RON'},
-                  ]}
+                  items={currencyList}
                   numberOfVisibleRows={3}
                   style={{marginLeft: 10}}
                   onChange={this.handleChangeCurrency}
-                  selectedValue={selectedValue}
+                  selectedValue={currency}
                   activeTextColor={'#000'}
                   inactiveTextColor={Colors.grey50}
                   textStyle={Typography.text60}
@@ -228,7 +229,7 @@ class ItemDetailsDialog extends Component {
                 Stock:
               </Text>
               <MaskedInput
-                value={quantity}
+                value={'' + quantity}
                 ref={r => (this.quantityInput = r)}
                 onChangeText={this.handleChangeQuantity}
                 onFocus={() => this.setState({stockFocus: true})}

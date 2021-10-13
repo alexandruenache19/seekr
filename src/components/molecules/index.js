@@ -16,3 +16,6 @@ export {default as PreviewActionsSection} from './live/PreviewActions';
 
 //Create Event
 export {default as TimeDateDialog} from './create-event/TimeDateDialog';
+
+//Orders
+export {default as OrderItems} from './orders/OrderItemsDialog';

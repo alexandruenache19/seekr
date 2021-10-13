@@ -13,6 +13,8 @@ import Onboarding from '../screens/Onboarding';
 import Live from '../screens/Live';
 import CreateEvent from '../screens/CreateEvent';
 import Record from '../screens/Record';
+import Orders from '../screens/Orders';
+
 export const ReduxProvider = Component => {
   return props => (
     <Provider store={store}>
@@ -56,5 +58,11 @@ export const registerScreens = () => {
     'Record',
     () => gestureHandlerRootHOC(ReduxProvider(Record)),
     () => gestureHandlerRootHOC(Record),
+  );
+
+  Navigation.registerComponent(
+    'Orders',
+    () => gestureHandlerRootHOC(ReduxProvider(Orders)),
+    () => gestureHandlerRootHOC(Orders),
   );
 };

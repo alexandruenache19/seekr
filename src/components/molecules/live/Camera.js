@@ -8,7 +8,6 @@ import FastImage from 'react-native-fast-image';
 import {Colors, Typography} from 'react-native-ui-lib';
 
 import {ButtonWithIcon, ButtonWithTextIcon, ButtonWithText} from '_atoms';
-import {ItemDetailsDialog} from '_molecules';
 import {eventsRef} from '../../../config/firebase';
 
 import {Interactions, ShareActions} from '_actions';

@@ -15,31 +15,58 @@ import {Card, Typography} from 'react-native-ui-lib';
 import {ButtonWithTextIcon, ButtonWithIcon} from '_atoms';
 import {Transitions, Service} from '_nav';
 import {ShareActions} from '_actions';
+import {FetchingActions} from '_actions';
 
+const {getEvent} = FetchingActions;
 const {pushScreen} = Transitions;
 const {shareOnFB, share} = ShareActions;
 
 class EventCard extends PureComponent {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      eventInfo: null,
+      loading: true,
+    };
     this.goToLive = this.goToLive.bind(this);
+    this.goToOrders = this.goToOrders.bind(this);
     this.shareOnFb = this.shareOnFb.bind(this);
     this.share = this.share.bind(this);
   }
 
+  async componentDidMount() {
+    const {eventId} = this.props;
+
+    const eventInfo = await getEvent(eventId);
+
+    if (eventInfo) {
+      this.setState({
+        loading: false,
+        eventInfo: eventInfo,
+      });
+    }
+  }
+
   shareOnFb() {
-    const {item} = this.props;
-    shareOnFB(item.info);
+    const {eventInfo} = this.state;
+    shareOnFB(eventInfo.info);
   }
 
   share() {
-    const {item} = this.props;
-    share(item.info);
+    const {eventInfo} = this.state;
+    share(eventInfo.info);
+  }
+
+  goToOrders() {
+    const {eventInfo} = this.state;
+
+    pushScreen(Service.instance.getScreenId(), 'Orders', {
+      eventInfo: eventInfo,
+    });
   }
 
   async goToLive() {
-    const {item} = this.props;
+    const {eventInfo} = this.state;
     try {
       if (Platform.OS === 'android') {
         const granted = await PermissionsAndroid.requestMultiple(
@@ -59,17 +86,17 @@ class EventCard extends PureComponent {
         );
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
           pushScreen(Service.instance.getScreenId(), 'Live', {
-            eventInfo: item,
+            eventInfo: eventInfo,
           });
         } else {
           pushScreen(Service.instance.getScreenId(), 'Live', {
-            eventInfo: item,
+            eventInfo: eventInfo,
           });
           console.log('Camera permission denied');
         }
       } else {
         pushScreen(Service.instance.getScreenId(), 'Live', {
-          eventInfo: item,
+          eventInfo: eventInfo,
         });
       }
     } catch (err) {
@@ -78,11 +105,27 @@ class EventCard extends PureComponent {
   }
 
   render() {
-    const {item} = this.props;
-    const {info} = item;
+    const {eventInfo, loading} = this.state;
+
+    if (!eventInfo || loading) {
+      return (
+        <Card
+          // useNative
+          enableShadow
+          enableBlur
+          borderRadius={10}
+          elevation={20}
+          activeScale={0.96}
+          style={styles.container}>
+          <View style={styles.innerContainer}></View>
+        </Card>
+      );
+    }
+
+    const {info} = eventInfo;
+    const formatTime = moment(info.timestamp).format('HH:mm A');
     const day = moment(info.timestamp).format('DD');
     const month = moment(info.timestamp).format('MMM');
-    const formatTime = moment(info.timestamp).format('HH:mm A');
 
     return (
       <Card
@@ -91,7 +134,7 @@ class EventCard extends PureComponent {
         enableBlur
         borderRadius={10}
         elevation={20}
-        onPress={this.goToLive}
+        onPress={info.status !== 'ended' ? this.goToLive : this.goToOrders}
         activeScale={0.96}
         style={styles.container}>
         <View style={styles.innerContainer}>
@@ -141,31 +184,33 @@ class EventCard extends PureComponent {
             end={{x: 0, y: 0}}
             style={styles.gradient}>
             <Text style={styles.mediumText}>{info.title}</Text>
-            <View
-              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-              <ButtonWithTextIcon
-                onPress={this.shareOnFb}
-                text="Post on Facebook"
-                style={styles.button}
-                containerStyle={styles.buttonContainer}
-                textStyle={Typography.text80H}
-                iconType="Feather"
-                iconName={'facebook'}
-                iconSize={20}
-                iconColor={'#000'}
-                iconAfterText
-              />
+            {info.status !== 'ended' && (
+              <View
+                style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                <ButtonWithTextIcon
+                  onPress={this.shareOnFb}
+                  text="Post on Facebook"
+                  style={styles.button}
+                  containerStyle={styles.buttonContainer}
+                  textStyle={Typography.text80H}
+                  iconType="Feather"
+                  iconName={'facebook'}
+                  iconSize={20}
+                  iconColor={'#000'}
+                  iconAfterText
+                />
 
-              <ButtonWithIcon
-                onPress={this.share}
-                style={styles.button}
-                containerStyle={styles.buttonContainer}
-                iconType="Feather"
-                iconName={'send'}
-                iconSize={20}
-                iconColor={'#000'}
-              />
-            </View>
+                <ButtonWithIcon
+                  onPress={this.share}
+                  style={styles.button}
+                  containerStyle={styles.buttonContainer}
+                  iconType="Feather"
+                  iconName={'send'}
+                  iconSize={20}
+                  iconColor={'#000'}
+                />
+              </View>
+            )}
           </LinearGradient>
         </View>
       </Card>

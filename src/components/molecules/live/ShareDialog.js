@@ -21,7 +21,7 @@ import {ShareActions} from '_actions';
 
 const {shareOnFB, share} = ShareActions;
 
-class ItemDetailsDialog extends Component {
+class ShareDialog extends Component {
   constructor(props) {
     super(props);
     const {eventInfo} = props;
@@ -217,7 +217,7 @@ class ItemDetailsDialog extends Component {
   }
 }
 
-export default ItemDetailsDialog;
+export default ShareDialog;
 
 const styles = StyleSheet.create({
   button: {

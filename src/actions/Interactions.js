@@ -10,21 +10,7 @@ export const createEvent = async (
 ) => {
   const newRef = eventsRef.push();
 
-  newRef.set({
-    id: newRef.key,
-    info: {
-      id: newRef.key,
-      timestamp: date.getTime(),
-      title: title,
-      sellerId: uid,
-      videoURL: videoURL,
-      status: status,
-    },
-  });
-
-  usersRef.child(`${uid}/events/current`).set(newRef.key);
-
-  return {
+  const eventInfo = {
     id: newRef.key,
     info: {
       id: newRef.key,
@@ -35,6 +21,12 @@ export const createEvent = async (
       status: status,
     },
   };
+
+  newRef.set(eventInfo);
+  usersRef.child(`${uid}/events/current`).set(eventInfo.id);
+  usersRef.child(`${uid}/events/live/${newRef.key}`).set(eventInfo);
+
+  return eventInfo;
 };
 
 export const endEvent = async (eventInfo, uid) => {
@@ -45,14 +37,14 @@ export const endEvent = async (eventInfo, uid) => {
   usersRef.child(`${uid}/events/current`).remove();
 };
 
-export const addItem = async (eventInfo, price, quantity) => {
+export const addItem = async (eventInfo, price, quantity, currency) => {
   const productRef = await eventsRef.child(`${eventInfo.id}/products/`).push();
 
   eventsRef.child(`${eventInfo.id}/products/${productRef.key}`).set({
     id: productRef.key,
     price: price,
     currentStock: quantity,
-    currency: 'USD',
+    currency: currency,
   });
 
   eventsRef.child(`${eventInfo.id}/info/currentProductId`).set(productRef.key);
