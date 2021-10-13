@@ -559,10 +559,7 @@ SPEC REPOS:
     - PromisesObjC
     - SDWebImage
     - SDWebImageWebPCoder
-<<<<<<< HEAD
-=======
     - TOCropViewController
->>>>>>> 456587d71ff3b55c86c25943b7fcf84677cae6c9
 
 EXTERNAL SOURCES:
   BVLinearGradient:
@@ -683,21 +680,12 @@ SPEC CHECKSUMS:
   BVLinearGradient: e3aad03778a456d77928f594a649e96995f1c872
   DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
   FBLazyVector: e686045572151edef46010a6f819ade377dfeb4b
-<<<<<<< HEAD
   FBReactNativeSpec: 7cd59baa45931fcc400c191ed8e781095397b236
-  Firebase: 21ac9f28b09a8bdfc005f34c984fca84e7e8786d
-  FirebaseAuth: 223adeeb2262b417532e89bf06a960e3a0a1e9e4
-  FirebaseCore: 620b677f70f5470a8e59cb77f3ddc666f6f09785
-  FirebaseCoreDiagnostics: b63732f581a1c6a453ec7241f9ab60b3a5bd3450
-  FirebaseDatabase: 917fbeed577a68eb1ba0eb48c52a3aa10ac13f92
-=======
-  FBReactNativeSpec: 4fa989ab3de0c945dd55ec2d04e413c846d735b8
   Firebase: bc9325d5ee2041524bac78a5213d0e530c651309
   FirebaseAuth: 2e7d029977648c67a5d51a263d4cbab76d34cf12
   FirebaseCore: f4804c1d3f4bbbefc88904d15653038f2c99ddf7
   FirebaseCoreDiagnostics: b63732f581a1c6a453ec7241f9ab60b3a5bd3450
   FirebaseDatabase: afc82291f9ed94ff949cec1b9505e8c3b944bc0f
->>>>>>> 456587d71ff3b55c86c25943b7fcf84677cae6c9
   glog: 73c2498ac6884b13ede40eda8228cb1eee9d9d62
   Google-Maps-iOS-Utils: c32891ff472eaaa1fca032beedafa1a013af7875
   GoogleDataTransport: 85fd18ff3019bb85d3f2c551d04c481dedf71fc9
@@ -764,10 +752,6 @@ SPEC CHECKSUMS:
   TOCropViewController: 3105367e808b7d3d886a74ff59bf4804e7d3ab38
   Yoga: 575c581c63e0d35c9a83f4b46d01d63abc1100ac
 
-<<<<<<< HEAD
-PODFILE CHECKSUM: fe9da9f5068b6f860445152669309b926362d998
-=======
-PODFILE CHECKSUM: 8d8642b5f583ee33af3699507bc23f7fb92fe6a6
->>>>>>> 456587d71ff3b55c86c25943b7fcf84677cae6c9
+PODFILE CHECKSUM: 8e9723d2e9d8474cf872024478ec89ef1e757444
 
 COCOAPODS: 1.10.1
