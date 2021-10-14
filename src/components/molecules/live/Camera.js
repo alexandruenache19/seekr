@@ -1,106 +1,106 @@
-import React, {PureComponent} from 'react';
-import {View, StyleSheet, Text} from 'react-native';
-import {Navigation} from 'react-native-navigation';
-import {NodeCameraView} from 'react-native-nodemediaclient';
-import {BlurView} from '@react-native-community/blur';
-import LinearGradient from 'react-native-linear-gradient';
-import FastImage from 'react-native-fast-image';
-import {Colors, Typography} from 'react-native-ui-lib';
+import React, { PureComponent } from 'react'
+import { View, StyleSheet, Text } from 'react-native'
+import { Navigation } from 'react-native-navigation'
+import { NodeCameraView } from 'react-native-nodemediaclient'
+import { BlurView } from '@react-native-community/blur'
+import LinearGradient from 'react-native-linear-gradient'
+import FastImage from 'react-native-fast-image'
+import { Colors, Typography } from 'react-native-ui-lib'
 
-import {ButtonWithIcon, ButtonWithTextIcon, ButtonWithText} from '_atoms';
-import {eventsRef} from '../../../config/firebase';
+import { ButtonWithIcon, ButtonWithTextIcon, ButtonWithText } from '_atoms'
+import { eventsRef } from '../../../config/firebase'
 
-import {Interactions, ShareActions} from '_actions';
-const {endEvent} = Interactions;
-const {share} = ShareActions;
+import { Interactions, ShareActions } from '_actions'
+const { endEvent } = Interactions
+const { share } = ShareActions
 
 class CameraSection extends PureComponent {
-  constructor(props) {
-    super(props);
+  constructor (props) {
+    super(props)
     this.state = {
       isVideoOn: true,
-      viewers: 0,
-    };
+      viewers: 0
+    }
 
-    this.toggleVideo = this.toggleVideo.bind(this);
-    this.switchCamera = this.switchCamera.bind(this);
-    this.endLive = this.endLive.bind(this);
-    this.shareLive = this.shareLive.bind(this);
+    this.toggleVideo = this.toggleVideo.bind(this)
+    this.switchCamera = this.switchCamera.bind(this)
+    this.endLive = this.endLive.bind(this)
+    this.shareLive = this.shareLive.bind(this)
   }
 
-  componentDidMount() {
-    const {isPreview, eventInfo} = this.props;
+  componentDidMount () {
+    const { isPreview, eventInfo } = this.props
 
     this.productInfoListener = eventsRef
       .child(`${eventInfo.id}/info/viewers`)
       .on('value', async snapshot => {
         if (snapshot.exists()) {
-          const viewers = snapshot.val();
+          const viewers = snapshot.val()
           this.setState({
-            viewers: viewers,
-          });
+            viewers: viewers
+          })
         }
-      });
+      })
 
-    if (!isPreview) this.vb.start();
+    if (!isPreview) this.vb.start()
   }
 
-  toggleVideo() {
-    const {isVideoOn} = this.state;
+  toggleVideo () {
+    const { isVideoOn } = this.state
     if (isVideoOn) {
-      this.vb.stop();
-      this.setState({isVideoOn: false});
+      this.vb.stop()
+      this.setState({ isVideoOn: false })
     } else {
-      this.vb.start();
-      this.setState({isVideoOn: true});
+      this.vb.start()
+      this.setState({ isVideoOn: true })
     }
   }
 
-  switchCamera() {
-    this.vb.switchCamera();
+  switchCamera () {
+    this.vb.switchCamera()
   }
 
-  async endLive() {
-    const {eventInfo, userInfo} = this.props;
-    await endEvent(eventInfo, userInfo.uid);
-    Navigation.popToRoot('HOME_STACK');
+  async endLive () {
+    const { eventInfo, userInfo } = this.props
+    await endEvent(eventInfo, userInfo.uid)
+    Navigation.popToRoot('HOME_STACK')
   }
 
-  shareLive() {
-    const {eventInfo} = this.props;
-    share(eventInfo);
+  shareLive () {
+    const { eventInfo } = this.props
+    share(eventInfo)
   }
 
-  render() {
-    const {isVideoOn, viewers} = this.state;
-    const {isPreview, userInfo} = this.props;
-    const url = userInfo.stream.serverURL + userInfo.stream.streamKey;
+  render () {
+    const { isVideoOn, viewers } = this.state
+    const { isPreview, userInfo } = this.props
+    const url = userInfo.stream.serverURL + userInfo.stream.streamKey
 
     return (
       <View style={styles.container}>
         <NodeCameraView
-          style={{height: '100%'}}
+          style={{ height: '100%' }}
           ref={vb => {
-            this.vb = vb;
+            this.vb = vb
           }}
           outputUrl={url}
-          camera={{cameraId: 1, cameraFrontMirror: true}}
-          audio={{bitrate: 32000, profile: 1, samplerate: 44100}}
+          camera={{ cameraId: 1, cameraFrontMirror: false }}
+          audio={{ bitrate: 96000, profile: 1, samplerate: 44100 }}
           video={{
-            preset: 5,
-            bitrate: 400000,
+            preset: 2,
+            bitrate: 500000,
             profile: 1,
-            fps: 24,
-            videoFrontMirror: false,
+            fps: 30,
+            videoFrontMirror: false
           }}
-          autopreview={true}
+          autopreview
         />
 
         <View style={styles.topActionsRow}>
           <View style={styles.statusContainer}>
             <View style={styles.imageContainer}>
               <FastImage
-                source={{uri: userInfo.imageURL}}
+                source={{ uri: userInfo.imageURL }}
                 style={styles.image}
                 resizeMode={FastImage.resizeMode.cover}
               />
@@ -109,74 +109,76 @@ class CameraSection extends PureComponent {
               style={{
                 justifyContent: 'center',
                 alignItems: 'flex-start',
-                marginLeft: 10,
-              }}>
+                marginLeft: 10
+              }}
+            >
               <Text style={styles.text}>@{userInfo.username}</Text>
               <View
                 style={{
                   flexDirection: 'row',
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  marginTop: 2,
-                }}>
+                  marginTop: 2
+                }}
+              >
                 <ButtonWithText
                   style={{
                     backgroundColor:
                       isVideoOn && !isPreview ? '#FC5D83' : Colors.grey40,
                     padding: 2,
                     paddingHorizontal: 5,
-                    borderRadius: 5,
+                    borderRadius: 5
                   }}
                   text={isVideoOn && !isPreview ? '● LIVE' : 'PREVIEW'}
                   textStyle={styles.text}
-                  // onPress={this.toggleVideo}
+                // onPress={this.toggleVideo}
                 />
                 <ButtonWithTextIcon
-                  iconType="Feather"
-                  iconName={'eye'}
+                  iconType='Feather'
+                  iconName='eye'
                   iconSize={16}
-                  iconColor={'#FFF'}
+                  iconColor='#FFF'
                   style={{
-                    marginLeft: 10,
+                    marginLeft: 10
                   }}
                   text={viewers}
-                  textStyle={{...styles.text, marginLeft: 5}}
+                  textStyle={{ ...styles.text, marginLeft: 5 }}
                 />
               </View>
             </View>
           </View>
 
           <ButtonWithIcon
-            iconType="Feather"
-            iconName="send"
+            iconType='Feather'
+            iconName='send'
             iconSize={20}
-            iconColor="#000"
+            iconColor='#000'
             style={{
-              ...styles.button,
+              ...styles.button
             }}
             onPress={this.shareLive}
           />
         </View>
         <View style={styles.bottomActionsRow}>
-          <View style={{flexDirection: 'row'}}>
+          <View style={{ flexDirection: 'row' }}>
             <ButtonWithTextIcon
-              iconType="Feather"
-              iconName={'x'}
+              iconType='Feather'
+              iconName='x'
               iconSize={20}
-              iconColor={'#000'}
+              iconColor='#000'
               style={styles.button}
               textStyle={{
                 color: '#000',
                 fontWeight: 'bold',
                 fontSize: 18,
-                marginLeft: 5,
+                marginLeft: 5
               }}
               onPress={this.endLive}
-              text={'End Event'}
+              text='End Event'
             />
           </View>
-          <View style={{flexDirection: 'row'}}>
-            {/*<ButtonWithIcon
+          <View style={{ flexDirection: 'row' }}>
+            {/* <ButtonWithIcon
               iconType="Feather"
               iconName={isVideoOn ? 'video' : 'video-off'}
               iconSize={20}
@@ -186,27 +188,27 @@ class CameraSection extends PureComponent {
                 marginLeft: 10,
               }}
               onPress={this.toggleVideo}
-            />*/}
+            /> */}
 
             <ButtonWithIcon
-              iconType="Feather"
-              iconName={'repeat'}
+              iconType='Feather'
+              iconName='repeat'
               iconSize={20}
-              iconColor={'#000'}
+              iconColor='#000'
               style={{
                 ...styles.button,
-                marginLeft: 10,
+                marginLeft: 10
               }}
               onPress={this.switchCamera}
             />
           </View>
         </View>
       </View>
-    );
+    )
   }
 }
 
-export default CameraSection;
+export default CameraSection
 
 const styles = StyleSheet.create({
   container: {
@@ -214,7 +216,7 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 10,
     backgroundColor: '#999',
-    overflow: 'hidden',
+    overflow: 'hidden'
   },
   topActionsRow: {
     position: 'absolute',
@@ -224,7 +226,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    alignItems: 'flex-start'
   },
   statusContainer: {
     backgroundColor: 'rgba(0,0,0,0.5)',
@@ -232,12 +234,12 @@ const styles = StyleSheet.create({
     padding: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 10,
+    borderRadius: 10
   },
   button: {
     padding: 10,
     backgroundColor: '#FFF',
-    borderRadius: 10,
+    borderRadius: 10
   },
   bottomActionsRow: {
     flexDirection: 'row',
@@ -247,12 +249,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     right: 0,
-    padding: 10,
+    padding: 10
   },
   text: {
     fontSize: 14,
     color: '#FFF',
-    fontWeight: 'bold',
+    fontWeight: 'bold'
   },
   absolute: {
     position: 'absolute',
@@ -260,25 +262,25 @@ const styles = StyleSheet.create({
     left: 0,
     bottom: 0,
     right: 0,
-    borderRadius: 10,
+    borderRadius: 10
   },
   itemContainer: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   imageContainer: {
     height: 40,
     width: 40,
     borderRadius: 20,
-    overflow: 'hidden',
+    overflow: 'hidden'
   },
   image: {
-    ...StyleSheet.absoluteFill,
+    ...StyleSheet.absoluteFill
   },
   endButton: {
     padding: 10,
     backgroundColor: '#FFF',
-    borderRadius: 10,
-  },
-});
+    borderRadius: 10
+  }
+})
