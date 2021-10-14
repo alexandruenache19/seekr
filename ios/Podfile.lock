@@ -98,6 +98,8 @@ PODS:
   - nanopb/decode (2.30908.0)
   - nanopb/encode (2.30908.0)
   - NodeMediaClient (2.9.6)
+  - Permission-Camera (3.0.5):
+    - RNPermissions
   - PromisesObjC (2.0.0)
   - RCT-Folly (2020.01.13.00):
     - boost-for-react-native
@@ -491,6 +493,7 @@ DEPENDENCIES:
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - lottie-ios (from `../node_modules/lottie-ios`)
   - lottie-react-native (from `../node_modules/lottie-react-native`)
+  - Permission-Camera (from `../node_modules/react-native-permissions/ios/Camera`)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
   - RCTTypeSafety (from `../node_modules/react-native/Libraries/TypeSafety`)
@@ -582,6 +585,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/lottie-ios"
   lottie-react-native:
     :path: "../node_modules/lottie-react-native"
+  Permission-Camera:
+    :path: "../node_modules/react-native-permissions/ios/Camera"
   RCT-Folly:
     :podspec: "../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
@@ -708,6 +713,7 @@ SPEC CHECKSUMS:
   lottie-react-native: b561920bba7ec727ec94a473b683cffba00faece
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
   NodeMediaClient: 0f15a8f84c84ec1023ab4a8b3c5c0dff9a7f62d1
+  Permission-Camera: ac603073e4128e51e6ca3c39129778f05b4082fa
   PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
   RCT-Folly: ec7a233ccc97cc556cf7237f0db1ff65b986f27c
   RCTRequired: 6d3e854f0e7260a648badd0d44fc364bc9da9728
@@ -764,6 +770,6 @@ SPEC CHECKSUMS:
   TOCropViewController: 3105367e808b7d3d886a74ff59bf4804e7d3ab38
   Yoga: 575c581c63e0d35c9a83f4b46d01d63abc1100ac
 
-PODFILE CHECKSUM: 8e9723d2e9d8474cf872024478ec89ef1e757444
+PODFILE CHECKSUM: 90377ada8151848ef09fe9acc72087dd3a3f6223
 
 COCOAPODS: 1.10.1
