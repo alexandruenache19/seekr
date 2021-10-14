@@ -30,14 +30,11 @@ class Home extends PureComponent {
 
   componentDidMount() {
     const {user} = this.props;
-    const eventIds = [];
 
     this.currentEventListener = database()
       .ref(`users/${user.uid}/events/current`)
       .on('value', async snap => {
         const currentEventId = snap.val();
-
-        console.log('current', currentEventId);
         this.setState({
           currentEventId: snap.val(),
         });
@@ -48,6 +45,8 @@ class Home extends PureComponent {
       .orderByValue()
       .limitToLast(20)
       .on('value', snapshot => {
+        const eventIds = [];
+
         snapshot.forEach(eventIdSnap => {
           const eventId = eventIdSnap.key;
           eventIds.push(eventId);
@@ -64,9 +63,14 @@ class Home extends PureComponent {
     database()
       .ref(`users/${user.uid}/events/current`)
       .off('value', this.currentEventListener);
+
+    database()
+      .ref(`users/${user.uid}/events/past`)
+      .off('value', this.pastEventsListener);
   }
 
   renderItem({item}) {
+    console.log(item);
     return (
       <View style={{marginRight: 20}}>
         <EventCard eventId={item} />
@@ -107,35 +111,35 @@ class Home extends PureComponent {
                   justifyContent: 'space-between',
                   alignItems: 'center',
                 }}>
-                {(eventIds.length > 0 || currentEventId) && (
-                  <View>
-                    <Text style={Typography.text65L}>Your</Text>
-                    <Text style={{...Typography.text40, marginTop: 3}}>
-                      Events
-                    </Text>
-                    <FlatList
-                      horizontal
-                      showsHorizontalScrollIndicator={false}
-                      ListHeaderComponent={
-                        currentEventId
-                          ? this.renderItem({
-                              item: currentEventId,
-                            })
-                          : null
+                <View>
+                  <Text style={Typography.text65L}>Your</Text>
+                  <Text style={{...Typography.text40, marginTop: 3}}>
+                    Events
+                  </Text>
+                  <FlatList
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    ListHeaderComponent={
+                      currentEventId != null ? (
+                        this.renderItem({
+                          item: currentEventId,
+                        })
+                      ) : (
+                        <View />
+                      )
+                    }
+                    data={eventIds}
+                    style={{marginTop: 20}}
+                    renderItem={this.renderItem}
+                    keyExtractor={(item, index) => {
+                      if (item) {
+                        return item + index;
+                      } else {
+                        return index;
                       }
-                      data={eventIds}
-                      style={{marginTop: 20}}
-                      renderItem={this.renderItem}
-                      keyExtractor={(item, index) => {
-                        if (item) {
-                          return item;
-                        } else {
-                          return index;
-                        }
-                      }}
-                    />
-                  </View>
-                )}
+                    }}
+                  />
+                </View>
               </View>
             </View>
           </ScrollView>

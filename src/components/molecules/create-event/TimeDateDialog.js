@@ -5,22 +5,24 @@ import {
   SafeAreaView,
   StyleSheet,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 import {ButtonWithText} from '_atoms';
 import {
   Dialog,
   PanningProvider,
-  DateTimePicker,
+  // DateTimePicker,
   Typography,
   Colors,
 } from 'react-native-ui-lib';
-
+import DateTimePicker from '@react-native-community/datetimepicker';
 class CalandarDialog extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
       showDialog: false,
       mode: 'date',
+      show: false,
       date: new Date(),
       time: new Date(),
     };
@@ -42,12 +44,12 @@ class CalandarDialog extends PureComponent {
     this.setState({showDialog: false});
   }
 
-  onChangeDate(value) {
-    this.setState({date: value});
+  onChangeDate(event, selectedDate) {
+    this.setState({date: selectedDate});
   }
 
-  onChangeTime(value) {
-    this.setState({time: value});
+  onChangeTime(event, selectedDate) {
+    this.setState({time: selectedDate});
   }
 
   onDone() {
@@ -56,15 +58,16 @@ class CalandarDialog extends PureComponent {
     this.hideDialog();
   }
 
-  renderTimeInput(props, toggle) {
-    const {value} = props;
+  renderTimeInput() {
+    const value = null;
     return (
       <View>
         <Text style={{...Typography.text50, color: Colors.grey40}}>Time</Text>
         <TouchableOpacity
           style={{paddingTop: 20}}
           onPress={() => {
-            toggle(true);
+            // toggle(true);
+            this.setState({mode: 'time', show: true});
           }}>
           <Text
             style={{
@@ -79,14 +82,16 @@ class CalandarDialog extends PureComponent {
   }
 
   renderDateInput(props, toggle) {
-    const {value} = props;
+    // const {value} = props;
+    const value = null;
     return (
       <View>
         <Text style={{...Typography.text50, color: Colors.grey40}}>Date</Text>
         <TouchableOpacity
           style={{paddingTop: 20}}
           onPress={() => {
-            toggle(true);
+            // toggle(true);
+            this.setState({mode: 'date', show: true});
           }}>
           <Text
             style={{
@@ -101,7 +106,7 @@ class CalandarDialog extends PureComponent {
   }
 
   render() {
-    const {showDialog, show, mode, date} = this.state;
+    const {showDialog, show, mode, date, time} = this.state;
 
     return (
       <Dialog
@@ -110,24 +115,36 @@ class CalandarDialog extends PureComponent {
         ignoreBackgroundPress
         key={'dialog-key'}
         bottom={true}
-        height={400}
+        height={300}
         panDirection={PanningProvider.Directions.DOWN}
         containerStyle={styles.container}
         visible={showDialog}
         onDismiss={this.hideDialog}>
         <View style={{margin: 30, justifyContent: 'space-between', flex: 1}}>
           <View>
+            <Text style={{...Typography.text50, color: Colors.grey40}}>
+              Date
+            </Text>
             <DateTimePicker
-              renderInput={this.renderDateInput}
+              testID="datePicker"
+              value={date}
+              mode={'date'}
               onChange={this.onChangeDate}
-              dateFormat={'MMM D, YYYY'}
+              textColor={Colors.black}
             />
-
+            <Text
+              style={{
+                ...Typography.text50,
+                color: Colors.grey40,
+                paddingTop: 20,
+              }}>
+              Time
+            </Text>
             <DateTimePicker
+              testID="timePicker"
+              value={time}
               mode={'time'}
               onChange={this.onChangeTime}
-              renderInput={this.renderTimeInput}
-              timeFormat={'h:mm A'}
             />
           </View>
 
@@ -142,16 +159,7 @@ class CalandarDialog extends PureComponent {
     );
   }
 }
-// {show && (
-//   <DateTimePicker
-//     testID="dateTimePicker"
-//     value={date}
-//     mode={mode}
-//     is24Hour={true}
-//     display="spinner"
-//     onChange={this.onChange}
-//   />
-// )}
+
 export default CalandarDialog;
 
 const styles = StyleSheet.create({
