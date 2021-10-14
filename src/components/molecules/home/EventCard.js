@@ -5,7 +5,8 @@ import {
   Text,
   StyleSheet,
   PermissionsAndroid,
-  Platform
+  Platform,
+  Pressable
 } from 'react-native'
 import moment from 'moment'
 import LinearGradient from 'react-native-linear-gradient'
@@ -28,7 +29,9 @@ class EventCard extends PureComponent {
     super(props)
     this.state = {
       eventInfo: null,
-      loading: true
+      loading: true,
+      currency: '',
+      totalRevenue: 0
     }
     this.goToLive = this.goToLive.bind(this)
     this.goToOrders = this.goToOrders.bind(this)
@@ -43,7 +46,31 @@ class EventCard extends PureComponent {
     const eventInfo = await getEvent(eventId)
 
     if (eventInfo) {
+      let totalRevenue = 0
+      let currency = ''
+      /** calculate total revenue */
+      if (eventInfo.info.status === 'ended' && eventInfo.orders) {
+        console.log('event', eventInfo.orders)
+        for (const orderKey in eventInfo.orders) {
+          const order = eventInfo.orders[orderKey]
+          let revenue = 0
+          const { products } = order
+
+          for (const key in products) {
+            const product = products[key]
+            revenue += product.priceToPay || 0
+            currency = product.currency
+          }
+
+          order.revenue = revenue
+          order.currency = currency
+          totalRevenue += revenue
+        }
+      }
+      // console.log('totalRev', totalRevenue)
       this.setState({
+        totalRevenue: totalRevenue,
+        currency: currency,
         loading: false,
         eventInfo: eventInfo
       })
@@ -120,7 +147,7 @@ class EventCard extends PureComponent {
   }
 
   render () {
-    const { eventInfo, loading } = this.state
+    const { eventInfo, loading, totalRevenue, currency } = this.state
 
     if (!eventInfo || loading) {
       return (
@@ -170,44 +197,46 @@ class EventCard extends PureComponent {
               repeat
             />
           ) : null}
-          <LinearGradient
-            colors={['rgba(0,0,0,0.5)', 'rgba(0,0,0,0.2)', 'rgba(0,0,0,0)']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 0, y: 1 }}
-            style={styles.gradient}
-          >
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'flex-start'
-              }}
+          {info.status !== 'ended' ? (
+            <LinearGradient
+              colors={['rgba(0,0,0,0.5)', 'rgba(0,0,0,0.2)', 'rgba(0,0,0,0)']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
+              style={styles.gradient}
             >
-              <View>
-                <Text style={styles.largeText}>{day}</Text>
-                <Text style={styles.mediumText}>{month}</Text>
-              </View>
               <View
                 style={{
-                  backgroundColor: '#FFF',
-                  borderRadius: 10,
-                  padding: 10
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start'
                 }}
               >
-                <Text style={{ ...styles.smallText, color: '#000' }}>
-                  {formatTime}
-                </Text>
+                <View>
+                  <Text style={styles.largeText}>{day}</Text>
+                  <Text style={styles.mediumText}>{month}</Text>
+                </View>
+                <View
+                  style={{
+                    backgroundColor: '#FFF',
+                    borderRadius: 10,
+                    padding: 10
+                  }}
+                >
+                  <Text style={{ ...styles.smallText, color: '#000' }}>
+                    {formatTime}
+                  </Text>
+                </View>
               </View>
-            </View>
-          </LinearGradient>
-          <LinearGradient
-            colors={['rgba(0,0,0,0.5)', 'rgba(0,0,0,0.2)', 'rgba(0,0,0,0)']}
-            start={{ x: 0, y: 1 }}
-            end={{ x: 0, y: 0 }}
-            style={styles.gradient}
-          >
-            <Text style={styles.mediumText}>{info.title}</Text>
-            {info.status !== 'ended' && (
+            </LinearGradient>
+          ) : null}
+          {info.status !== 'ended' ? (
+            <LinearGradient
+              colors={['rgba(0,0,0,0.5)', 'rgba(0,0,0,0.2)', 'rgba(0,0,0,0)']}
+              start={{ x: 0, y: 1 }}
+              end={{ x: 0, y: 0 }}
+              style={styles.gradient}
+            >
+              <Text style={styles.mediumText}>{info.title}</Text>
               <View
                 style={{ flexDirection: 'row', justifyContent: 'space-between' }}
               >
@@ -238,33 +267,98 @@ class EventCard extends PureComponent {
                   iconColor='#000'
                 />
               </View>
-            )}
-          </LinearGradient>
+            </LinearGradient>
+          ) : null}
           {info.status === 'ended' ? (
             <View
               style={{
                 ...StyleSheet.absoluteFill,
                 backgroundColor: 'rgba(0,0,0,0.7)',
-                alignItems: 'center',
-                justifyContent: 'center'
+                alignItems: 'flex-start',
+                justifyContent: 'space-between',
+                padding: 20
               }}
             >
-              <Icon
-                iconType='FontAwesome'
-                iconName='hourglass-end'
-                iconColor='#FFF'
-                iconSize={24}
-              />
-              <Text
+              {/* <ButtonWithText
+                text='placeholder'
+                onPress={() => null}
+                textStyle={{ ...Typography.text60, color: 'transparent' }}
                 style={{
-                  ...Typography.text60,
-                  color: Colors.white,
-                  marginTop: 15
+                  paddingVertical: 8,
+                  backgroundColor: 'transparent',
+                  width: '100%'
                 }}
-              >
-                Event ended {month}, {day}
-              </Text>
-              <ButtonWithText
+              /> */}
+              <View style={{ alignItems: 'flex-start' }}>
+                <Text style={{ ...styles.mediumText }}>{info.title}</Text>
+                <ButtonWithTextIcon
+                  text={`Ended ${month}, ${day}`}
+                  onPress={this.goToOrders}
+                  style={{ marginTop: 10 }}
+                  textStyle={{ ...Typography.text60L, color: Colors.white, marginLeft: 8 }}
+                  iconType='FontAwesome'
+                  iconName='hourglass-end'
+                  iconColor='#FFF'
+                  iconSize={14}
+                />
+                {totalRevenue && totalRevenue > 0 ? (
+                  <Text style={{ ...styles.mediumText, marginTop: 10 }}>{totalRevenue} {currency}</Text>
+                ) : null}
+              </View>
+              <Pressable onPress={this.goToOrders} style={{ width: '100%' }}>
+                <LinearGradient
+                  colors={['#6A4087', '#C94573']}
+                  // start={{ x: 0, y: 0 }}
+                  // end={{ x: 0, y: 1 }}
+                  useAngle
+                  angle={270}
+                  angleCenter={{ x: 0.7, y: 0.5 }}
+                  style={{
+                    paddingHorizontal: 12,
+                    paddingVertical: 8,
+                    backgroundColor: '#FFF',
+                    alignItems: 'center',
+                    borderRadius: 10,
+                    width: '100%'
+                  }}
+                >
+                  <Text style={{ ...Typography.text60, color: Colors.white }}>View Orders</Text>
+                </LinearGradient>
+              </Pressable>
+              {/* {eventInfo && eventInfo.orders ? (
+                <Pressable onPress={this.goToOrders} style={{ width: '100%' }}>
+                  <LinearGradient
+                    colors={['#6A4087', '#C94573']}
+                    // start={{ x: 0, y: 0 }}
+                    // end={{ x: 0, y: 1 }}
+                    useAngle
+                    angle={270}
+                    angleCenter={{ x: 0.7, y: 0.5 }}
+                    style={{
+                      paddingHorizontal: 12,
+                      paddingVertical: 8,
+                      backgroundColor: '#FFF',
+                      alignItems: 'center',
+                      borderRadius: 10,
+                      width: '100%'
+                    }}
+                  >
+                    <Text style={{ ...Typography.text60, color: Colors.white }}>View Orders</Text>
+                  </LinearGradient>
+                </Pressable>
+              ) : (
+                <ButtonWithText
+                  text='placeholder'
+                  onPress={() => null}
+                  textStyle={{ ...Typography.text60, color: 'transparent' }}
+                  style={{
+                    paddingVertical: 8,
+                    backgroundColor: 'transparent',
+                    width: '100%'
+                  }}
+                />
+              )} */}
+              {/* <ButtonWithText
                 text='View Orders'
                 onPress={this.goToOrders}
                 textStyle={{ ...Typography.text60 }}
@@ -272,10 +366,11 @@ class EventCard extends PureComponent {
                   paddingHorizontal: 12,
                   paddingVertical: 8,
                   backgroundColor: '#FFF',
+                  alignItems: 'center',
                   borderRadius: 10,
-                  marginTop: 15
+                  width: '100%'
                 }}
-              />
+              /> */}
             </View>
           ) : null}
         </View>
