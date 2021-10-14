@@ -1,3 +1,4 @@
+import 'react-native-gesture-handler';
 import {Navigation} from 'react-native-navigation';
 import App from './App';
 import {registerScreens} from './src/navigation/screen-registry';
