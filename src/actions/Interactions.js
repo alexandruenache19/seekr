@@ -106,6 +106,7 @@ export const endEvent = async (eventInfo, uid) => {
     usersRef
       .child(`${uid}/events/past/${eventInfo.id}`)
       .set(eventInfo.info.timestamp);
+    usersRef.child(`${uid}/events/live/${eventInfo.id}`).remove();
     usersRef.child(`${uid}/events/current`).remove();
   } catch (e) {
     console.log('e', e);

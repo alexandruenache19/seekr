@@ -1,4 +1,4 @@
-import React, {PureComponent} from 'react';
+import React, { PureComponent } from 'react';
 import {
   SafeAreaView,
   View,
@@ -8,15 +8,15 @@ import {
   FlatList,
   TouchableOpacity,
 } from 'react-native';
-import {Typography, Colors} from 'react-native-ui-lib';
-import {Navigation} from 'react-native-navigation';
+import { Typography, Colors } from 'react-native-ui-lib';
+import { Navigation } from 'react-native-navigation';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import LinearGradient from 'react-native-linear-gradient';
-import Carousel, {Pagination} from 'react-native-snap-carousel';
+import Carousel, { Pagination } from 'react-native-snap-carousel';
 import LottieView from 'lottie-react-native';
 
-import {Transitions, Service} from '_nav';
-import {Constants} from '_styles';
+import { Transitions, Service } from '_nav';
+import { Constants } from '_styles';
 
 import NumberInput from './screens/NumberInput';
 import LocationInput from './screens/LocationInput';
@@ -68,8 +68,8 @@ Navigation.registerComponent(
   () => Complete,
 );
 
-const {pushScreen} = Transitions;
-const {WIDTH} = Constants;
+const { pushScreen } = Transitions;
+const { WIDTH } = Constants;
 
 class Onboarding extends PureComponent {
   constructor(props) {
@@ -78,15 +78,15 @@ class Onboarding extends PureComponent {
       activeSlide: 0,
       data: [
         {
-          title: ['Interact', 'Live with', 'Sellers'],
+          title: ['Discover & buy products in a new way.'],
           color: '',
         },
         {
-          title: ['Sell'],
+          title: ['Sell anything, to anyone on the internet.'],
           color: '',
         },
         {
-          title: ['All', 'Live'],
+          title: ['Go live & show items. Chat to buyers & sell.'],
           color: '',
         },
       ],
@@ -95,7 +95,7 @@ class Onboarding extends PureComponent {
   }
 
   goToPhoneInput() {
-    const {activeSlide} = this.state;
+    const { activeSlide } = this.state;
     if (activeSlide === 2) {
       pushScreen(Service.instance.getScreenId(), 'NumberInput');
     } else {
@@ -103,13 +103,13 @@ class Onboarding extends PureComponent {
     }
   }
 
-  _renderItem = ({item, index}) => {
+  _renderItem = ({ item, index }) => {
     return (
       <View style={styles.slide}>
-        <View style={{paddingHorizontal: 20}}>
+        <View style={{ paddingHorizontal: 5, marginTop: 5 }}>
           <Text style={styles.title}>{item.title[0]}</Text>
           <Text style={styles.title}>{item.title[1]}</Text>
-          <Text style={{...styles.title, paddingBottom: 20}}>
+          <Text style={{ ...styles.title }}>
             {item.title[2]}
           </Text>
         </View>
@@ -122,27 +122,43 @@ class Onboarding extends PureComponent {
             borderRadius: 20,
             padding: 20,
             justifyContent: 'center',
-            alignSelf: 'center',
+            alignItems: 'center',
           }}>
-          <Text style={{color: Colors.white, ...Typography.text60H}}>
+          {/* <Text style={{color: Colors.white, ...Typography.text60H}}>
             Ask questions live about the products you are interested in
-          </Text>
-          <LottieView
-            style={{height: 200}}
-            source={require('./animation.json')}
-            autoPlay
-            loop
-          />
+          </Text> */}
+          {index === 0 ? (
+            <LottieView
+              style={{ width: '100%' }}
+              source={require('./animation-buy.json')}
+              autoPlay
+              loop
+            />
+          ) : index === 1 ? (
+            <LottieView
+              style={{ width: '100%' }}
+              source={require('./animation-sell.json')}
+              autoPlay
+              loop
+            />
+          ) : (
+            <LottieView
+              style={{ width: '115%' }}
+              source={require('./animation-live.json')}
+              autoPlay
+              loop
+            />
+          )}
         </View>
       </View>
     );
   };
   render() {
-    const {data, activeSlide} = this.state;
+    const { data, activeSlide } = this.state;
     return (
       <LinearGradient
-        start={{x: 0, y: 1}}
-        end={{x: 0, y: 0}}
+        start={{ x: 0, y: 1 }}
+        end={{ x: 0, y: 0 }}
         colors={['#FFF', '#FFF']}
         style={styles.container}>
         <View
@@ -159,7 +175,7 @@ class Onboarding extends PureComponent {
             inactiveDotOpacity={0.4}
             inactiveDotScale={0.6}
           />
-          <Text style={{paddingHorizontal: 40, ...styles.buttonText}}>
+          <Text style={{ paddingHorizontal: 40, ...styles.buttonText }}>
             seekr.
           </Text>
         </View>
@@ -172,13 +188,13 @@ class Onboarding extends PureComponent {
           renderItem={this._renderItem}
           inactiveSlideScale={0.6}
           activeAnimationType={'decay'}
-          onSnapToItem={index => this.setState({activeSlide: index})}
+          onSnapToItem={index => this.setState({ activeSlide: index })}
           sliderWidth={WIDTH}
           itemWidth={WIDTH}
         />
         <View style={styles.footer}>
           <TouchableOpacity style={styles.button} onPress={this.goToPhoneInput}>
-            <Text style={{...styles.buttonText, color: '#FFF'}}>
+            <Text style={{ ...styles.buttonText, color: '#FFF' }}>
               {activeSlide === 2 ? 'Get Started' : 'Next'}
             </Text>
             <FontAwesome name={'arrow-right'} color={'#FFF'} size={24} />
@@ -201,8 +217,9 @@ const styles = StyleSheet.create({
   slide: {
     flex: 1,
     paddingHorizontal: 40,
-    paddingBottom: 20,
-    justifyContent: 'center',
+    paddingBottom: 30,
+    paddingTop: 10,
+    justifyContent: 'space-between',
   },
   title: {
     ...Typography.text30BL,

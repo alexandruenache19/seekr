@@ -11,6 +11,7 @@ import {
 import {Typography} from 'react-native-ui-lib';
 import database from '@react-native-firebase/database';
 import Toast from 'react-native-toast-message';
+import {ButtonWithIcon} from '_atoms';
 import {LiveButton, EventCard, HomeHeader, CreateEventCard} from '_molecules';
 import {Service, Transitions} from '_nav';
 
@@ -34,7 +35,6 @@ class Home extends PureComponent {
     this.currentEventListener = database()
       .ref(`users/${user.uid}/events/current`)
       .on('value', async snap => {
-        const currentEventId = snap.val();
         this.setState({
           currentEventId: snap.val(),
         });
@@ -51,7 +51,6 @@ class Home extends PureComponent {
           const eventId = eventIdSnap.key;
           eventIds.push(eventId);
         });
-
         this.setState({
           eventIds: eventIds.reverse(),
         });
@@ -70,7 +69,6 @@ class Home extends PureComponent {
   }
 
   renderItem({item}) {
-    console.log(item);
     return (
       <View style={{marginRight: 20}}>
         <EventCard eventId={item} />
@@ -87,12 +85,14 @@ class Home extends PureComponent {
     const {currentEventId, eventIds} = this.state;
     const {user} = this.props;
     const {info} = user;
+
     if (user && user.info) {
       return (
         <SafeAreaView style={styles.safeContainer}>
           <ScrollView
             showsVerticalScrollIndicator={false}
-            style={styles.container}>
+            style={styles.container}
+            contentContainerStyle={{paddingBottom: 30}}>
             <HomeHeader info={info} />
 
             <View style={{marginTop: 30}}>
@@ -106,16 +106,36 @@ class Home extends PureComponent {
             <View style={{paddingBottom: 20}}>
               <View
                 style={{
-                  marginTop: 20,
+                  marginTop: 25,
                   flexDirection: 'row',
                   justifyContent: 'space-between',
                   alignItems: 'center',
                 }}>
                 <View>
-                  <Text style={Typography.text65L}>Your</Text>
-                  <Text style={{...Typography.text40, marginTop: 3}}>
-                    Events
-                  </Text>
+                  <View
+                    style={{
+                      marginTop: 20,
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}>
+                    <View>
+                      <Text style={Typography.text65L}>your</Text>
+                      <Text style={Typography.text40}>Events</Text>
+                    </View>
+                    <ButtonWithIcon
+                      iconType="Feather"
+                      iconName={'plus'}
+                      iconSize={20}
+                      iconColor={'#FFF'}
+                      style={{
+                        padding: 10,
+                        backgroundColor: '#000',
+                        borderRadius: 10,
+                      }}
+                      onPress={this.goToCreateEvent}
+                    />
+                  </View>
                   <FlatList
                     horizontal
                     showsHorizontalScrollIndicator={false}
@@ -129,7 +149,7 @@ class Home extends PureComponent {
                       )
                     }
                     data={eventIds}
-                    style={{marginTop: 20}}
+                    style={{marginTop: 15, flex: 1}}
                     renderItem={this.renderItem}
                     keyExtractor={(item, index) => {
                       if (item) {

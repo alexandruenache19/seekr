@@ -1,4 +1,4 @@
-import React, {PureComponent} from 'react';
+import React, { PureComponent } from 'react'
 import {
   SafeAreaView,
   View,
@@ -7,92 +7,93 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   FlatList,
-  KeyboardAvoidingView,
-} from 'react-native';
-import {Keyboard, Typography, Colors, Card} from 'react-native-ui-lib';
-import Video from 'react-native-video';
-import {Navigation} from 'react-native-navigation';
-import database from '@react-native-firebase/database';
-import {Transitions, Service} from '_nav';
-import {ButtonWithIcon, ButtonWithText} from '_atoms';
-import {OrderItems} from '_molecules';
+  KeyboardAvoidingView
+} from 'react-native'
+import { Keyboard, Typography, Colors, Card } from 'react-native-ui-lib'
+import Video from 'react-native-video'
+import { Navigation } from 'react-native-navigation'
+import database from '@react-native-firebase/database'
+import LinearGradient from 'react-native-linear-gradient'
+import { Transitions, Service } from '_nav'
+import { ButtonWithIcon, ButtonWithText } from '_atoms'
+import { OrderItems } from '_molecules'
 
-class Onboarding extends PureComponent {
-  constructor(props) {
-    super(props);
+class OrdersScreen extends PureComponent {
+  constructor (props) {
+    super(props)
     this.state = {
       orders: [],
       totalRevenue: 0,
-      orderCurrency: '',
-    };
-    this.goBack = this.goBack.bind(this);
-    this.renderItem = this.renderItem.bind(this);
-    this.goToUserOrder = this.goToUserOrder.bind(this);
+      orderCurrency: ''
+    }
+    this.goBack = this.goBack.bind(this)
+    this.renderItem = this.renderItem.bind(this)
+    this.goToUserOrder = this.goToUserOrder.bind(this)
   }
 
-  componentDidMount() {
-    const {eventInfo} = this.props;
+  componentDidMount () {
+    const { eventInfo } = this.props
 
     this.ordersListener = database()
       .ref(`events/${eventInfo.id}/orders`)
       .on('value', snapshot => {
-        let currentOrders = [];
-        let totalRevenue = 0;
-        let orderCurrency = '';
+        const currentOrders = []
+        let totalRevenue = 0
+        let orderCurrency = ''
         snapshot.forEach(orderSnap => {
-          const order = orderSnap.val();
-          let revenue = 0;
-          let productsPacked = 0;
-          let totalProducts = 0;
-          let currency = '';
-          const {products} = order;
+          const order = orderSnap.val()
+          let revenue = 0
+          let productsPacked = 0
+          let totalProducts = 0
+          let currency = ''
+          const { products } = order
 
           for (const key in products) {
-            const product = products[key];
+            const product = products[key]
             if (product.isPacked) {
-              productsPacked++;
+              productsPacked++
             }
-            totalProducts++;
-            revenue += product.priceToPay || 0;
-            currency = product.currency;
+            totalProducts++
+            revenue += product.priceToPay || 0
+            currency = product.currency
           }
 
-          order.revenue = revenue;
-          order.productsPacked = productsPacked;
-          order.totalProducts = totalProducts;
-          order.currency = currency;
-          orderCurrency = currency;
-          totalRevenue += revenue;
-          currentOrders.push(order);
-        });
+          order.revenue = revenue
+          order.productsPacked = productsPacked
+          order.totalProducts = totalProducts
+          order.currency = currency
+          orderCurrency = currency
+          totalRevenue += revenue
+          currentOrders.push(order)
+        })
 
         this.setState({
           orders: currentOrders,
           totalRevenue: totalRevenue,
-          orderCurrency: orderCurrency,
-        });
-      });
+          orderCurrency: orderCurrency
+        })
+      })
   }
 
-  componentWillUnmount() {
-    const {eventInfo} = this.props;
+  componentWillUnmount () {
+    const { eventInfo } = this.props
 
     database()
       .ref(`events/${eventInfo.id}/orders`)
-      .off('value', this.ordersListener);
+      .off('value', this.ordersListener)
   }
 
-  goBack() {
-    Navigation.pop(Service.instance.getScreenId());
+  goBack () {
+    Navigation.pop(Service.instance.getScreenId())
   }
 
-  goToUserOrder(item) {
-    const {eventInfo} = this.props;
-    this.dialog.showDialog(item, eventInfo.id);
+  goToUserOrder (item) {
+    const { eventInfo } = this.props
+    this.dialog.showDialog(item, eventInfo.id)
   }
 
-  renderItem({item}) {
-    const {info, products} = item;
+  renderItem ({ item }) {
+    const { info, products } = item
 
     return (
       <Card
@@ -101,23 +102,33 @@ class Onboarding extends PureComponent {
         enableBlur
         borderRadius={10}
         elevation={20}
-        backgroundColor={'#FF4365'}
+        backgroundColor='#FF4365'
         activeScale={0.96}
         onPress={() => this.goToUserOrder(item)}
-        style={{...styles.container, marginTop: 20}}>
-        <View style={styles.innerContainer}>
+        style={{ ...styles.container, padding: 0, marginTop: 20 }}
+      >
+        <LinearGradient
+          colors={['#6A4087', '#C94573']}
+          // start={{ x: 0, y: 0 }}
+          // end={{ x: 0, y: 1 }}
+          useAngle
+          angle={270}
+          angleCenter={{ x: 0.7, y: 0.5 }}
+          style={{ ...styles.innerContainer, borderRadius: 10, padding: 20 }}
+        >
+          {/* <View style={styles.innerContainer}> */}
           <View>
-            <Text style={{...Typography.text60, color: Colors.white}}>
+            <Text style={{ ...Typography.text60, color: Colors.white }}>
               {info.name}
             </Text>
 
-            <Text style={{...Typography.text70, color: Colors.white}}>
+            <Text style={{ ...Typography.text70, color: Colors.white }}>
               Total: {item.revenue} {item.currency}
             </Text>
           </View>
 
           <ButtonWithText
-            style={{...styles.button, backgroundColor: '#FFF'}}
+            style={{ ...styles.button, backgroundColor: '#FFF' }}
             text={`${item.productsPacked} / ${item.totalProducts}`}
             textStyle={Typography.text70BL}
             // iconType="Feather"
@@ -126,23 +137,24 @@ class Onboarding extends PureComponent {
             // iconColor={'#000'}
             onPress={() => this.goToUserOrder(item)}
           />
-        </View>
+          {/* </View> */}
+        </LinearGradient>
       </Card>
-    );
+    )
   }
 
-  render() {
-    const {orders, totalRevenue, orderCurrency} = this.state;
+  render () {
+    const { orders, totalRevenue, orderCurrency } = this.state
 
     return (
       <SafeAreaView style={styles.safeContainer}>
         <View style={styles.container}>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <ButtonWithIcon
-              style={{paddingRight: 20}}
-              iconType={'Feather'}
-              iconName={'arrow-left'}
-              iconColor={'#000'}
+              style={{ paddingRight: 20 }}
+              iconType='Feather'
+              iconName='arrow-left'
+              iconColor='#000'
               iconSize={30}
               onPress={this.goBack}
             />
@@ -155,7 +167,8 @@ class Onboarding extends PureComponent {
             renderItem={this.renderItem}
             keyExtractor={(item, index) => item + index}
           />
-          <Text style={{...Typography.text60L, lineHeight: 30}}>
+
+          <Text style={{ ...Typography.text60L, lineHeight: 30 }}>
             {'Total Earned '}
             <Text style={Typography.text40}>
               {totalRevenue} {orderCurrency}
@@ -164,44 +177,45 @@ class Onboarding extends PureComponent {
         </View>
         <OrderItems ref={ref => (this.dialog = ref)} />
       </SafeAreaView>
-    );
+    )
   }
 }
 
 const styles = StyleSheet.create({
   safeContainer: {
-    flex: 1,
+    flex: 1
   },
   title: {
-    ...Typography.text30BL,
+    ...Typography.text30BL
   },
   innerContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    flex: 1
   },
   container: {
     padding: 20,
     flex: 1,
-    justifyContent: 'space-between',
+    justifyContent: 'space-between'
   },
   fieldStyle: {
-    marginBottom: 40,
+    marginBottom: 40
   },
   smallText: {
-    fontSize: 16,
+    fontSize: 16
   },
   button: {
     padding: 15,
     backgroundColor: '#222',
     borderRadius: 20,
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   buttonText: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#FFF',
+    color: '#FFF'
   },
   video: {
     position: 'absolute',
@@ -210,7 +224,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 5,
-    alignItems: 'stretch',
+    alignItems: 'stretch'
   },
   createVideoContainer: {
     marginTop: 20,
@@ -219,8 +233,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.grey40,
     height: 100,
     borderRadius: 10,
-    overflow: 'hidden',
-  },
-});
+    overflow: 'hidden'
+  }
+})
 
-export default Onboarding;
+export default OrdersScreen
