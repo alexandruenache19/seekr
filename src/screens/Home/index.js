@@ -139,15 +139,14 @@ class Home extends PureComponent {
                   <FlatList
                     horizontal
                     showsHorizontalScrollIndicator={false}
-                    ListHeaderComponent={
-                      currentEventId != null ? (
-                        this.renderItem({
-                          item: currentEventId,
-                        })
-                      ) : (
-                        <View />
-                      )
-                    }
+                    ListHeaderComponent={() => (
+                      <View>
+                        {currentEventId &&
+                          this.renderItem({
+                            item: currentEventId,
+                          })}
+                      </View>
+                    )}
                     data={eventIds}
                     style={{marginTop: 15, flex: 1}}
                     renderItem={this.renderItem}

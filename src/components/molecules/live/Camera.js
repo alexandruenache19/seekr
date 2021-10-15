@@ -10,10 +10,11 @@ import {Colors, Typography} from 'react-native-ui-lib';
 import {ButtonWithIcon, ButtonWithTextIcon, ButtonWithText} from '_atoms';
 import {eventsRef} from '../../../config/firebase';
 
-import {Interactions, ShareActions} from '_actions';
+import {Interactions, ShareActions, HelperActions} from '_actions';
+
 const {endEvent} = Interactions;
 const {share} = ShareActions;
-
+const {nFormatter} = HelperActions;
 class CameraSection extends PureComponent {
   constructor(props) {
     super(props);
@@ -102,7 +103,11 @@ class CameraSection extends PureComponent {
         />
 
         <View style={styles.topActionsRow}>
-          <View style={styles.statusContainer}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}>
             <View style={styles.imageContainer}>
               <FastImage
                 source={{uri: userInfo.imageURL}}
@@ -112,9 +117,9 @@ class CameraSection extends PureComponent {
             </View>
             <View
               style={{
-                justifyContent: 'center',
+                justifyContent: 'space-between',
+                paddingLeft: 10,
                 alignItems: 'flex-start',
-                marginLeft: 10,
               }}>
               <Text style={styles.text}>@{userInfo.username}</Text>
               <View
@@ -122,48 +127,95 @@ class CameraSection extends PureComponent {
                   flexDirection: 'row',
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  marginTop: 2,
+                  flex: 1,
                 }}>
-                <ButtonWithText
+                {/*<ButtonWithTextIcon
+                  iconType="Feather"
+                  iconName="plus"
+                  iconSize={16}
+                  iconColor="#000"
                   style={{
-                    backgroundColor:
-                      isVideoOn && !isPreview ? '#FC5D83' : Colors.grey40,
-                    padding: 2,
-                    paddingHorizontal: 5,
+                    backgroundColor: '#FFF',
                     borderRadius: 5,
+                    padding: 3,
                   }}
-                  text={isVideoOn && !isPreview ? '● LIVE' : 'PREVIEW'}
-                  textStyle={styles.text}
-                  // onPress={this.toggleVideo}
-                />
+                  text={'Follow'}
+                  textStyle={{...styles.text, color: '#000'}}
+                />*/}
                 <ButtonWithTextIcon
                   iconType="Feather"
-                  iconName="eye"
+                  iconName="send"
                   iconSize={16}
-                  iconColor="#FFF"
+                  iconColor="#000"
                   style={{
-                    marginLeft: 10,
+                    backgroundColor: '#FFF',
+                    borderRadius: 5,
+                    padding: 2,
                   }}
-                  text={viewers}
-                  textStyle={{...styles.text, marginLeft: 5}}
+                  text={'Share'}
+                  textStyle={{...styles.text, color: '#000', paddingRight: 2}}
+                  onPress={this.shareLive}
+                  iconAfterText
                 />
               </View>
             </View>
           </View>
 
-          <ButtonWithIcon
-            iconType="Feather"
-            iconName="send"
-            iconSize={20}
-            iconColor="#000"
-            style={{
-              ...styles.button,
-            }}
-            onPress={this.shareLive}
-          />
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginTop: 2,
+                height: '100%',
+              }}>
+              <ButtonWithTextIcon
+                iconType="Feather"
+                iconName="eye"
+                iconSize={16}
+                iconColor="#FFF"
+                style={{
+                  backgroundColor:
+                    isVideoOn && !isPreview ? '#FC5D83' : Colors.grey40,
+                  borderRadius: 5,
+                  paddingHorizontal: 5,
+                  paddingVertical: 10,
+                }}
+                text={
+                  isVideoOn && !isPreview
+                    ? `${nFormatter(viewers, 1)}   ● LIVE`
+                    : `${nFormatter(viewers, 1)}   PREVIEW `
+                }
+                textStyle={{paddingLeft: 5, ...styles.text}}
+              />
+              {/*<ButtonWithTextIcon
+                iconType="Feather"
+                iconName="eye"
+                iconSize={16}
+                iconColor="#FFF"
+                style={{
+                  marginLeft: 10,
+                }}
+                text={viewers}
+                textStyle={{...styles.text, marginLeft: 5}}
+              />*/}
+            </View>
+            <ButtonWithIcon
+              iconType="Feather"
+              iconName="x"
+              iconSize={30}
+              iconColor="#FFF"
+              style={{
+                // ...styles.button,
+                marginLeft: 10,
+              }}
+              onPress={this.endLive}
+            />
+          </View>
         </View>
         <View style={styles.bottomActionsRow}>
-          <View style={{flexDirection: 'row'}}>
+          {/*<View style={{flexDirection: 'row'}}>
             <ButtonWithTextIcon
               iconType="Feather"
               iconName="x"
@@ -179,8 +231,10 @@ class CameraSection extends PureComponent {
               onPress={this.endLive}
               text="End Event"
             />
-          </View>
-          <View style={{flexDirection: 'row'}}>
+          </View>*/}
+
+          <View
+            style={{flexDirection: 'row', justifyContent: 'flex-end', flex: 1}}>
             {/* <ButtonWithIcon
               iconType="Feather"
               iconName={isVideoOn ? 'video' : 'video-off'}
@@ -229,7 +283,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    alignItems: 'center',
   },
   statusContainer: {
     backgroundColor: 'rgba(0,0,0,0.5)',
