@@ -518,7 +518,7 @@
 				CODE_SIGN_ENTITLEMENTS = Seekr/Seekr.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = 752PW3JDX9;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Seekr/Info.plist;
@@ -551,7 +551,7 @@
 				CODE_SIGN_ENTITLEMENTS = Seekr/Seekr.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = 752PW3JDX9;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Seekr/Info.plist;

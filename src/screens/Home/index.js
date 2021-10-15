@@ -51,6 +51,7 @@ class Home extends PureComponent {
           const eventId = eventIdSnap.key;
           eventIds.push(eventId);
         });
+
         this.setState({
           eventIds: eventIds.reverse(),
         });
@@ -69,11 +70,14 @@ class Home extends PureComponent {
   }
 
   renderItem({item}) {
-    return (
-      <View style={{marginRight: 20}}>
-        <EventCard eventId={item} />
-      </View>
-    );
+    if (item) {
+      return (
+        <View style={{marginRight: 20}}>
+          <EventCard eventId={item} />
+        </View>
+      );
+    }
+    return null;
   }
 
   goToCreateEvent() {

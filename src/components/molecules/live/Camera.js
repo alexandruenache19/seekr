@@ -5,7 +5,7 @@ import {NodeCameraView} from 'react-native-nodemediaclient';
 import {BlurView} from '@react-native-community/blur';
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
-import {Colors, Typography} from 'react-native-ui-lib';
+import {Colors, Typography, Dialog, PanningProvider} from 'react-native-ui-lib';
 
 import {ButtonWithIcon, ButtonWithTextIcon, ButtonWithText} from '_atoms';
 import {eventsRef} from '../../../config/firebase';
@@ -21,12 +21,15 @@ class CameraSection extends PureComponent {
     this.state = {
       isVideoOn: true,
       viewers: 0,
+      showDialog: false,
     };
 
     this.toggleVideo = this.toggleVideo.bind(this);
     this.switchCamera = this.switchCamera.bind(this);
     this.endLive = this.endLive.bind(this);
     this.shareLive = this.shareLive.bind(this);
+    this.hideDialog = this.hideDialog.bind(this);
+    this.showDialog = this.showDialog.bind(this);
   }
 
   componentDidMount() {
@@ -46,6 +49,14 @@ class CameraSection extends PureComponent {
     if (!isPreview) this.vb.start();
   }
 
+  hideDialog() {
+    this.setState({showDialog: false});
+  }
+
+  showDialog() {
+    this.setState({showDialog: true});
+  }
+
   toggleVideo() {
     const {isVideoOn} = this.state;
     if (isVideoOn) {
@@ -63,12 +74,12 @@ class CameraSection extends PureComponent {
 
   async endLive() {
     const {eventInfo, userInfo} = this.props;
+    this.setState({showDialog: false});
     try {
       await endEvent(eventInfo, userInfo.uid);
       Navigation.popToRoot('HOME_STACK');
     } catch (e) {
       console.log('e', e);
-    } finally {
     }
   }
 
@@ -78,7 +89,7 @@ class CameraSection extends PureComponent {
   }
 
   render() {
-    const {isVideoOn, viewers} = this.state;
+    const {isVideoOn, viewers, showDialog} = this.state;
     const {isPreview, userInfo} = this.props;
     const url = userInfo.stream.serverURL + userInfo.stream.streamKey;
 
@@ -210,7 +221,7 @@ class CameraSection extends PureComponent {
                 // ...styles.button,
                 marginLeft: 10,
               }}
-              onPress={this.endLive}
+              onPress={this.showDialog}
             />
           </View>
         </View>
@@ -260,6 +271,50 @@ class CameraSection extends PureComponent {
             />
           </View>
         </View>
+        <Dialog
+          migrate
+          useSafeArea
+          ignoreBackgroundPress
+          key={'dialog-key'}
+          bottom={true}
+          height={200}
+          panDirection={PanningProvider.Directions.DOWN}
+          containerStyle={{
+            backgroundColor: '#FFF',
+            borderRadius: 12,
+            marginBottom: 20,
+            padding: 20,
+            justifyContent: 'space-between',
+          }}
+          visible={showDialog}
+          onDismiss={this.hideDialog}>
+          <Text style={Typography.text50}>Do you want to end this event?</Text>
+
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-around',
+              alignItems: 'center',
+            }}>
+            <ButtonWithText
+              style={{...styles.button, backgroundColor: Colors.grey40}}
+              textStyle={{...Typography.text50, color: '#FFF'}}
+              onPress={this.endLive}
+              text="Yes"
+            />
+
+            <ButtonWithText
+              style={{
+                ...styles.button,
+                backgroundColor: Colors.grey40,
+              }}
+              textStyle={{...Typography.text50, color: '#FFF'}}
+              onPress={this.hideDialog}
+              text="No"
+            />
+          </View>
+          <View />
+        </Dialog>
       </View>
     );
   }
