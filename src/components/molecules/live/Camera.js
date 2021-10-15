@@ -2,7 +2,7 @@ import React, {PureComponent} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import {Navigation} from 'react-native-navigation';
 import {NodeCameraView} from 'react-native-nodemediaclient';
-import {BlurView} from '@react-native-community/blur';
+
 import LinearGradient from 'react-native-linear-gradient';
 import FastImage from 'react-native-fast-image';
 import {Colors, Typography, Dialog, PanningProvider} from 'react-native-ui-lib';
@@ -140,7 +140,7 @@ class CameraSection extends PureComponent {
                   alignItems: 'center',
                   flex: 1,
                 }}>
-                {/*<ButtonWithTextIcon
+                {/* <ButtonWithTextIcon
                   iconType="Feather"
                   iconName="plus"
                   iconSize={16}
@@ -152,7 +152,7 @@ class CameraSection extends PureComponent {
                   }}
                   text={'Follow'}
                   textStyle={{...styles.text, color: '#000'}}
-                />*/}
+                /> */}
                 <ButtonWithTextIcon
                   iconType="Feather"
                   iconName="send"
@@ -163,7 +163,7 @@ class CameraSection extends PureComponent {
                     borderRadius: 5,
                     padding: 2,
                   }}
-                  text={'Share'}
+                  text="Share"
                   textStyle={{...styles.text, color: '#000', paddingRight: 2}}
                   onPress={this.shareLive}
                   iconAfterText
@@ -200,7 +200,7 @@ class CameraSection extends PureComponent {
                 }
                 textStyle={{paddingLeft: 5, ...styles.text}}
               />
-              {/*<ButtonWithTextIcon
+              {/* <ButtonWithTextIcon
                 iconType="Feather"
                 iconName="eye"
                 iconSize={16}
@@ -210,7 +210,7 @@ class CameraSection extends PureComponent {
                 }}
                 text={viewers}
                 textStyle={{...styles.text, marginLeft: 5}}
-              />*/}
+              /> */}
             </View>
             <ButtonWithIcon
               iconType="Feather"
@@ -226,7 +226,7 @@ class CameraSection extends PureComponent {
           </View>
         </View>
         <View style={styles.bottomActionsRow}>
-          {/*<View style={{flexDirection: 'row'}}>
+          {/* <View style={{flexDirection: 'row'}}>
             <ButtonWithTextIcon
               iconType="Feather"
               iconName="x"
@@ -242,7 +242,7 @@ class CameraSection extends PureComponent {
               onPress={this.endLive}
               text="End Event"
             />
-          </View>*/}
+          </View> */}
 
           <View
             style={{flexDirection: 'row', justifyContent: 'flex-end', flex: 1}}>

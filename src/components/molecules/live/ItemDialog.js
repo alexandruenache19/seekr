@@ -6,8 +6,10 @@ import {
   StyleSheet,
   Pressable,
   ScrollView,
+  ActivityIndicator,
   Platform,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  Dimensions
 } from 'react-native'
 import {
   Dialog,
@@ -43,7 +45,8 @@ class ItemDetailsDialog extends Component {
       price: 0,
       quantity: 1,
       currency: 'USD',
-      productImagePath: null
+      productImagePath: null,
+      uploading: false
     }
 
     this.showDialog = this.showDialog.bind(this)
@@ -69,9 +72,13 @@ class ItemDetailsDialog extends Component {
     const { price, quantity, currency, productImagePath } = this.state
 
     if (price !== 0 && quantity !== 0 && productImagePath !== null) {
-      this.hideDialog()
-      await addItem(eventInfo, price, quantity, currency, productImagePath)
-      this.props.callback && this.props.callback()
+      this.setState({ uploading: true })
+      await addItem(eventInfo, price, quantity, currency, productImagePath, () => {
+        this.props.callback()
+        this.hideDialog()
+        this.setState({ uploading: false })
+      })
+      // this.props.callback && this.props.callback()
     } else {
       Toast.show({
         type: 'error',
@@ -149,7 +156,7 @@ class ItemDetailsDialog extends Component {
   }
 
   render() {
-    const { showDialog, price, quantity, currency, productImagePath } = this.state
+    const { showDialog, price, quantity, currency, productImagePath, uploading } = this.state
 
     return (
       <KeyboardAvoidingView
@@ -167,6 +174,9 @@ class ItemDetailsDialog extends Component {
           visible={showDialog}
           onDismiss={this.hideDialog}
           renderPannableHeader={() => {
+            if (uploading) {
+              return null
+            }
             return (
               <View
                 style={{
@@ -189,150 +199,165 @@ class ItemDetailsDialog extends Component {
             )
           }}
         >
-          <View
-            // contentContainerStyle={{
-            //   justifyContent: 'space-between',
-            //   minHeight: 100
-            // }}
-            style={{
-              paddingHorizontal: 20,
-              paddingBottom: 20,
-              marginTop: 0,
-              flex: 1,
-              justifyContent: 'space-between',
-              height: 300
-            }}
-          >
+          {uploading ? (
             <View
               style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
+                borderRadius: 12,
+                flex: 1,
+                justifyContent: 'center',
                 alignItems: 'center',
-                maxHeight: 80
+                height: 300,
+                backgroundColor: '#1f1f1f'
               }}
             >
-              <Text style={{ ...Typography.text50, color: Colors.grey40 }}>
-                Price:
+              <ActivityIndicator size='large' color='#FFF' />
+              <Text style={{ fontWeight: 'bold', marginTop: 15, color: '#FFF' }}>
+                Uploading...
               </Text>
+            </View>
+          ) : (
+            <View
+              style={{
+                paddingHorizontal: 20,
+                paddingBottom: 20,
+                marginTop: 0,
+                flex: 1,
+                justifyContent: 'space-between',
+                height: 300
+              }}
+            >
               <View
                 style={{
                   flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  maxHeight: 80
+                }}
+              >
+                <Text style={{ ...Typography.text50, color: Colors.grey40 }}>
+                  Price:
+                </Text>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginTop: 10
+                  }}
+                >
+                  <MaskedInput
+                    ref={r => (this.priceInput = r)}
+                    onChangeText={this.handleChangePrice}
+                    onFocus={() => this.setState({ priceFocus: true })}
+                    onBlur={() => this.setState({ priceFocus: false })}
+                    renderMaskedText={this.renderPrice}
+                    keyboardType='numeric'
+                  />
+                  <WheelPicker
+                    items={currencyList}
+                    numberOfVisibleRows={3}
+                    style={{ marginLeft: 10 }}
+                    onChange={this.handleChangeCurrency}
+                    selectedValue={currency}
+                    activeTextColor='#000'
+                    inactiveTextColor={Colors.grey50}
+                    textStyle={Typography.text60}
+                    align={WheelPicker.CENTER}
+                  />
+                </View>
+              </View>
+
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  backgroundColor: '#FFFFFF',
+                  paddingTop: 10,
+                  marginTop: -5
+                }}
+              >
+                <Text style={{ ...Typography.text50, color: Colors.grey40 }}>
+                  Stock:
+                </Text>
+                <MaskedInput
+                  value={'' + quantity}
+                  ref={r => (this.quantityInput = r)}
+                  onChangeText={this.handleChangeQuantity}
+                  onFocus={() => this.setState({ stockFocus: true })}
+                  onBlur={() => this.setState({ stockFocus: false })}
+                  renderMaskedText={this.renderQuantity}
+                  keyboardType='numeric'
+                />
+              </View>
+
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
                   alignItems: 'center',
                   marginTop: 10
                 }}
               >
-                <MaskedInput
-                  ref={r => (this.priceInput = r)}
-                  onChangeText={this.handleChangePrice}
-                  onFocus={() => this.setState({ priceFocus: true })}
-                  onBlur={() => this.setState({ priceFocus: false })}
-                  renderMaskedText={this.renderPrice}
-                  keyboardType='numeric'
-                />
-                <WheelPicker
-                  items={currencyList}
-                  numberOfVisibleRows={3}
-                  style={{ marginLeft: 10 }}
-                  onChange={this.handleChangeCurrency}
-                  selectedValue={currency}
-                  activeTextColor='#000'
-                  inactiveTextColor={Colors.grey50}
-                  textStyle={Typography.text60}
-                  align={WheelPicker.CENTER}
-                />
+                {/* <Text style={{ ...Typography.text50, color: Colors.grey40 }}>
+                Product Pic:
+              </Text> */}
+                <Pressable
+                  onPress={() => {
+                    openModal(
+                      'TakePic',
+                      'TakePic',
+                      {
+                        setProductImagePath: async (imgPath) => {
+                          this.setState({ productImagePath: imgPath })
+                        }
+                      },
+                      { modalPresentationStyle: 'fullScreen' }
+                    )
+                  }}
+                  style={{ width: '100%' }}
+                >
+                  {productImagePath ? (
+                    <FastImage
+                      style={{
+                        width: '100%',
+                        height: 100,
+                        borderRadius: 10
+                      }}
+                      source={{ uri: productImagePath }}
+                    />
+                  ) : (
+                    <View style={{
+                      width: '100%',
+                      height: 100,
+                      borderRadius: 10,
+                      backgroundColor: Colors.grey40,
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                    >
+                      <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#000', alignItems: 'center', justifyContent: 'center' }}>
+                        <Icon
+                          iconType='Feather'
+                          iconName='camera'
+                          iconColor='#FFF'
+                          iconSize={20}
+                        />
+                      </View>
+                      <Text style={{ ...Typography.text80, marginTop: 5 }}>Upload product picture</Text>
+                    </View>
+                  )}
+                </Pressable>
               </View>
-            </View>
 
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                backgroundColor: '#FFFFFF',
-                paddingTop: 10,
-                marginTop: -5
-              }}
-            >
-              <Text style={{ ...Typography.text50, color: Colors.grey40 }}>
-                Stock:
-              </Text>
-              <MaskedInput
-                value={'' + quantity}
-                ref={r => (this.quantityInput = r)}
-                onChangeText={this.handleChangeQuantity}
-                onFocus={() => this.setState({ stockFocus: true })}
-                onBlur={() => this.setState({ stockFocus: false })}
-                renderMaskedText={this.renderQuantity}
-                keyboardType='numeric'
+              <ButtonWithText
+                style={{ ...styles.button, marginTop: 10 }}
+                textStyle={styles.buttonText}
+                onPress={this.handleAddItem}
+                text='Done'
               />
             </View>
 
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginTop: 10
-              }}
-            >
-              {/* <Text style={{ ...Typography.text50, color: Colors.grey40 }}>
-                Product Pic:
-              </Text> */}
-              <Pressable
-                onPress={() => {
-                  openModal(
-                    'TakePic',
-                    'TakePic',
-                    {
-                      setProductImagePath: async (imgPath) => {
-                        this.setState({ productImagePath: imgPath })
-                      }
-                    },
-                    { modalPresentationStyle: 'fullScreen' }
-                  )
-                }}
-                style={{ width: '100%' }}
-              >
-                {productImagePath ? (
-                  <FastImage
-                    style={{
-                      width: '100%',
-                      height: 100,
-                      borderRadius: 10
-                    }}
-                    source={{ uri: productImagePath }}
-                  />
-                ) : (
-                  <View style={{
-                    width: '100%',
-                    height: 100,
-                    borderRadius: 10,
-                    backgroundColor: Colors.grey40,
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
-                  >
-                    <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#000', alignItems: 'center', justifyContent: 'center' }}>
-                      <Icon
-                        iconType='Feather'
-                        iconName='camera'
-                        iconColor='#FFF'
-                        iconSize={20}
-                      />
-                    </View>
-                    <Text style={{ ...Typography.text80, marginTop: 5 }}>Upload product picture</Text>
-                  </View>
-                )}
-              </Pressable>
-            </View>
-
-            <ButtonWithText
-              style={{ ...styles.button, marginTop: 10 }}
-              textStyle={styles.buttonText}
-              onPress={this.handleAddItem}
-              text='Done'
-            />
-          </View>
+          )}
           <Toast ref={ref => Toast.setRef(ref)} />
         </Dialog>
       </KeyboardAvoidingView>

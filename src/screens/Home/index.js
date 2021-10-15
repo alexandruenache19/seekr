@@ -7,8 +7,9 @@ import {
   StyleSheet,
   Text,
   FlatList,
+  Dimensions,
 } from 'react-native';
-import {Typography} from 'react-native-ui-lib';
+import {Constants, Typography} from 'react-native-ui-lib';
 import database from '@react-native-firebase/database';
 import Toast from 'react-native-toast-message';
 import {ButtonWithIcon} from '_atoms';
@@ -77,6 +78,7 @@ class Home extends PureComponent {
         </View>
       );
     }
+
     return null;
   }
 
@@ -107,7 +109,7 @@ class Home extends PureComponent {
               <CreateEventCard uid={user.uid} />
             </View>
 
-            <View style={{paddingBottom: 20}}>
+            <View style={{paddingBottom: 20, flex: 1}}>
               <View
                 style={{
                   marginTop: 25,
@@ -115,13 +117,14 @@ class Home extends PureComponent {
                   justifyContent: 'space-between',
                   alignItems: 'center',
                 }}>
-                <View>
+                <View style={{width: '100%'}}>
                   <View
                     style={{
                       marginTop: 20,
                       flexDirection: 'row',
                       justifyContent: 'space-between',
                       alignItems: 'center',
+                      width: '100%',
                     }}>
                     <View>
                       <Text style={Typography.text65L}>your</Text>
@@ -129,9 +132,9 @@ class Home extends PureComponent {
                     </View>
                     <ButtonWithIcon
                       iconType="Feather"
-                      iconName={'plus'}
+                      iconName="plus"
                       iconSize={20}
-                      iconColor={'#FFF'}
+                      iconColor="#FFF"
                       style={{
                         padding: 10,
                         backgroundColor: '#000',
@@ -181,8 +184,8 @@ const styles = StyleSheet.create({
   },
   container: {
     padding: 20,
-
     flex: 1,
+    width: Dimensions.get('window').width,
   },
 });
 
