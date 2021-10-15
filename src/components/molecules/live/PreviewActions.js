@@ -52,8 +52,8 @@ class PreviewActionsSection extends Component {
 
   completeAddItem () {
     const { activeIndex } = this.state
-    if (activeIndex == 2) {
-      this.setState({ complete: true, activeIndex: 3 })
+    if (activeIndex === 1) {
+      this.setState({ complete: true, activeIndex: 2 })
     } else {
       this.setState({ activeIndex: activeIndex + 1 })
     }
@@ -158,7 +158,7 @@ class PreviewActionsSection extends Component {
             indexLabelStyle={{ ...Typography.text60, color: '#FFF' }}
             labelStyle={Typography.text70}
             state={this.getStepState(2)}
-            label='Invite audience'
+            label='Invite others'
           />
         </Wizard>
 
