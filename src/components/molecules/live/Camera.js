@@ -1,5 +1,5 @@
 import React, {PureComponent} from 'react';
-import {View, StyleSheet, Text} from 'react-native';
+import {View, StyleSheet, Text, PermissionsAndroid} from 'react-native';
 import {Navigation} from 'react-native-navigation';
 import {NodeCameraView} from 'react-native-nodemediaclient';
 
@@ -18,10 +18,19 @@ const {nFormatter} = HelperActions;
 class CameraSection extends PureComponent {
   constructor(props) {
     super(props);
+
+    const {userInfo} = props;
+    let url = '';
+
+    if (userInfo && userInfo.hasOwnProperty('stream')) {
+      url = userInfo.stream.serverURL + userInfo.stream.streamKey;
+    }
+
     this.state = {
       isVideoOn: true,
       viewers: 0,
       showDialog: false,
+      url: url,
     };
 
     this.toggleVideo = this.toggleVideo.bind(this);
@@ -32,8 +41,29 @@ class CameraSection extends PureComponent {
     this.showDialog = this.showDialog.bind(this);
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const {isPreview, eventInfo} = this.props;
+
+    // try {
+    //   PermissionsAndroid.requestMultiple(
+    //     [
+    //       PermissionsAndroid.PERMISSIONS.CAMERA,
+    //       PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+    //     ],
+    //     {
+    //       title: 'Seekr Camera And Microphone Permission',
+    //       message:
+    //         'Seekr needs access to your camera ' + 'so you can start a live.',
+    //     },
+    //   );
+    //   if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+    //     console.log('You can use the camera');
+    //   } else {
+    //     console.log('Camera permission denied');
+    //   }
+    // } catch (err) {
+    //   console.warn(err);
+    // }
 
     this.productInfoListener = eventsRef
       .child(`${eventInfo.id}/info/viewers`)
@@ -89,10 +119,23 @@ class CameraSection extends PureComponent {
   }
 
   render() {
-    const {isVideoOn, viewers, showDialog} = this.state;
+    const {isVideoOn, viewers, showDialog, url} = this.state;
     const {isPreview, userInfo} = this.props;
-    const url = userInfo.stream.serverURL + userInfo.stream.streamKey;
-
+    if (url === '') {
+      return (
+        <View
+          style={{
+            ...styles.container,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <Text style={{...Typography.text60}}>
+            Text us on whatsapp to become a seller
+          </Text>
+          <Text style={{...Typography.text40}}>+4478567584593</Text>
+        </View>
+      );
+    }
     return (
       <View style={styles.container}>
         <NodeCameraView
@@ -102,10 +145,10 @@ class CameraSection extends PureComponent {
           }}
           outputUrl={url}
           camera={{cameraId: 1, cameraFrontMirror: false}}
-          audio={{bitrate: 96000, profile: 1, samplerate: 44100}}
+          audio={{bitrate: 128000, profile: 1, samplerate: 48000}}
           video={{
             preset: 2,
-            bitrate: 500000,
+            bitrate: 800000,
             profile: 1,
             fps: 30,
             videoFrontMirror: false,
@@ -133,13 +176,7 @@ class CameraSection extends PureComponent {
                 alignItems: 'flex-start',
               }}>
               <Text style={styles.text}>@{userInfo.username}</Text>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  flex: 1,
-                }}>
+              <View style={styles.fullRow}>
                 {/* <ButtonWithTextIcon
                   iconType="Feather"
                   iconName="plus"
@@ -200,17 +237,6 @@ class CameraSection extends PureComponent {
                 }
                 textStyle={{paddingLeft: 5, ...styles.text}}
               />
-              {/* <ButtonWithTextIcon
-                iconType="Feather"
-                iconName="eye"
-                iconSize={16}
-                iconColor="#FFF"
-                style={{
-                  marginLeft: 10,
-                }}
-                text={viewers}
-                textStyle={{...styles.text, marginLeft: 5}}
-              /> */}
             </View>
             <ButtonWithIcon
               iconType="Feather"
@@ -226,38 +252,8 @@ class CameraSection extends PureComponent {
           </View>
         </View>
         <View style={styles.bottomActionsRow}>
-          {/* <View style={{flexDirection: 'row'}}>
-            <ButtonWithTextIcon
-              iconType="Feather"
-              iconName="x"
-              iconSize={20}
-              iconColor="#000"
-              style={styles.button}
-              textStyle={{
-                color: '#000',
-                fontWeight: 'bold',
-                fontSize: 18,
-                marginLeft: 5,
-              }}
-              onPress={this.endLive}
-              text="End Event"
-            />
-          </View> */}
-
           <View
             style={{flexDirection: 'row', justifyContent: 'flex-end', flex: 1}}>
-            {/* <ButtonWithIcon
-              iconType="Feather"
-              iconName={isVideoOn ? 'video' : 'video-off'}
-              iconSize={20}
-              iconColor={'#000'}
-              style={{
-                ...styles.button,
-                marginLeft: 10,
-              }}
-              onPress={this.toggleVideo}
-            /> */}
-
             <ButtonWithIcon
               iconType="Feather"
               iconName="repeat"
@@ -298,7 +294,7 @@ class CameraSection extends PureComponent {
             }}>
             <ButtonWithText
               style={{...styles.button, backgroundColor: Colors.grey40}}
-              textStyle={{...Typography.text50, color: '#FFF'}}
+              textStyle={{...Typography.text50, color: '#FFF', width: 50}}
               onPress={this.endLive}
               text="Yes"
             />
@@ -308,7 +304,7 @@ class CameraSection extends PureComponent {
                 ...styles.button,
                 backgroundColor: Colors.grey40,
               }}
-              textStyle={{...Typography.text50, color: '#FFF'}}
+              textStyle={{...Typography.text50, color: '#FFF', width: 50}}
               onPress={this.hideDialog}
               text="No"
             />
@@ -394,5 +390,11 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#FFF',
     borderRadius: 10,
+  },
+  fullRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flex: 1,
   },
 });

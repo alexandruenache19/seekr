@@ -5,8 +5,8 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  PermissionsAndroid,
   Platform,
+  PermissionsAndroid,
 } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {Card, Typography, Colors} from 'react-native-ui-lib';
@@ -26,48 +26,42 @@ class LiveButton extends PureComponent {
   async goToLive() {
     const {uid} = this.props;
 
-    const eventInfo = await createEvent(
-      'Live now',
-      new Date(),
-      '',
-      uid,
-      'live',
-    );
-
     try {
+      const eventInfo = await createEvent(
+        'Live now',
+        new Date(),
+        '',
+        uid,
+        'live',
+      );
+
       if (Platform.OS === 'android') {
-        const granted = await PermissionsAndroid.requestMultiple(
-          [
+        try {
+          await PermissionsAndroid.request(
             PermissionsAndroid.PERMISSIONS.CAMERA,
+            {
+              title: 'Permission to use camera',
+              message: 'We need your permission to use your camera',
+            },
+          );
+
+          await PermissionsAndroid.request(
             PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-          ],
-          {
-            title: 'Cool Photo App Camera And Microphone Permission',
-            message:
-              'Cool Photo App needs access to your camera ' +
-              'so you can take awesome pictures.',
-            buttonNeutral: 'Ask Me Later',
-            buttonNegative: 'Cancel',
-            buttonPositive: 'OK',
-          },
-        );
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          pushScreen(Service.instance.getScreenId(), 'Live', {
-            eventInfo: eventInfo,
-          });
-        } else {
-          pushScreen(Service.instance.getScreenId(), 'Live', {
-            eventInfo: eventInfo,
-          });
-          console.log('Camera permission denied');
+            {
+              title: 'Permission to use audio recording',
+              message: 'We need your permission to use your audio',
+            },
+          );
+        } catch (e) {
+          console.log(e);
         }
-      } else {
-        pushScreen(Service.instance.getScreenId(), 'Live', {
-          eventInfo: eventInfo,
-        });
       }
-    } catch (err) {
-      console.warn(err);
+
+      pushScreen(Service.instance.getScreenId(), 'Live', {
+        eventInfo: eventInfo,
+      });
+    } catch (e) {
+      console.log(e);
     }
   }
 

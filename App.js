@@ -1,39 +1,39 @@
-import React, { PureComponent } from 'react'
-import { StyleSheet, useColorScheme, View } from 'react-native'
+import React, {PureComponent} from 'react';
+import {StyleSheet, useColorScheme, View} from 'react-native';
 
-import { Transitions } from './src/navigation'
-import { DotIndicator } from 'react-native-indicators'
-import auth from '@react-native-firebase/auth'
+import {Transitions} from './src/navigation';
+import {DotIndicator} from 'react-native-indicators';
+import auth from '@react-native-firebase/auth';
+import crashlytics from '@react-native-firebase/crashlytics';
 
-const { goToApp, goToOnboarding } = Transitions
-// const isDarkMode = useColorScheme() === 'dark';
+const {goToApp, goToOnboarding} = Transitions;
 
 class App extends PureComponent {
   async componentDidMount() {
-    const user = await auth().currentUser
+    const user = await auth().currentUser;
     // goToOnboarding()
 
     if (!user) {
-      goToOnboarding()
+      goToOnboarding();
     } else {
-      goToApp()
+      goToApp();
     }
   }
 
   render() {
     return (
-      <View style={{ height: '100%' }}>
-        <DotIndicator size={8} color='black' />
+      <View style={{height: '100%'}}>
+        <DotIndicator size={8} color="black" />
       </View>
-    )
+    );
   }
 }
 
 const styles = StyleSheet.create({
   sectionContainer: {
     marginTop: 32,
-    paddingHorizontal: 24
-  }
-})
+    paddingHorizontal: 24,
+  },
+});
 
-export default App
+export default App;

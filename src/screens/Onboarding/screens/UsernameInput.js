@@ -139,6 +139,7 @@ class SignUpForm extends PureComponent {
             <TouchableOpacity
               style={{
                 ...styles.button,
+                zIndex: 20,
                 backgroundColor:
                   available === false ? 'rgba(0,0,0,0.2)' : '#000',
               }}

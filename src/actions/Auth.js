@@ -4,17 +4,15 @@ const {eventsRef, usersRef, usernamesRef} = Firebase;
 export const createUser = async userCredential => {
   const snap = await usersRef.child(userCredential.user.uid).once('value');
 
-  if (snap.exists()) {
-    const userFromFirebase = snap.val();
-  } else {
+  if (!snap.exists()) {
     await usersRef.child(userCredential.user.uid).update({
       uid: userCredential.user.uid,
       info: {
         dateRegistered: new Date().getTime(),
         type: 'buyer',
         uid: userCredential.user.uid,
+        finishOnboarding: false,
       },
-      finishOnboarding: false,
     });
   }
 };

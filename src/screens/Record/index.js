@@ -15,7 +15,8 @@ import {decode} from 'base64-arraybuffer';
 import {Navigation} from 'react-native-navigation';
 import {Icon} from '_atoms';
 import {Service} from '_nav';
-
+import {HelperActions} from '_actions';
+const {generateId} = HelperActions;
 class CameraScreen extends PureComponent {
   static get options() {
     return {
@@ -118,7 +119,7 @@ class CameraScreen extends PureComponent {
     const arrayBuffer = decode(base64);
     const params = {
       Bucket: 'event-preview',
-      Key: 'videoName.mov',
+      Key: generateId(11),
       Body: arrayBuffer,
       // ContentDisposition: contentDeposition,
       ContentType: contentType,
