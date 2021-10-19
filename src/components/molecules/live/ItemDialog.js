@@ -29,9 +29,10 @@ import {ButtonWithText, ButtonWithIcon, Icon} from '_atoms';
 import {Interactions} from '_actions';
 import {Transitions} from '_nav';
 
-const {addItem, uploadImageToS3} = Interactions;
+const {addItem} = Interactions;
 const {openModal} = Transitions;
 const {WheelPicker} = Incubator;
+
 const currencyList = [
   {value: 'USD', label: 'USD'},
   {value: 'EUR', label: 'EUR'},
@@ -70,7 +71,6 @@ class ItemDetailsDialog extends Component {
     this.hideDialog = this.hideDialog.bind(this);
     this.handleAddItem = this.handleAddItem.bind(this);
     this.renderPrice = this.renderPrice.bind(this);
-    this.renderQuantity = this.renderQuantity.bind(this);
     this.handleChangePrice = this.handleChangePrice.bind(this);
     this.handleChangeQuantity = this.handleChangeQuantity.bind(this);
     this.handleChangeCurrency = this.handleChangeCurrency.bind(this);
@@ -121,7 +121,7 @@ class ItemDetailsDialog extends Component {
 
   renderPrice(value) {
     const {priceFocus, currency} = this.state;
-    const hasValue = value && value.length > 0;
+    const hasValue = value && value > 0;
 
     return (
       <View
@@ -129,6 +129,9 @@ class ItemDetailsDialog extends Component {
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'center',
+          borderBottomWidth: 2,
+          borderColor: '#000',
+          marginRight: 10,
         }}>
         <Text
           style={{
@@ -138,32 +141,6 @@ class ItemDetailsDialog extends Component {
             lineHeight: 34,
           }}>
           {hasValue ? value : '00'}
-        </Text>
-      </View>
-    );
-  }
-
-  renderQuantity(value) {
-    const {stockFocus, quantity} = this.state;
-    const hasValue = value > 0;
-    return (
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
-        <Text
-          style={{
-            ...Typography.text50,
-            color: hasValue ? '#000' : '#888',
-            fontSize: stockFocus ? 32 : 24,
-            lineHeight: 34,
-          }}>
-          {hasValue ? value : '0'}
-        </Text>
-        <Text style={{...Typography.text60, paddingRight: 5, marginLeft: 10}}>
-          {value > 1 ? 'items' : 'item'}
         </Text>
       </View>
     );
@@ -407,6 +384,7 @@ class ItemDetailsDialog extends Component {
                       alignItems: 'center',
                     }}>
                     <MaskedInput
+                      value={price}
                       ref={r => (this.priceInput = r)}
                       onChangeText={this.handleChangePrice}
                       onFocus={() => this.setState({priceFocus: true})}
@@ -457,15 +435,6 @@ class ItemDetailsDialog extends Component {
                     }}>
                     {quantity > 1 ? 'items' : 'item'}
                   </Text>
-                  {/*<MaskedInput
-                  value={'' + quantity}
-                  ref={r => (this.quantityInput = r)}
-                  onChangeText={this.handleChangeQuantity}
-                  onFocus={() => this.setState({stockFocus: true})}
-                  onBlur={() => this.setState({stockFocus: false})}
-                  renderMaskedText={this.renderQuantity}
-                  keyboardType="numeric"
-                />*/}
                 </View>
               </View>
               <View

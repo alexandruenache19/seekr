@@ -17,6 +17,7 @@ import {Interactions} from '_actions';
 
 const {pushScreen} = Transitions;
 const {createEvent} = Interactions;
+
 class LiveButton extends PureComponent {
   constructor(props) {
     super(props);

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   View,
   Text,
@@ -16,15 +16,15 @@ import {
 import Clipboard from '@react-native-community/clipboard';
 import Toast from 'react-native-toast-message';
 
-import { ButtonWithText, ButtonWithIcon, ButtonWithTextIcon } from '_atoms';
-import { ShareActions } from '_actions';
+import {ButtonWithIcon, ButtonWithTextIcon} from '_atoms';
+import {ShareActions} from '_actions';
 
-const { shareOnFB, share } = ShareActions;
+const {share} = ShareActions;
 
 class ShareDialog extends Component {
   constructor(props) {
     super(props);
-    const { eventInfo } = props;
+    const {eventInfo} = props;
     const eventID = eventInfo ? eventInfo.id : '';
 
     this.state = {
@@ -37,47 +37,50 @@ class ShareDialog extends Component {
     this.showDialog = this.showDialog.bind(this);
     this.hideDialog = this.hideDialog.bind(this);
 
-    this.shareOnFb = this.shareOnFb.bind(this);
     this.share = this.share.bind(this);
   }
 
   showDialog() {
-    this.setState({ showDialog: true });
+    this.setState({showDialog: true});
   }
 
   hideDialog() {
-    this.setState({ showDialog: false });
+    this.setState({showDialog: false});
     this.props.callback && this.props.callback();
   }
 
   copy() {
-    const { url } = this.state;
-    this.setState({
-      copied: true,
-    });
-    Clipboard.setString(url);
-    Toast.show({
-      type: 'success',
-      text1: 'Copied',
-      text2: 'Coppied to your clipboard',
-      position: 'bottom',
-    });
-  }
-
-  shareOnFb() {
-    const { eventInfo } = this.props;
-
-    shareOnFB(eventInfo);
+    const {url} = this.state;
+    this.setState(
+      {
+        copied: true,
+      },
+      async () => {
+        Clipboard.setString(url);
+        Toast.show({
+          type: 'success',
+          text1: 'Copied',
+          text2: 'Coppied to your clipboard',
+          position: 'bottom',
+        });
+        setTimeout(() => {
+          this.hideDialog();
+        }, 1000);
+      },
+    );
   }
 
   share() {
-    const { eventInfo } = this.props;
+    const {eventInfo} = this.props;
 
     share(eventInfo);
+    setTimeout(() => {
+      this.hideDialog();
+    }, 1000);
   }
 
   render() {
-    const { showDialog, copied, url } = this.state;
+    const {showDialog, copied, url} = this.state;
 
     return (
       <Dialog
@@ -103,12 +106,12 @@ class ShareDialog extends Component {
             iconSize={30}
             onPress={this.hideDialog}
           />
-          <View style={{ paddingLeft: 10, flex: 1 }}>
-            <Text style={{ ...Typography.text40, paddingBottom: 10 }}>
+          <View style={{paddingLeft: 10, flex: 1}}>
+            <Text style={{...Typography.text40, paddingBottom: 10}}>
               Invite Others
             </Text>
 
-            <Text style={{ flexShrink: 1, lineHeight: 19 }}>
+            <Text style={{flexShrink: 1, lineHeight: 19}}>
               Get your group members to join this event to have higher chances
               of selling all your products
             </Text>

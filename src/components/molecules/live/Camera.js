@@ -293,8 +293,14 @@ class CameraSection extends PureComponent {
               alignItems: 'center',
             }}>
             <ButtonWithText
-              style={{...styles.button, backgroundColor: Colors.grey40}}
-              textStyle={{...Typography.text50, color: '#FFF', width: 50}}
+              style={{
+                ...styles.button,
+                backgroundColor: Colors.grey40,
+                width: 70,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+              textStyle={{...Typography.text50, color: '#FFF'}}
               onPress={this.endLive}
               text="Yes"
             />
@@ -303,8 +309,11 @@ class CameraSection extends PureComponent {
               style={{
                 ...styles.button,
                 backgroundColor: Colors.grey40,
+                width: 70,
+                justifyContent: 'center',
+                alignItems: 'center',
               }}
-              textStyle={{...Typography.text50, color: '#FFF', width: 50}}
+              textStyle={{...Typography.text50, color: '#FFF'}}
               onPress={this.hideDialog}
               text="No"
             />
