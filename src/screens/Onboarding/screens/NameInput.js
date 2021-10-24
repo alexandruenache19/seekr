@@ -4,7 +4,7 @@ import {
   StyleSheet,
   View,
   StatusBar,
-  Pressable,
+  TouchableOpacity,
   Text,
   Platform,
   Button,
@@ -66,10 +66,10 @@ class NumberInput extends PureComponent {
             placeholder="write here..."
           />
           <View style={styles.footer}>
-            <Pressable style={styles.button} onPress={this.goToComplete}>
+            <TouchableOpacity style={styles.button} onPress={this.goToComplete}>
               <Text style={styles.buttonText}>Next</Text>
               <FontAwesome name={'arrow-right'} color={'#FFF'} size={24} />
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>
       </SafeAreaView>

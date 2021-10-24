@@ -1,5 +1,5 @@
 import React, {PureComponent} from 'react';
-import {View, Text, StyleSheet, Pressable} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {Typography} from 'react-native-ui-lib';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -20,7 +20,6 @@ class HomeHeader extends PureComponent {
 
   handleChangeImage() {
     const {info} = this.props;
-    console.log('info', info);
     ImagePicker.openPicker({
       width: 400,
       height: 400,
@@ -79,13 +78,13 @@ class HomeHeader extends PureComponent {
           <Text style={Typography.text40}>{info.username}</Text>
         </View>
 
-        <Pressable onPress={this.handleChangeImage}>
+        <TouchableOpacity onPress={this.handleChangeImage}>
           <FastImage
             style={styles.profile}
             source={{uri: this.state.imageURL}}
             resizeMode={FastImage.resizeMode.cover}
           />
-        </Pressable>
+        </TouchableOpacity>
       </View>
     );
   }

@@ -4,7 +4,7 @@ import {
   View,
   StyleSheet,
   SafeAreaView,
-  Pressable,
+  TouchableOpacity,
   Text,
   KeyboardAvoidingView,
 } from 'react-native';
@@ -154,7 +154,7 @@ class SignUpForm extends PureComponent {
           </View>
 
           <View style={styles.footer}>
-            <Pressable
+            <TouchableOpacity
               style={{
                 ...styles.button,
                 zIndex: 20,
@@ -175,7 +175,7 @@ class SignUpForm extends PureComponent {
                 color={'#FFF'}
                 size={24}
               />
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>
       </SafeAreaView>

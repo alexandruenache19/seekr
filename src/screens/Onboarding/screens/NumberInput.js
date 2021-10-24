@@ -4,7 +4,7 @@ import {
   StyleSheet,
   View,
   StatusBar,
-  Pressable,
+  TouchableOpacity,
   Text,
   Platform,
   Button,
@@ -34,19 +34,21 @@ class NumberInput extends PureComponent {
 
   async goToCodeConfirmation() {
     const {number} = this.state;
+    this.setState({loading: true});
     const isValid = this.myRef.current.isValidNumber(number);
-
-    if (isValid) {
-      this.setState({isValid: true, loading: true}, async () => {
+    try {
+      if (isValid) {
         const confirmation = await auth().signInWithPhoneNumber(number);
         pushScreen(Service.instance.getScreenId(), 'CodeInput', {
           confirmation: confirmation,
           number: number,
         });
-      });
-    } else {
-      this.setState({isValid: false});
+      }
+    } catch (e) {
+      console.log(e);
+      this.setState({isValid: isValid, loading: false});
     }
+    this.setState({loading: false, isValid: isValid});
   }
 
   render() {
@@ -93,12 +95,12 @@ class NumberInput extends PureComponent {
             <Text style={styles.extraInfo}>
               By continuing you may receive an sms for verification.
             </Text>
-            <Pressable
+            <TouchableOpacity
               style={styles.button}
               onPress={this.goToCodeConfirmation}>
               <Text style={styles.buttonText}>Next</Text>
               <FontAwesome name="arrow-right" color="#FFF" size={24} />
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>
       </SafeAreaView>

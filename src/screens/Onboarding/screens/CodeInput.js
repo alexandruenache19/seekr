@@ -4,7 +4,7 @@ import {
   StyleSheet,
   View,
   StatusBar,
-  Pressable,
+  TouchableOpacity,
   Text,
   Platform,
   KeyboardAvoidingView,
@@ -101,10 +101,10 @@ class NumberInput extends PureComponent {
             <UnderlineInput onChangeText={this.onChangeText} />
           </View>
           <View style={styles.footer}>
-            <Pressable style={styles.button} onPress={this.confirmCode}>
+            <TouchableOpacity style={styles.button} onPress={this.confirmCode}>
               <Text style={styles.buttonText}>Next</Text>
               <FontAwesome name={'arrow-right'} color={'#FFF'} size={24} />
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>
       </SafeAreaView>

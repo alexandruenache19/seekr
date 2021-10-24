@@ -4,7 +4,7 @@ import {
   StyleSheet,
   View,
   StatusBar,
-  Pressable,
+  TouchableOpacity,
   Text,
   Platform,
   Button,
@@ -42,12 +42,12 @@ class Complete extends PureComponent {
           <Text style={styles.title}>You are all set! Let's go!</Text>
 
           <View style={styles.footer}>
-            <Pressable
+            <TouchableOpacity
               style={styles.button}
               onPress={this.handleFinishOnboarding}>
               <Text style={styles.buttonText}>Done</Text>
               <FontAwesome name={'check'} color={'#FFF'} size={24} />
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>
       </SafeAreaView>

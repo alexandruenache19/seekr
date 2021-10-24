@@ -118,12 +118,23 @@ class CreateEvent extends PureComponent {
                 placeholder="write here..."
               />
 
-              <InputWithLabel
-                style={{marginTop: 30, color: '#000'}}
-                label="When is it happening?"
-                placeholder="select date and time"
-                value={dateString}
-                editable={false}
+              <Text
+                style={{
+                  ...Typography.text50,
+                  color: Colors.grey40,
+                  marginTop: 30,
+                }}>
+                When is it happening?
+              </Text>
+              <ButtonWithText
+                style={{
+                  marginTop: 30,
+                }}
+                textStyle={{
+                  ...Typography.text60,
+                  color: dateString === '' ? Colors.grey50 : Colors.black,
+                }}
+                text={dateString === '' ? 'select date and time' : dateString}
                 onPress={() => this.timeDialog.showDialog()}
               />
 

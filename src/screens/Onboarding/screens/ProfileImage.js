@@ -4,7 +4,7 @@ import {
   View,
   StyleSheet,
   SafeAreaView,
-  Pressable,
+  TouchableOpacity,
   Text,
   Alert,
   KeyboardAvoidingView,
@@ -113,7 +113,7 @@ class LoginScreen extends Component {
         <View style={styles.container}>
           <Text style={styles.title}>{`Upload you profile image`}</Text>
 
-          <Pressable onPress={this.handleChangeImage}>
+          <TouchableOpacity onPress={this.handleChangeImage}>
             {loadingImage && (
               <View
                 style={{
@@ -164,13 +164,13 @@ class LoginScreen extends Component {
                 iconColor={'#FFF'}
               />
             </View>
-          </Pressable>
+          </TouchableOpacity>
 
           <View style={styles.footer}>
-            <Pressable style={styles.button} onPress={this.handleSelect}>
+            <TouchableOpacity style={styles.button} onPress={this.handleSelect}>
               <Text style={styles.buttonText}>Next</Text>
               <FontAwesome name={'arrow-right'} color={'#FFF'} size={24} />
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </View>
       </SafeAreaView>

@@ -16,13 +16,16 @@ import {
   Colors,
 } from 'react-native-ui-lib';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import moment from 'moment';
+
 class CalandarDialog extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
       showDialog: false,
       mode: 'date',
-      show: false,
+      showDate: false,
+      showTime: false,
       date: new Date(),
       time: new Date(),
     };
@@ -32,8 +35,9 @@ class CalandarDialog extends PureComponent {
     this.onChangeDate = this.onChangeDate.bind(this);
     this.onChangeTime = this.onChangeTime.bind(this);
     this.onDone = this.onDone.bind(this);
-    this.renderDateInput = this.renderDateInput.bind(this);
-    this.renderTimeInput = this.renderTimeInput.bind(this);
+
+    this.handleShowTime = this.handleShowTime.bind(this);
+    this.handleShowDate = this.handleShowDate.bind(this);
   }
 
   showDialog() {
@@ -44,12 +48,20 @@ class CalandarDialog extends PureComponent {
     this.setState({showDialog: false});
   }
 
-  onChangeDate(event, selectedDate) {
-    this.setState({date: selectedDate});
+  handleShowDate() {
+    this.setState({showDate: true});
   }
 
-  onChangeTime(event, selectedDate) {
-    this.setState({time: selectedDate});
+  handleShowTime() {
+    this.setState({showTime: true});
+  }
+
+  onChangeDate(event, date) {
+    this.setState({date: date, showDate: Platform.OS === 'ios'});
+  }
+
+  onChangeTime(event, time) {
+    this.setState({time: time, showTime: Platform.OS === 'ios'});
   }
 
   onDone() {
@@ -58,55 +70,8 @@ class CalandarDialog extends PureComponent {
     this.hideDialog();
   }
 
-  renderTimeInput() {
-    const value = null;
-    return (
-      <View>
-        <Text style={{...Typography.text50, color: Colors.grey40}}>Time</Text>
-        <TouchableOpacity
-          style={{paddingTop: 20}}
-          onPress={() => {
-            // toggle(true);
-            this.setState({mode: 'time', show: true});
-          }}>
-          <Text
-            style={{
-              ...Typography.text60,
-              color: value ? Colors.black : Colors.grey50,
-            }}>
-            {value ? value : 'Select time'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
-  renderDateInput(props, toggle) {
-    // const {value} = props;
-    const value = null;
-    return (
-      <View>
-        <Text style={{...Typography.text50, color: Colors.grey40}}>Date</Text>
-        <TouchableOpacity
-          style={{paddingTop: 20}}
-          onPress={() => {
-            // toggle(true);
-            this.setState({mode: 'date', show: true});
-          }}>
-          <Text
-            style={{
-              ...Typography.text60,
-              color: value ? Colors.black : Colors.grey50,
-            }}>
-            {value ? value : 'Select date'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
   render() {
-    const {showDialog, show, mode, date, time} = this.state;
+    const {showDialog, showTime, showDate, date, time} = this.state;
 
     return (
       <Dialog
@@ -125,13 +90,22 @@ class CalandarDialog extends PureComponent {
             <Text style={{...Typography.text50, color: Colors.grey40}}>
               Date
             </Text>
-            <DateTimePicker
-              testID="datePicker"
-              value={date}
-              mode={'date'}
-              onChange={this.onChangeDate}
-              textColor={Colors.black}
+
+            <ButtonWithText
+              textStyle={{...Typography.text50, color: Colors.black}}
+              text={moment(date).format('dddd DD MMM')}
+              onPress={this.handleShowDate}
             />
+            {showDate && (
+              <DateTimePicker
+                testID="datePicker"
+                value={date}
+                mode={'date'}
+                onChange={this.onChangeDate}
+                textColor={Colors.black}
+              />
+            )}
+
             <Text
               style={{
                 ...Typography.text50,
@@ -140,12 +114,20 @@ class CalandarDialog extends PureComponent {
               }}>
               Time
             </Text>
-            <DateTimePicker
-              testID="timePicker"
-              value={time}
-              mode={'time'}
-              onChange={this.onChangeTime}
+
+            <ButtonWithText
+              textStyle={{...Typography.text50, color: Colors.black}}
+              text={moment(time).format('HH:mm')}
+              onPress={this.handleShowTime}
             />
+            {showTime && (
+              <DateTimePicker
+                testID="timePicker"
+                value={time}
+                mode={'time'}
+                onChange={this.onChangeTime}
+              />
+            )}
           </View>
 
           <ButtonWithText
