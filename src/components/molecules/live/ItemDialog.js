@@ -27,8 +27,9 @@ import ImagePicker from 'react-native-image-crop-picker'
 import FastImage from 'react-native-fast-image'
 import { RNCamera } from 'react-native-camera'
 
-import { ButtonWithText, ButtonWithIcon, Icon } from '_atoms'
+import { ButtonWithText, ButtonWithIcon, Icon, ButtonWithTextIcon } from '_atoms'
 import { Interactions } from '_actions'
+import database from '@react-native-firebase/database'
 
 const { addItem } = Interactions
 const { WheelPicker } = Incubator
@@ -51,7 +52,7 @@ class ItemDetailsDialog extends Component {
       uploading: false,
       showCamera: false,
       isFrontCamera: false,
-      showItems: false,
+      showItems: true,
       showDialog: false,
       products: []
     }
@@ -69,14 +70,41 @@ class ItemDetailsDialog extends Component {
     this.renderItem = this.renderItem.bind(this)
   }
 
+  componentDidMount () {
+    const { eventInfo } = this.props
+
+    try {
+      this.productsListener = database()
+        .ref(`events/${eventInfo.id}/products`)
+        .on('value', async snapshot => {
+          if (snapshot.exists()) {
+            const productsObj = snapshot.val()
+            this.setState({
+              products: Object.values(productsObj)
+            })
+          }
+        })
+    } catch (e) { }
+  }
+
+  componentWillUnmount () {
+    const { eventInfo } = this.props
+    try {
+      database()
+        .ref(`events/${eventInfo.id}/products`)
+        .off('value', this.productsListener)
+    } catch (e) { }
+  }
+
   renderItem ({ item }) {
+    console.log(item)
     return (
       <Card
         enableShadow={false}
         borderRadius={10}
         backgroundColor={Colors.grey60}
         activeScale={0.96}
-        height={130}
+        height='auto'
         style={styles.productContainer}
       >
         {item.imageURL && (
@@ -93,11 +121,20 @@ class ItemDetailsDialog extends Component {
           }}
         >
           <View>
-            <Text style={{ ...Typography.text50, color: Colors.black }}>
-              Stock: {item.currentStock}
+            {item.description ? (
+              <Text
+                numberOfLines={3}
+                ellipsizeMode='tail'
+                style={{ ...Typography.text70BO, lineHeight: 20, marginBottom: 3, color: Colors.black }}
+              >
+                {item.description}
+              </Text>
+            ) : null}
+            <Text style={{ ...Typography.text70, color: Colors.black }}>
+              {item.currentStock} in stock
             </Text>
             <Text style={{ ...Typography.text70, color: Colors.black }}>
-              Price: {item.price} {item.currency}
+              {item.price} {item.currency}
             </Text>
           </View>
           {/*  <ButtonWithTextIcon
@@ -127,13 +164,16 @@ class ItemDetailsDialog extends Component {
   }
 
   hideDialog () {
-    this.setState({ showDialog: false })
+    this.setState({
+      showDialog: false,
+      showItems: true
+    })
     // this.props.callback && this.props.callback();
   }
 
   async handleAddItem () {
     const { eventInfo } = this.props
-    const { price, quantity, currency, productImagePath } = this.state
+    const { price, quantity, currency, productImagePath, description } = this.state
 
     if (price && price !== 0 && quantity !== 0 && productImagePath !== null) {
       this.setState({ uploading: true })
@@ -142,27 +182,17 @@ class ItemDetailsDialog extends Component {
         price,
         quantity,
         currency,
+        description,
         productImagePath,
         productId => {
-          // this.hideDialog();
-          const { products } = this.state
-
-          products.push({
-            id: productId,
-            price: price,
-            currentStock: quantity,
-            currency: currency,
-            imageURL: productImagePath
-          })
-
           this.setState({
             uploading: false,
             price: null,
             quantity: 1,
             currency: 'RON',
+            description: '',
             productImagePath: productImagePath,
-            showItems: true,
-            products: products
+            showItems: true
           })
         }
       )
@@ -295,7 +325,7 @@ class ItemDetailsDialog extends Component {
         ignoreBackgroundPress
         key='dialog-key'
         top
-        height='85%'
+        height='90%'
         panDirection={PanningProvider.Directions.TOP}
         containerStyle={styles.container}
         visible={showDialog}
@@ -303,28 +333,51 @@ class ItemDetailsDialog extends Component {
         renderPannableHeader={() => {
           if (uploading || showCamera) {
             return null
+          } else if (showItems) {
+            return (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'flex-start',
+                  marginHorizontal: 20,
+                  marginTop: 20
+                }}
+              >
+                <ButtonWithIcon
+                  iconType='Feather'
+                  iconName='chevron-down'
+                  iconColor='#000'
+                  iconSize={32}
+                  style={{ marginRight: 10 }}
+                  onPress={this.hideDialog}
+                />
+                <Text style={Typography.text50}>Products</Text>
+              </View>
+            )
+          } else {
+            return (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'flex-start',
+                  marginHorizontal: 20,
+                  marginTop: 20
+                }}
+              >
+                <ButtonWithIcon
+                  iconType='Feather'
+                  iconName='chevron-left'
+                  iconColor='#000'
+                  iconSize={32}
+                  style={{ marginRight: 10, marginLeft: -3 }}
+                  onPress={() => this.setState({ showItems: true })}
+                />
+                <Text style={Typography.text50}>New Product</Text>
+              </View>
+            )
           }
-          return (
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'flex-start',
-                marginHorizontal: 20,
-                marginTop: 20
-              }}
-            >
-              <ButtonWithIcon
-                iconType='Feather'
-                iconName='chevron-down'
-                iconColor='#000'
-                iconSize={32}
-                style={{ marginRight: 10 }}
-                onPress={this.hideDialog}
-              />
-              <Text style={Typography.text50}>Products</Text>
-            </View>
-          )
         }}
       >
         {uploading ? (
@@ -426,49 +479,66 @@ class ItemDetailsDialog extends Component {
             </View>
           </View>
         ) : showItems ? (
-          <View>
-            <FlatList
-              data={products}
-              showsVerticalScrollIndicator={false}
-              renderItem={this.renderItem}
-              ListFooterComponent={() => {
-                return (
-                  <Card
-                    onPress={() => null}
-                    style={{
-                      ...styles.cardContainer,
-                      padding: 15
-                    }}
-                  >
-                    <Text style={styles.buttonText}>New Product</Text>
-                    <Icon
-                      iconType='Feather'
-                      iconName='plus'
-                      iconColor='#000'
-                      iconSize={28}
-                    />
-                  </Card>
-                )
+          <View
+            style={{
+              paddingHorizontal: 20,
+              paddingBottom: 20,
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flex: 1
+            }}
+          >
+            <View
+              style={{
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flex: 1,
+                width: '100%'
               }}
-              keyExtractor={(item, index) => item.imageURL + index}
+            >
+              <FlatList
+                data={products}
+                style={{ flex: 1, width: '100%', marginTop: 10 }}
+                showsVerticalScrollIndicator={false}
+                renderItem={this.renderItem}
+                keyExtractor={(item, index) => item.imageURL + index}
+              />
+              <ButtonWithTextIcon
+                style={{ marginTop: 10, padding: 12, borderRadius: 15 }}
+                iconType='Feather'
+                iconName='plus'
+                iconSize={28}
+                iconColor='#000'
+                iconAfterText
+                textStyle={{ ...styles.buttonText, marginRight: 10, color: '#000' }}
+                onPress={() => this.setState({ showItems: false })}
+                text='Add Product'
+              />
+            </View>
+            <ButtonWithText
+              style={{ ...styles.button, width: '100%', marginTop: 10 }}
+              textStyle={styles.buttonText}
+              onPress={this.handleAddItem}
+              text='Done'
             />
           </View>
         ) : (
           <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 20 : 0}
             style={{ flex: 1 }}
           >
-            <View style={{ paddingHorizontal: 20, marginTop: 10, zIndex: 5 }}>
+            <View style={{ paddingHorizontal: 20, marginTop: 10, paddingVertical: 10, backgroundColor: '#FFF', zIndex: 5 }}>
               <TextInput
                 ref={r => (this.priceInput = r)}
                 placeholderTextColor='#888'
                 returnKeyType='done'
                 selectionColor='rgba(255,255,255,0.7)'
-                keyboardType='numeric'
                 clearButtonMode='never'
                 keyboardAppearance='dark'
                 returnKeyLabel='Done'
-                placeholder='Product title or description...'
+                multiline
+                placeholder='Add a short title or description...'
                 onChangeText={this.handleChangeDescription}
                 value={description}
                 style={{
@@ -480,7 +550,7 @@ class ItemDetailsDialog extends Component {
               style={{
                 paddingHorizontal: 20,
                 paddingBottom: 20,
-                marginTop: -10,
+                marginTop: -20,
                 flex: 1,
                 justifyContent: 'space-between'
               }}
@@ -574,7 +644,7 @@ class ItemDetailsDialog extends Component {
                   flexDirection: 'row',
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  marginTop: 10,
+                  marginTop: -10,
                   flex: 1
                 }}
               >
@@ -637,7 +707,7 @@ class ItemDetailsDialog extends Component {
                 style={{ ...styles.button, marginTop: 10 }}
                 textStyle={styles.buttonText}
                 onPress={this.handleAddItem}
-                text='Done'
+                text='Add'
               />
             </View>
           </KeyboardAvoidingView>
@@ -655,8 +725,9 @@ const styles = StyleSheet.create({
     flex: 1
   },
   image: {
-    width: 100,
-    height: 100,
+    width: 80,
+    minHeight: 80,
+    height: '100%',
     borderRadius: 10
   },
   preview: {
@@ -688,7 +759,7 @@ const styles = StyleSheet.create({
   },
   productContainer: {
     borderRadius: 12,
-    padding: 10,
+    padding: 8,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -696,7 +767,8 @@ const styles = StyleSheet.create({
     marginBottom: 10
   },
   buttonText: {
-    ...Typography.text50
+    ...Typography.text50,
+    color: '#FFF'
   },
   cardContainer: {
     borderRadius: 15,
