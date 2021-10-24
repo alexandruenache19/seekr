@@ -11,13 +11,13 @@ import { ButtonWithTextIcon } from '_atoms'
 import { eventsRef } from '../../../config/firebase'
 
 class CommentsSection extends PureComponent {
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = { loading: true, comments: [] }
     this.renderItem = this.renderItem.bind(this)
   }
 
-  componentDidMount () {
+  componentDidMount() {
     const { eventInfo } = this.props
     this.commentsListener = eventsRef
       .child(`${eventInfo.id}/comments`)
@@ -37,7 +37,7 @@ class CommentsSection extends PureComponent {
       })
   }
 
-  renderItem ({ item }) {
+  renderItem({ item }) {
     return (
       <View style={styles.itemContainer}>
         <Avatar
@@ -62,7 +62,7 @@ class CommentsSection extends PureComponent {
     )
   }
 
-  render () {
+  render() {
     const { comments, loading } = this.state
     return (
       <View style={styles.container}>

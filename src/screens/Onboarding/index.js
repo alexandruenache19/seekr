@@ -78,16 +78,13 @@ class Onboarding extends PureComponent {
       activeSlide: 0,
       data: [
         {
-          title: ['Discover & buy products in a new way.'],
-          color: '',
+          title: 'Discover & buy products in a new way.',
         },
         {
-          title: ['Sell anything, to anyone on the internet.'],
-          color: '',
+          title: 'Sell anything, to anyone on the internet.',
         },
         {
-          title: ['Go live & show items. Chat to buyers & sell.'],
-          color: '',
+          title: 'Go live & show items. Chat to buyers & sell.',
         },
       ],
     };
@@ -106,11 +103,7 @@ class Onboarding extends PureComponent {
   _renderItem = ({item, index}) => {
     return (
       <View style={styles.slide}>
-        <View>
-          <Text style={styles.title}>{item.title[0]}</Text>
-          <Text style={styles.title}>{item.title[1]}</Text>
-          <Text style={{...styles.title}}>{item.title[2]}</Text>
-        </View>
+        <Text style={styles.title}>{item.title}</Text>
 
         <View
           style={{
@@ -137,7 +130,7 @@ class Onboarding extends PureComponent {
             />
           ) : (
             <LottieView
-              style={{width: '115%'}}
+              style={{width: '100%'}}
               source={require('./animation-live.json')}
               autoPlay
               loop
@@ -182,6 +175,7 @@ class Onboarding extends PureComponent {
           sliderWidth={WIDTH}
           itemWidth={WIDTH}
         />
+
         <View style={styles.footer}>
           <TouchableOpacity style={styles.button} onPress={this.goToPhoneInput}>
             <Text style={{...styles.buttonText, color: '#FFF'}}>
@@ -206,9 +200,8 @@ const styles = StyleSheet.create({
   },
   slide: {
     flex: 1,
-    paddingHorizontal: 40,
-
-    justifyContent: 'center',
+    padding: 40,
+    justifyContent: 'space-between',
   },
   title: {
     ...Typography.text30BL,

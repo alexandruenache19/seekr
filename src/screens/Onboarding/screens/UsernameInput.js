@@ -4,7 +4,7 @@ import {
   View,
   StyleSheet,
   SafeAreaView,
-  TouchableOpacity,
+  Pressable,
   Text,
   KeyboardAvoidingView,
 } from 'react-native';
@@ -33,6 +33,7 @@ class SignUpForm extends PureComponent {
     super(props);
     this.state = {
       username: '',
+      isError: false,
       loading: false,
       available: true,
     };
@@ -42,14 +43,25 @@ class SignUpForm extends PureComponent {
   }
 
   async handleChangeField(keyName, value) {
-    let available = false;
-
     clearTimeout(this.typingTimer);
 
     this.typingTimer = setTimeout(async () => {
       if (value !== '') {
-        available = await isUsernameAvailable(value);
-        this.setState({available: available});
+        let available = false;
+        const isError =
+          value.includes('.') ||
+          value.includes('#') ||
+          value.includes('$') ||
+          value.includes('[') ||
+          value.includes(']');
+        if (!isError) {
+          available = await isUsernameAvailable(value);
+        }
+
+        this.setState({
+          isError: isError,
+          available: available,
+        });
       }
     }, 300);
 
@@ -85,7 +97,7 @@ class SignUpForm extends PureComponent {
   }
 
   render() {
-    const {username, loading, available} = this.state;
+    const {username, loading, available, isError} = this.state;
 
     if (loading) {
       return (
@@ -133,22 +145,37 @@ class SignUpForm extends PureComponent {
               }
               iconSize2={28}
             />
+            {isError && (
+              <Text style={styles.warning}>
+                *Remove invalid characters:
+                <Text style={{...Typography.text60}}> {'. # $ [ ]'}</Text>
+              </Text>
+            )}
           </View>
 
           <View style={styles.footer}>
-            <TouchableOpacity
+            <Pressable
               style={{
                 ...styles.button,
                 zIndex: 20,
                 backgroundColor:
                   available === false ? 'rgba(0,0,0,0.2)' : '#000',
               }}
+              disable={available}
               onPress={this.handleCreate}>
               <Text style={styles.buttonText}>
-                {available === true ? `Next` : 'Username is Taken'}
+                {available
+                  ? `Next`
+                  : isError
+                  ? 'Invalid characters'
+                  : 'Username is taken'}
               </Text>
-              <FontAwesome name={'arrow-right'} color={'#FFF'} size={24} />
-            </TouchableOpacity>
+              <FontAwesome
+                name={available ? 'arrow-right' : 'close'}
+                color={'#FFF'}
+                size={24}
+              />
+            </Pressable>
           </View>
         </KeyboardAvoidingView>
       </SafeAreaView>
@@ -205,6 +232,7 @@ const styles = StyleSheet.create({
     marginBottom: 50,
     height: 100,
   },
+  warning: {...Typography.text80L, color: '#F44E3F', lineHeight: 40},
 });
 
 export default SignUpForm;

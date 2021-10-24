@@ -4,10 +4,11 @@ import {
   StyleSheet,
   View,
   StatusBar,
-  TouchableOpacity,
+  Pressable,
   Text,
   Platform,
   Button,
+  ActivityIndicator,
   KeyboardAvoidingView,
 } from 'react-native';
 import PhoneInput from 'react-native-phone-number-input';
@@ -23,7 +24,8 @@ class NumberInput extends PureComponent {
     super(props);
     this.state = {
       number: 0,
-      confirmation: null,
+      isValid: true,
+      loading: false,
     };
 
     this.myRef = React.createRef(PhoneInput);
@@ -33,17 +35,35 @@ class NumberInput extends PureComponent {
   async goToCodeConfirmation() {
     const {number} = this.state;
     const isValid = this.myRef.current.isValidNumber(number);
+
     if (isValid) {
-      const confirmation = await auth().signInWithPhoneNumber(number);
-      pushScreen(Service.instance.getScreenId(), 'CodeInput', {
-        confirmation: confirmation,
-        number: number,
+      this.setState({isValid: true, loading: true}, async () => {
+        const confirmation = await auth().signInWithPhoneNumber(number);
+        pushScreen(Service.instance.getScreenId(), 'CodeInput', {
+          confirmation: confirmation,
+          number: number,
+        });
       });
+    } else {
+      this.setState({isValid: false});
     }
   }
 
   render() {
-    const {number, confirmation} = this.state;
+    const {number, isValid, loading} = this.state;
+    if (loading) {
+      return (
+        <SafeAreaView
+          style={{
+            ...styles.safeContainer,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <ActivityIndicator size="large" color="#000" />
+        </SafeAreaView>
+      );
+    }
+
     return (
       <SafeAreaView style={styles.safeContainer}>
         <KeyboardAvoidingView
@@ -63,17 +83,22 @@ class NumberInput extends PureComponent {
               withShadow
               autoFocus
             />
+            {!isValid && (
+              <Text style={styles.warning}>
+                *Number is not valid. Try removing the first '0'
+              </Text>
+            )}
           </View>
           <View style={styles.footer}>
             <Text style={styles.extraInfo}>
               By continuing you may receive an sms for verification.
             </Text>
-            <TouchableOpacity
+            <Pressable
               style={styles.button}
               onPress={this.goToCodeConfirmation}>
               <Text style={styles.buttonText}>Next</Text>
               <FontAwesome name="arrow-right" color="#FFF" size={24} />
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </KeyboardAvoidingView>
       </SafeAreaView>
@@ -87,11 +112,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
   },
   keyboardContainer: {
-    justifyContent: 'space-between',
     flex: 1,
-    alignItems: 'center',
-    width: '100%',
     padding: 20,
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   title: {
     ...Typography.text30BL,
@@ -101,6 +125,11 @@ const styles = StyleSheet.create({
     ...Typography.text70,
     color: Colors.grey40,
     paddingBottom: 20,
+  },
+  warning: {
+    ...Typography.text80L,
+    color: '#F44E3F',
+    paddingTop: 10,
   },
   button: {
     backgroundColor: '#000',

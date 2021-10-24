@@ -7,7 +7,7 @@ import { Icon } from '_atoms'
 import { ItemDetailsDialog, ShareDialog } from '_molecules'
 
 class PreviewActionsSection extends Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {
       activeIndex: 0,
@@ -20,7 +20,7 @@ class PreviewActionsSection extends Component {
     this.getStepState = this.getStepState.bind(this)
   }
 
-  getStepState(index) {
+  getStepState (index) {
     const { activeIndex, complete } = this.state
     let state = Wizard.States.ENABLED
 
@@ -31,7 +31,7 @@ class PreviewActionsSection extends Component {
     return state
   }
 
-  goToNextStep() {
+  goToNextStep () {
     const { userInfo } = this.props
     const { activeIndex } = this.state
 
@@ -55,7 +55,7 @@ class PreviewActionsSection extends Component {
     }
   }
 
-  completeAddItem() {
+  completeAddItem () {
     const { activeIndex } = this.state
     if (activeIndex === 1) {
       this.setState({ complete: true, activeIndex: 2 })
@@ -64,7 +64,7 @@ class PreviewActionsSection extends Component {
     }
   }
 
-  renderCurrentStep() {
+  renderCurrentStep () {
     const { activeIndex, complete } = this.state
 
     let text = 'Next'
@@ -134,12 +134,19 @@ class PreviewActionsSection extends Component {
     )
   }
 
-  render() {
-    const { copied, complete, activeIndex } = this.state
+  render () {
+    const { complete, activeIndex } = this.state
     const { eventInfo } = this.props
 
     return (
-      <View style={{ ...styles.container, padding: complete ? 0 : 20, marginTop: complete ? 20 : 15 }}>
+      <View style={{
+        ...styles.container,
+        padding: complete ? 0 : 20,
+        paddingBottom: 20,
+        backgroundColor: complete ? 'transparent' : '#282B28',
+        marginTop: complete ? 20 : 15
+      }}
+      >
         <KeyboardAvoidingView>
           <ItemDetailsDialog
             eventInfo={eventInfo}
@@ -166,36 +173,26 @@ class PreviewActionsSection extends Component {
             }}
             activeConfig={{
               color: '#000',
-              circleColor: '#000'
+              circleColor: '#FFFFFF'
             }}
             activeIndex={activeIndex}
           >
-            {/* <Wizard.Step
-            circleColor='#FFF'
-            color='#FFF'
-            circleSize={30}
-            circleBackgroundColor='#000'
-            indexLabelStyle={{ ...Typography.text60, color: '#FFF' }}
-            labelStyle={Typography.text60}
-            state={this.getStepState(0)}
-            label='Check camera'
-          /> */}
             <Wizard.Step
               circleColor='#FFF'
-              color='#FFF'
+              color='#000'
               circleSize={30}
-              circleBackgroundColor='#000'
-              indexLabelStyle={{ ...Typography.text60, color: '#FFF' }}
+              circleBackgroundColor='#FFFFFF'
+              indexLabelStyle={{ ...Typography.text60, color: '#000' }}
               labelStyle={{ ...Typography.text70, color: '#FFF' }}
               state={this.getStepState(1)}
               label='What will you sell?'
             />
             <Wizard.Step
               circleColor='#FFF'
-              color='#FFF'
+              color='#000'
               circleSize={30}
-              circleBackgroundColor='#000'
-              indexLabelStyle={{ ...Typography.text60, color: '#FFF' }}
+              circleBackgroundColor='#FFFFFF'
+              indexLabelStyle={{ ...Typography.text60, color: '#000' }}
               labelStyle={{ ...Typography.text70, color: '#FFF' }}
               state={this.getStepState(2)}
               label='Invite others'
@@ -223,8 +220,7 @@ const styles = StyleSheet.create({
     // alignItems: 'center',
   },
   buttonText: {
-    ...Typography.text50,
-    color: '#000'
+    ...Typography.text50
   },
   cardContainer: {
     borderRadius: 15,
@@ -232,7 +228,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#FFF'
+    backgroundColor: '#FFFFFF'
   },
   button: {
     padding: 15,

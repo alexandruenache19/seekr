@@ -115,7 +115,7 @@ class CameraSection extends PureComponent {
 
   shareLive () {
     const { eventInfo } = this.props
-    share(eventInfo)
+    share(eventInfo.info)
   }
 
   render () {
@@ -300,8 +300,14 @@ class CameraSection extends PureComponent {
             }}
           >
             <ButtonWithText
-              style={{ ...styles.button, backgroundColor: Colors.grey40 }}
-              textStyle={{ ...Typography.text50, color: '#FFF', width: 50 }}
+              style={{
+                ...styles.button,
+                backgroundColor: Colors.grey40,
+                width: 70,
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+              textStyle={{ ...Typography.text50, color: '#FFF' }}
               onPress={this.endLive}
               text='Yes'
             />
@@ -309,9 +315,12 @@ class CameraSection extends PureComponent {
             <ButtonWithText
               style={{
                 ...styles.button,
-                backgroundColor: Colors.grey40
+                backgroundColor: Colors.grey40,
+                width: 70,
+                justifyContent: 'center',
+                alignItems: 'center'
               }}
-              textStyle={{ ...Typography.text50, color: '#FFF', width: 50 }}
+              textStyle={{ ...Typography.text50, color: '#FFF' }}
               onPress={this.hideDialog}
               text='No'
             />

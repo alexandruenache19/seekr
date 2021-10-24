@@ -27,31 +27,18 @@ import { RNCamera } from 'react-native-camera'
 
 import { ButtonWithText, ButtonWithIcon, Icon } from '_atoms'
 import { Interactions } from '_actions'
-import { Transitions } from '_nav'
 
-const { addItem, uploadImageToS3 } = Interactions
-const { openModal } = Transitions
+const { addItem } = Interactions
 const { WheelPicker } = Incubator
+
 const currencyList = [
   { value: 'RON', label: 'RON' },
   { value: 'USD', label: 'USD' },
   { value: 'EUR', label: 'EUR' }
 ]
 
-const itemsList = [
-  { value: 1, label: 1 },
-  { value: 2, label: 2 },
-  { value: 3, label: 3 },
-  { value: 4, label: 4 },
-  { value: 5, label: 5 },
-  { value: 6, label: 6 },
-  { value: 7, label: 7 },
-  { value: 8, label: 8 },
-  { value: 9, label: 9 }
-]
-
 class ItemDetailsDialog extends Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {
       showDialog: false,
@@ -70,7 +57,6 @@ class ItemDetailsDialog extends Component {
     this.hideDialog = this.hideDialog.bind(this)
     this.handleAddItem = this.handleAddItem.bind(this)
     this.renderPrice = this.renderPrice.bind(this)
-    this.renderQuantity = this.renderQuantity.bind(this)
     this.handleChangePrice = this.handleChangePrice.bind(this)
     this.handleChangeQuantity = this.handleChangeQuantity.bind(this)
     this.handleChangeCurrency = this.handleChangeCurrency.bind(this)
@@ -78,19 +64,19 @@ class ItemDetailsDialog extends Component {
     this.takePicture = this.takePicture.bind(this)
   }
 
-  showDialog() {
+  showDialog () {
     this.setState({ showDialog: true })
   }
 
-  hideDialog() {
+  hideDialog () {
     this.setState({ showDialog: false })
   }
 
-  async handleAddItem() {
+  async handleAddItem () {
     const { eventInfo } = this.props
     const { price, quantity, currency, productImagePath } = this.state
 
-    if (price !== 0 && quantity !== 0 && productImagePath !== null) {
+    if (price && price !== 0 && quantity !== 0 && productImagePath !== null) {
       this.setState({ uploading: true })
       await addItem(
         eventInfo,
@@ -114,11 +100,11 @@ class ItemDetailsDialog extends Component {
     }
   }
 
-  handleChangeCurrency(item) {
+  handleChangeCurrency (item) {
     this.setState({ currency: item })
   }
 
-  renderPrice(value) {
+  renderPrice (value) {
     const { price } = this.state
     const hasValue = price && price.length > 0
 
@@ -127,7 +113,10 @@ class ItemDetailsDialog extends Component {
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          justifyContent: 'center'
+          justifyContent: 'center',
+          borderBottomWidth: 2,
+          borderColor: '#000',
+          marginRight: 10
         }}
       >
         <Text
@@ -144,43 +133,15 @@ class ItemDetailsDialog extends Component {
     )
   }
 
-  renderQuantity(value) {
-    const { stockFocus, quantity } = this.state
-    const hasValue = value > 0
-    return (
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}
-      >
-        <Text
-          style={{
-            ...Typography.text50,
-            color: hasValue ? '#000' : '#888',
-            fontSize: stockFocus ? 32 : 24,
-            lineHeight: 34
-          }}
-        >
-          {hasValue ? value : '0'}
-        </Text>
-        <Text style={{ ...Typography.text60, paddingRight: 5, marginLeft: 10 }}>
-          {value > 1 ? 'items' : 'item'}
-        </Text>
-      </View>
-    )
-  }
-
-  handleChangePrice(value) {
+  handleChangePrice (value) {
     this.setState({ price: value })
   }
 
-  handleChangeQuantity(value) {
+  handleChangeQuantity (value) {
     this.setState({ quantity: value })
   }
 
-  async takePicture() {
+  async takePicture () {
     const { setProductImagePath } = this.props
     if (this.camera) {
       const options = {
@@ -195,7 +156,7 @@ class ItemDetailsDialog extends Component {
     }
   }
 
-  async handleSelectImage() {
+  async handleSelectImage () {
     const { setProductImagePath } = this.props
     ImagePicker.openPicker({
       mediaType: 'photo',
@@ -233,7 +194,7 @@ class ItemDetailsDialog extends Component {
       })
   }
 
-  render() {
+  render () {
     const {
       showDialog,
       price,
@@ -496,15 +457,6 @@ class ItemDetailsDialog extends Component {
                     >
                       {'in stock'}
                     </Text>
-                    {/* <MaskedInput
-                  value={'' + quantity}
-                  ref={r => (this.quantityInput = r)}
-                  onChangeText={this.handleChangeQuantity}
-                  onFocus={() => this.setState({stockFocus: true})}
-                  onBlur={() => this.setState({stockFocus: false})}
-                  renderMaskedText={this.renderQuantity}
-                  keyboardType="numeric"
-                /> */}
                   </View>
                 </View>
                 <View

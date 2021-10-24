@@ -3,7 +3,7 @@ import {
   SafeAreaView,
   StyleSheet,
   View,
-  TouchableOpacity,
+  Pressable,
   Text,
   KeyboardAvoidingView,
 } from 'react-native';
@@ -186,12 +186,10 @@ class LocationInput extends PureComponent {
             </View>
 
             <View style={styles.footer}>
-              <TouchableOpacity
-                style={styles.button}
-                onPress={this.confirmLocation}>
+              <Pressable style={styles.button} onPress={this.confirmLocation}>
                 <Text style={styles.buttonText}>Next</Text>
                 <FontAwesome name={'arrow-right'} color={'#FFF'} size={24} />
-              </TouchableOpacity>
+              </Pressable>
             </View>
           </View>
         </SafeAreaView>
