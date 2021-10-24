@@ -27,8 +27,9 @@ import ImagePicker from 'react-native-image-crop-picker';
 import FastImage from 'react-native-fast-image';
 import {RNCamera} from 'react-native-camera';
 
-import {ButtonWithText, ButtonWithIcon, Icon} from '_atoms';
+import {ButtonWithText, ButtonWithIcon, Icon, ButtonWithTextIcon} from '_atoms';
 import {Interactions} from '_actions';
+import database from '@react-native-firebase/database';
 
 const {addItem} = Interactions;
 const {WheelPicker} = Incubator;
@@ -50,7 +51,7 @@ class ItemDetailsDialog extends Component {
       uploading: false,
       showCamera: false,
       isFrontCamera: false,
-      showItems: false,
+      showItems: true,
       showDialog: false,
       products: [],
     };
@@ -67,7 +68,34 @@ class ItemDetailsDialog extends Component {
     this.renderItem = this.renderItem.bind(this);
   }
 
+  componentDidMount() {
+    const {eventInfo} = this.props;
+
+    try {
+      this.productsListener = database()
+        .ref(`events/${eventInfo.id}/products`)
+        .on('value', async snapshot => {
+          if (snapshot.exists()) {
+            const productsObj = snapshot.val();
+            this.setState({
+              products: Object.values(productsObj),
+            });
+          }
+        });
+    } catch (e) {}
+  }
+
+  componentWillUnmount() {
+    const {eventInfo} = this.props;
+    try {
+      database()
+        .ref(`events/${eventInfo.id}/products`)
+        .off('value', this.productsListener);
+    } catch (e) {}
+  }
+
   renderItem({item}) {
+    console.log(item);
     return (
       <Card
         enableShadow={false}
@@ -140,17 +168,6 @@ class ItemDetailsDialog extends Component {
         currency,
         productImagePath,
         productId => {
-          // this.hideDialog();
-          const {products} = this.state;
-
-          products.push({
-            id: productId,
-            price: price,
-            currentStock: quantity,
-            currency: currency,
-            imageURL: productImagePath,
-          });
-
           this.setState({
             uploading: false,
             price: null,
@@ -158,7 +175,6 @@ class ItemDetailsDialog extends Component {
             currency: 'RON',
             productImagePath: productImagePath,
             showItems: true,
-            products: products,
           });
         },
       );
@@ -418,12 +434,41 @@ class ItemDetailsDialog extends Component {
             </View>
           </View>
         ) : showItems ? (
-          <View>
-            <FlatList
-              data={products}
-              showsVerticalScrollIndicator={false}
-              renderItem={this.renderItem}
-              keyExtractor={(item, index) => item.imageURL + index}
+          <View
+            style={{
+              paddingHorizontal: 20,
+              paddingBottom: 20,
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flex: 1,
+            }}>
+            <View
+              style={{
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flex: 1,
+              }}>
+              <FlatList
+                data={products}
+                showsVerticalScrollIndicator={false}
+                renderItem={this.renderItem}
+                keyExtractor={(item, index) => item.imageURL + index}
+              />
+              <ButtonWithTextIcon
+                style={{marginTop: 10}}
+                iconType="Feather"
+                iconName={'plus'}
+                iconSize={22}
+                iconColor={'#000'}
+                onPress={() => this.setState({showItems: false})}
+                text="Add Product"
+              />
+            </View>
+            <ButtonWithText
+              style={{...styles.button, marginTop: 10}}
+              textStyle={styles.buttonText}
+              onPress={this.handleAddItem}
+              text="Done"
             />
           </View>
         ) : (
