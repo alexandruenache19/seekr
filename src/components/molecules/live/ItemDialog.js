@@ -41,7 +41,7 @@ const currencyList = [
 ]
 
 class ItemDetailsDialog extends Component {
-  constructor (props) {
+  constructor(props) {
     super(props)
     this.state = {
       price: null,
@@ -67,10 +67,11 @@ class ItemDetailsDialog extends Component {
     this.handleChangeDescription = this.handleChangeDescription.bind(this)
     this.handleSelectImage = this.handleSelectImage.bind(this)
     this.takePicture = this.takePicture.bind(this)
+    this.handleDone = this.handleDone.bind(this)
     this.renderItem = this.renderItem.bind(this)
   }
 
-  componentDidMount () {
+  componentDidMount() {
     const { eventInfo } = this.props
 
     try {
@@ -87,7 +88,7 @@ class ItemDetailsDialog extends Component {
     } catch (e) { }
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     const { eventInfo } = this.props
     try {
       database()
@@ -96,7 +97,7 @@ class ItemDetailsDialog extends Component {
     } catch (e) { }
   }
 
-  renderItem ({ item }) {
+  renderItem({ item }) {
     console.log(item)
     return (
       <Card
@@ -159,11 +160,11 @@ class ItemDetailsDialog extends Component {
     )
   }
 
-  showDialog () {
+  showDialog() {
     this.setState({ showDialog: true })
   }
 
-  hideDialog () {
+  hideDialog() {
     this.setState({
       showDialog: false,
       showItems: true
@@ -171,7 +172,12 @@ class ItemDetailsDialog extends Component {
     // this.props.callback && this.props.callback();
   }
 
-  async handleAddItem () {
+  handleDone() {
+    this.hideDialog()
+    this.props.callback && this.props.callback()
+  }
+
+  async handleAddItem() {
     const { eventInfo } = this.props
     const { price, quantity, currency, productImagePath, description } = this.state
 
@@ -206,11 +212,11 @@ class ItemDetailsDialog extends Component {
     }
   }
 
-  handleChangeCurrency (item) {
+  handleChangeCurrency(item) {
     this.setState({ currency: item })
   }
 
-  renderPrice (value) {
+  renderPrice(value) {
     const { price } = this.state
     const hasValue = price && price.length > 0
 
@@ -239,15 +245,15 @@ class ItemDetailsDialog extends Component {
     )
   }
 
-  handleChangePrice (value) {
+  handleChangePrice(value) {
     this.setState({ price: value })
   }
 
-  handleChangeQuantity (value) {
+  handleChangeQuantity(value) {
     this.setState({ quantity: value })
   }
 
-  async takePicture () {
+  async takePicture() {
     const { setProductImagePath } = this.props
     if (this.camera) {
       const options = {
@@ -262,11 +268,11 @@ class ItemDetailsDialog extends Component {
     }
   }
 
-  handleChangeDescription (val) {
+  handleChangeDescription(val) {
     this.setState({ description: val })
   }
 
-  async handleSelectImage () {
+  async handleSelectImage() {
     const { setProductImagePath } = this.props
     ImagePicker.openPicker({
       mediaType: 'photo',
@@ -304,7 +310,7 @@ class ItemDetailsDialog extends Component {
       })
   }
 
-  render () {
+  render() {
     const {
       showDialog,
       price,
@@ -518,7 +524,7 @@ class ItemDetailsDialog extends Component {
             <ButtonWithText
               style={{ ...styles.button, width: '100%', marginTop: 10 }}
               textStyle={styles.buttonText}
-              onPress={this.handleAddItem}
+              onPress={this.handleDone}
               text='Done'
             />
           </View>

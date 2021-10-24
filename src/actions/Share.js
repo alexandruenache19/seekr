@@ -28,8 +28,6 @@ export const share = async item => {
     .once('value')
   const username = usernameSnap.val()
 
-  console.log('item', item)
-
   let options = {
     title: 'Join my live sale',
     message: `Live on Seekr on ${day} ${month}`,

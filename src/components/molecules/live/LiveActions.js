@@ -3,12 +3,12 @@ import { View, StyleSheet, Text } from 'react-native'
 
 import { Typography } from 'react-native-ui-lib'
 import { ButtonWithTextIcon, ButtonWithText } from '_atoms'
-import { ItemDetailsDialog } from '_molecules'
+import { ProductListDialog } from '_molecules'
 import { eventsRef } from '../../../config/firebase'
 import { Interactions } from '_actions'
 const { getProductInfo } = Interactions
 class LiveActionsSection extends Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {
       productInfo: null,
@@ -17,9 +17,8 @@ class LiveActionsSection extends Component {
     this.goToNextItem = this.goToNextItem.bind(this)
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const { eventInfo } = this.props
-    const { productId } = this.state
 
     this.productInfoListener = eventsRef
       .child(`${eventInfo.id}/info/currentProductId`)
@@ -42,11 +41,11 @@ class LiveActionsSection extends Component {
       })
   }
 
-  goToNextItem() {
+  goToNextItem () {
     this.dialog.showDialog()
   }
 
-  render() {
+  render () {
     const { eventInfo } = this.props
     const { productInfo } = this.state
     return (
@@ -97,7 +96,7 @@ class LiveActionsSection extends Component {
           text='Next Product'
         />
 
-        <ItemDetailsDialog eventInfo={eventInfo} ref={r => (this.dialog = r)} />
+        <ProductListDialog eventInfo={eventInfo} ref={r => (this.dialog = r)} />
       </View>
     )
   }
