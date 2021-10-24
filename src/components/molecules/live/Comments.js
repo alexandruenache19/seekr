@@ -1,73 +1,73 @@
-import React, {PureComponent} from 'react';
+import React, { PureComponent } from 'react'
 import {
   View,
   Text,
   StyleSheet,
   FlatList,
-  ActivityIndicator,
-} from 'react-native';
-import {Avatar, Colors, Typography} from 'react-native-ui-lib';
-import {ButtonWithTextIcon} from '_atoms';
-import {eventsRef} from '../../../config/firebase';
+  ActivityIndicator
+} from 'react-native'
+import { Avatar, Colors, Typography } from 'react-native-ui-lib'
+import { ButtonWithTextIcon } from '_atoms'
+import { eventsRef } from '../../../config/firebase'
 
 class CommentsSection extends PureComponent {
   constructor(props) {
-    super(props);
-    this.state = {loading: true, comments: []};
-    this.renderItem = this.renderItem.bind(this);
+    super(props)
+    this.state = { loading: true, comments: [] }
+    this.renderItem = this.renderItem.bind(this)
   }
 
   componentDidMount() {
-    const {eventInfo} = this.props;
+    const { eventInfo } = this.props
     this.commentsListener = eventsRef
       .child(`${eventInfo.id}/comments`)
       .orderByChild('timestamp')
       .limitToLast(20)
       .on('value', snapshot => {
-        const comments = [];
+        const comments = []
         snapshot.forEach(commentSnapshot => {
-          const comment = commentSnapshot.val();
-          comments.push(comment);
-        });
+          const comment = commentSnapshot.val()
+          comments.push(comment)
+        })
 
         this.setState({
           comments: comments.reverse(),
-          loading: false,
-        });
-      });
+          loading: false
+        })
+      })
   }
 
-  renderItem({item}) {
+  renderItem({ item }) {
     return (
       <View style={styles.itemContainer}>
         <Avatar
           style={styles.image}
-          source={{uri: item.imageURL}}
+          source={{ uri: item.imageURL }}
           label={
             item.username
               ? item.username.charAt(0).toUpperCase() +
-                item.username.charAt(1).toUpperCase()
+              item.username.charAt(1).toUpperCase()
               : ''
           }
           backgroundColor={Colors.red60}
         />
 
-        <View style={{flexDirection: 'column', marginLeft: 10}}>
-          <Text style={{color: '#FFF', fontSize: 16, fontWeight: 'bold'}}>
+        <View style={{ flexDirection: 'column', marginLeft: 10 }}>
+          <Text style={{ ...Typography.text70BL }}>
             @{item.username}
           </Text>
-          <Text style={{color: '#FFF', fontSize: 18}}>{item.text}</Text>
+          <Text style={{ ...Typography.text70, lineHeight: 20 }}>{item.text}</Text>
         </View>
       </View>
-    );
+    )
   }
 
   render() {
-    const {comments, loading} = this.state;
+    const { comments, loading } = this.state
     return (
       <View style={styles.container}>
         {loading ? (
-          <ActivityIndicator color="#FFF" style={{paddingTop: 20}} />
+          <ActivityIndicator color='#FFF' style={{ paddingTop: 20 }} />
         ) : comments.length > 0 ? (
           <FlatList
             inverted
@@ -78,31 +78,33 @@ class CommentsSection extends PureComponent {
           />
         ) : (
           <View
-            style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+            style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+          >
             <Text
               style={{
                 ...Typography.text70,
-                color: Colors.white,
-                textAlign: 'center',
-              }}>
+                textAlign: 'center'
+              }}
+            >
               Questions will appear here
             </Text>
           </View>
         )}
       </View>
-    );
+    )
   }
 }
 
-export default CommentsSection;
+export default CommentsSection
 
 const styles = StyleSheet.create({
   container: {
     height: '20%',
-    backgroundColor: '#282B28',
+    // backgroundColor: '#282B28',
     width: '100%',
     borderRadius: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 5,
+    paddingVertical: 5
     // justifyContent: 'center',
     // alignItems: 'center',
   },
@@ -111,12 +113,12 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
     marginTop: 5,
-    marginBottom: 10,
+    marginBottom: 10
   },
   image: {
-    height: 30,
-    width: 30,
+    height: 24,
+    width: 24,
     marginRight: 10,
-    borderRadius: 15,
-  },
-});
+    borderRadius: 12
+  }
+})

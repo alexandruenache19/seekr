@@ -19,6 +19,7 @@ import { ShareActions, FetchingActions } from '_actions'
 
 import Clipboard from '@react-native-community/clipboard'
 import Toast from 'react-native-toast-message'
+import { Firebase } from '../../../config'
 
 const { getEvent } = FetchingActions
 const { pushScreen } = Transitions
@@ -134,10 +135,21 @@ class EventCard extends PureComponent {
     }
   }
 
-  copy () {
+  async copy () {
     const { eventInfo } = this.state
-    // this.setState({copied: true});
-    Clipboard.setString(`https://seekrlive.com/e/${eventInfo.id}`)
+    const usernameSnap = await Firebase.usersRef
+      .child(eventInfo.info.sellerId)
+      .child('info')
+      .child('username')
+      .once('value')
+    const username = usernameSnap.val()
+
+    if (username) {
+      Clipboard.setString(`https://seekrlive.com/${username}`)
+    } else {
+      Clipboard.setString(`https://seekrlive.com/e/${eventInfo.id}`)
+    }
+
     Toast.show({
       type: 'success',
       text1: 'Copied',

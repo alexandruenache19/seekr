@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { View, StyleSheet, Text } from 'react-native'
 
 import { Typography } from 'react-native-ui-lib'
-import { ButtonWithTextIcon } from '_atoms'
+import { ButtonWithTextIcon, ButtonWithText } from '_atoms'
 import { ItemDetailsDialog } from '_molecules'
 import { eventsRef } from '../../../config/firebase'
 import { Interactions } from '_actions'
@@ -82,11 +82,11 @@ class LiveActionsSection extends Component {
           </View>
         )}
 
-        <ButtonWithTextIcon
+        <ButtonWithText
           style={styles.nextButton}
           textStyle={{
-            ...styles.text,
-            marginRight: 10
+            ...styles.text
+            // marginRight: 10
           }}
           iconType='Feather'
           iconName='arrow-right'
@@ -94,7 +94,7 @@ class LiveActionsSection extends Component {
           iconColor='#000'
           iconAfterText
           onPress={this.goToNextItem}
-          text='Next Item'
+          text='Next Product'
         />
 
         <ItemDetailsDialog eventInfo={eventInfo} ref={r => (this.dialog = r)} />
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     height: '10%',
     backgroundColor: '#282B28',
     width: '100%',
-    borderRadius: 10,
+    borderRadius: 15,
     padding: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -118,14 +118,11 @@ const styles = StyleSheet.create({
   },
   nextButton: {
     padding: 15,
-
     backgroundColor: '#FFF',
-    borderRadius: 10
+    borderRadius: 15
   },
   text: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#000'
+    ...Typography.text60
   },
   detailsText: {
     fontSize: 16,
