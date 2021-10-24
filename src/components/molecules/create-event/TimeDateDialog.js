@@ -35,7 +35,6 @@ class CalandarDialog extends PureComponent {
     this.onChangeDate = this.onChangeDate.bind(this);
     this.onChangeTime = this.onChangeTime.bind(this);
     this.onDone = this.onDone.bind(this);
-
     this.handleShowTime = this.handleShowTime.bind(this);
     this.handleShowDate = this.handleShowDate.bind(this);
   }
@@ -80,7 +79,7 @@ class CalandarDialog extends PureComponent {
         ignoreBackgroundPress
         key={'dialog-key'}
         bottom={true}
-        height={300}
+        height={400}
         panDirection={PanningProvider.Directions.DOWN}
         containerStyle={styles.container}
         visible={showDialog}

@@ -50,9 +50,9 @@ class CameraScreen extends PureComponent {
     this.camera
       .recordAsync({
         maxDuration: 15,
-        quality: RNCamera.Constants.VideoQuality['720p'],
-        videoBitrate: 2 * 1000 * 1000,
-        codec: Platform.OS === 'ios' && RNCamera.Constants.VideoCodec['H264'],
+        quality: RNCamera.Constants.VideoQuality['480p'],
+        videoBitrate: 2.5 * 1000 * 1000,
+        // codec: Platform.OS === 'ios' && RNCamera.Constants.VideoCodec['H264'],
       })
       .then(data => {
         this.setState({
@@ -119,12 +119,15 @@ class CameraScreen extends PureComponent {
     });
 
     // let contentDeposition = 'inline;filename="' + 'videoName' + '"';
-    const base64 = await fs.readFile(file.uri, 'base64');
-    const arrayBuffer = decode(base64);
+    // const base64 = await fs.readFile(file.uri, 'base64');
+    // const arrayBuffer = decode(base64);
+    const resp = await fetch(file.uri);
+    const buffer = await resp.blob();
+
     const params = {
       Bucket: 'event-preview',
       Key: `${generateId(11)}.mp4`,
-      Body: arrayBuffer,
+      Body: buffer,
     };
 
     s3bucket.upload(params, (err, data) => {
