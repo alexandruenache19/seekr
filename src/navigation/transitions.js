@@ -7,7 +7,14 @@ import {store} from '../redux/store';
 import {Service} from '_nav';
 import {FetchingActions} from '_actions';
 
+import Entypo from 'react-native-vector-icons/Entypo';
+import Feather from 'react-native-vector-icons/Feather';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
 const {fetchUser} = FetchingActions;
+const selectedColor = '#F5F5F5';
+const unSelectedColor = '#ADADAD';
+const iconColor = '#E7E7E7';
 
 export const goToApp = async (passProps = {}) => {
   const currentUser = await auth().currentUser;
@@ -27,22 +34,113 @@ export const goToApp = async (passProps = {}) => {
       visible: false,
     },
   });
-
-  Navigation.setRoot({
-    root: {
-      stack: {
-        id: 'HOME_STACK',
-        children: [
-          {
-            component: {
-              id: 'home',
-              name: 'Home',
-            },
+  return Promise.all([
+    Feather.getImageSource('home', 31, unSelectedColor),
+    Feather.getImageSource('home', 31, selectedColor),
+    Feather.getImageSource('plus', 28, unSelectedColor),
+    Feather.getImageSource('plus', 28, selectedColor),
+    Entypo.getImageSource('grid', 31, unSelectedColor),
+    Entypo.getImageSource('grid', 31, selectedColor),
+  ]).then(
+    ([
+      homeIcon,
+      homeIconSelected,
+      plusIcon,
+      plusIconSelected,
+      userIcon,
+      userIconSelected,
+    ]) => {
+      Navigation.setRoot({
+        root: {
+          bottomTabs: {
+            children: [
+              {
+                stack: {
+                  id: 'HOME_STACK',
+                  children: [
+                    {
+                      component: {
+                        id: 'home',
+                        name: 'Home',
+                      },
+                    },
+                  ],
+                  options: {
+                    bottomTab: {
+                      animate: true,
+                      icon: homeIcon,
+                      // iconColor: iconColor,
+                      selectedIcon: homeIconSelected,
+                      titleDisplayMode: 'alwaysHide',
+                    },
+                  },
+                },
+              },
+              {
+                stack: {
+                  id: 'HOME_STACK',
+                  children: [
+                    {
+                      component: {
+                        id: 'addProduct',
+                        name: 'AddProduct',
+                      },
+                    },
+                  ],
+                  options: {
+                    bottomTab: {
+                      animate: true,
+                      icon: plusIcon,
+                      // iconColor: iconColor,
+                      selectedIcon: plusIconSelected,
+                      titleDisplayMode: 'alwaysHide',
+                    },
+                  },
+                },
+              },
+              {
+                stack: {
+                  id: 'HOME_STACK',
+                  children: [
+                    {
+                      component: {
+                        id: 'profile',
+                        name: 'Profile',
+                      },
+                    },
+                  ],
+                  options: {
+                    bottomTab: {
+                      animate: true,
+                      icon: userIcon,
+                      // iconColor: iconColor,
+                      selectedIcon: userIconSelected,
+                      titleDisplayMode: 'alwaysHide',
+                    },
+                  },
+                },
+              },
+            ],
           },
-        ],
-      },
+        },
+      });
     },
-  });
+  );
+  // Navigation.setRoot({
+  //   root: {
+  //     stack: {
+  //       id: 'HOME_STACK',
+  //       children: [
+  //         {
+  //           component: {
+  //             id: 'home',
+  //             name: 'Home',
+  //           },
+  //         },
+  //       ],
+  //     },
+  //   },
+  // });
 };
 
 export const goToOnboarding = async (passProps = {}) => {

@@ -17,8 +17,10 @@ class ProductCard extends Component {
   check() {
     const {eventId, orderId, product} = this.props;
     const {check} = this.state;
-    updateOrderProductStatus(eventId, orderId, product.id, !check);
-    this.setState({check: !check});
+    if (eventId) {
+      updateOrderProductStatus(eventId, orderId, product.id, !check);
+      this.setState({check: !check});
+    }
   }
 
   render() {
