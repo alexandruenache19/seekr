@@ -22,6 +22,7 @@
     "@react-native-firebase/database": "^12.3.0",
     "@react-native-picker/picker": "^1.16.7",
     "aws-sdk": "^2.987.0",
+    "axios": "^0.24.0",
     "base64-arraybuffer": "^1.0.1",
     "lottie-ios": "3.2.3",
     "lottie-react-native": "^4.0.3",

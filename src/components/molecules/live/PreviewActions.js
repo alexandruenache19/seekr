@@ -4,7 +4,7 @@ import {Typography, Wizard, Card} from 'react-native-ui-lib';
 import LinearGradient from 'react-native-linear-gradient';
 
 import {Icon} from '_atoms';
-import {ProductListDialog, ShareDialog} from '_molecules';
+import {ItemDetailsDialog, ShareDialog} from '_molecules';
 
 class PreviewActionsSection extends Component {
   constructor(props) {
@@ -145,7 +145,7 @@ class PreviewActionsSection extends Component {
           marginTop: complete ? 20 : 15,
         }}>
         <KeyboardAvoidingView>
-          <ProductListDialog
+          <ItemDetailsDialog
             eventInfo={eventInfo}
             callback={this.completeAddItem}
             ref={r => (this.dialog = r)}

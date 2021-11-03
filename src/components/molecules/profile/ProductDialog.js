@@ -15,23 +15,22 @@ import {
 } from 'react-native-ui-lib';
 import Clipboard from '@react-native-community/clipboard';
 import Toast from 'react-native-toast-message';
+import FastImage from 'react-native-fast-image';
 
 import {ButtonWithIcon, ButtonWithTextIcon} from '_atoms';
 import {ShareActions} from '_actions';
 
-const {share} = ShareActions;
+const {shareProduct} = ShareActions;
 
 class ShareDialog extends Component {
   constructor(props) {
     super(props);
-    const {eventInfo} = props;
-    const eventID = eventInfo ? eventInfo.id : '';
 
     this.state = {
       showDialog: false,
       copied: false,
       currentPosition: 0,
-      url: `https://seekrlive.com/e/${eventID}`,
+      product: {},
     };
     this.copy = this.copy.bind(this);
     this.showDialog = this.showDialog.bind(this);
@@ -40,8 +39,8 @@ class ShareDialog extends Component {
     this.share = this.share.bind(this);
   }
 
-  showDialog() {
-    this.setState({showDialog: true});
+  showDialog(item) {
+    this.setState({showDialog: true, product: item});
   }
 
   hideDialog() {
@@ -50,13 +49,13 @@ class ShareDialog extends Component {
   }
 
   copy() {
-    const {url} = this.state;
+    const {product} = this.state;
     this.setState(
       {
         copied: true,
       },
       async () => {
-        Clipboard.setString(url);
+        Clipboard.setString(`https://seekrlive.com/p/${product.id}`);
         Toast.show({
           type: 'success',
           text1: 'Copied',
@@ -71,10 +70,9 @@ class ShareDialog extends Component {
   }
 
   async share() {
-    const {eventInfo} = this.props;
-
+    const {product} = this.state;
     try {
-      await share(eventInfo);
+      await shareProduct(product);
     } catch (e) {
       console.log(e);
     } finally {
@@ -83,7 +81,7 @@ class ShareDialog extends Component {
   }
 
   render() {
-    const {showDialog, copied, url} = this.state;
+    const {showDialog, copied, product} = this.state;
 
     return (
       <Dialog
@@ -92,7 +90,7 @@ class ShareDialog extends Component {
         ignoreBackgroundPress
         key={'dialog-key'}
         bottom={true}
-        height={'30%'}
+        height={'80%'}
         panDirection={PanningProvider.Directions.DOWN}
         containerStyle={styles.container}
         visible={showDialog}
@@ -110,17 +108,23 @@ class ShareDialog extends Component {
             onPress={this.hideDialog}
           />
           <View style={{paddingLeft: 10, flex: 1}}>
-            <Text style={{...Typography.text40, paddingBottom: 10}}>
-              Invite Others
-            </Text>
-
-            <Text style={{flexShrink: 1, lineHeight: 19}}>
-              Get your group members to join this event to have higher chances
-              of selling all your products
-            </Text>
+            <Text style={{...Typography.text40, paddingBottom: 10}}>Share</Text>
           </View>
         </View>
-
+        <Text style={{...Typography.text70, paddingBottom: 10}}>
+          {product.name}
+        </Text>
+        <FastImage
+          style={{
+            height: 300,
+            width: '100%',
+            borderRadius: 20,
+          }}
+          source={{uri: product.imageUrl}}
+        />
+        <Text style={{...Typography.text60, paddingBottom: 10}}>
+          Price: {product.price}
+        </Text>
         <View
           style={{
             flexDirection: 'row',
@@ -148,7 +152,7 @@ class ShareDialog extends Component {
             iconColor={Colors.white}
             iconAfterText
             onPress={this.copy}
-            text={`${'seekrlive.com/e/... '}${copied ? '' : 'Copy'}`}
+            text={`${'seekrlive.com/p/... '}${copied ? '' : 'Copy'}`}
           />
 
           <ButtonWithIcon

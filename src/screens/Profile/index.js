@@ -20,7 +20,7 @@ import {Transitions, Service} from '_nav';
 import {InputWithLabel, ButtonWithText, ButtonWithIcon} from '_atoms';
 import FastImage from 'react-native-fast-image';
 import {Constants} from '_styles';
-import {OrderItems} from '_molecules';
+import {OrderItems, ProductDialog} from '_molecules';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -34,6 +34,7 @@ class Profile extends PureComponent {
       userInfo: {},
     };
     this.renderHeader = this.renderHeader.bind(this);
+    this.renderItem = this.renderItem.bind(this);
     this.renderOrderItem = this.renderOrderItem.bind(this);
   }
 
@@ -55,6 +56,7 @@ class Profile extends PureComponent {
           });
         }
       });
+
     this.currentEventListener = database()
       .ref(`users/${user.uid}/info`)
       .on('value', async snap => {
@@ -65,14 +67,22 @@ class Profile extends PureComponent {
 
   renderItem({item}) {
     return (
-      <FastImage
+      <TouchableOpacity
         style={{
-          height: windowWidth * 0.3,
           width: windowWidth * 0.3,
+          height: windowWidth * 0.3,
           borderRadius: 10,
         }}
-        source={{uri: item.imageUrl}}
-      />
+        onPress={() => this.productDialog.showDialog(item)}>
+        <FastImage
+          style={{
+            height: '100%',
+            width: '100%',
+            borderRadius: 10,
+          }}
+          source={{uri: item.imageUrl}}
+        />
+      </TouchableOpacity>
     );
   }
 
@@ -81,12 +91,14 @@ class Profile extends PureComponent {
       <TouchableOpacity
         style={{
           width: windowWidth * 0.45,
-          backgroundColor: '#888',
+          backgroundColor: '#272D2D',
           padding: 10,
           borderRadius: 10,
         }}
         onPress={() => this.dialog.showDialog(item)}>
-        <Text style={Typography.text70BO}>{item.info.name}</Text>
+        <Text style={{...Typography.text70BO, color: '#FFF'}}>
+          {item.info.name}
+        </Text>
       </TouchableOpacity>
     );
   }
@@ -148,7 +160,9 @@ class Profile extends PureComponent {
     return (
       <SafeAreaView style={styles.safeContainer}>
         <View style={{flex: 1, padding: 10}}>
+          <ProductDialog ref={ref => (this.productDialog = ref)} />
           <OrderItems ref={ref => (this.dialog = ref)} />
+
           <FlatList
             data={products}
             ListHeaderComponent={this.renderHeader}
