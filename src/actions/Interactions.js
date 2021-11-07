@@ -135,14 +135,14 @@ export const addProduct = async (
     );
   }
 
-  const req = await axios.post('https://seekrlive.com/api/checkout', {
-    productId: productId,
-    name: description,
-    quantity: quantity,
-    price: price,
-    imageUrl: imageUrl,
-  });
-  const paymentUrl = req.data.url;
+  // const req = await axios.post('https://seekrlive.com/api/checkout', {
+  //   productId: productId,
+  //   name: description,
+  //   quantity: quantity,
+  //   price: price,
+  //   imageUrl: imageUrl,
+  // });
+  // const paymentUrl = req.data.url;
 
   await database()
     .ref(`products/${productId}`)
@@ -152,7 +152,7 @@ export const addProduct = async (
       price: parseFloat(price),
       imageUrl: imageUrl,
       quantity: parseFloat(quantity),
-      paymentUrl: paymentUrl,
+      // paymentUrl: paymentUrl,
       uid: uid,
       timestamp: +new Date(),
     });
@@ -160,7 +160,7 @@ export const addProduct = async (
   await database()
     .ref(`users/${uid}/shop/products/${productId}`)
     .update({
-      paymentUrl: paymentUrl,
+      // paymentUrl: paymentUrl,
       uid: uid,
       id: productId,
       name: description,
@@ -169,8 +169,9 @@ export const addProduct = async (
       quantity: parseFloat(quantity),
       timestamp: +new Date(),
     });
-  callback();
+  callback && callback();
 };
+
 export const addItem = async (
   eventInfo,
   price,
@@ -205,6 +206,30 @@ export const addItem = async (
   await eventsRef
     .child(`${eventInfo.id}/info/currentProductId`)
     .set(productRef.key);
+
+  await database()
+    .ref(`products/${productRef.key}`)
+    .update({
+      id: productRef.key,
+      name: description,
+      price: parseFloat(price),
+      imageUrl: imageURL,
+      quantity: parseFloat(quantity),
+      uid: eventInfo.info.sellerId,
+      timestamp: +new Date(),
+    });
+
+  await database()
+    .ref(`users/${eventInfo.info.sellerId}/shop/products/${productRef.key}`)
+    .update({
+      uid: eventInfo.info.sellerId,
+      id: productRef.key,
+      name: description,
+      price: parseFloat(price),
+      imageUrl: imageURL,
+      quantity: parseFloat(quantity),
+      timestamp: +new Date(),
+    });
 
   callback(productRef.key);
 };

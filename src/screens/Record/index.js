@@ -52,7 +52,7 @@ class CameraScreen extends PureComponent {
         maxDuration: 15,
         quality: RNCamera.Constants.VideoQuality['480p'],
         videoBitrate: 2.5 * 1000 * 1000,
-        // codec: Platform.OS === 'ios' && RNCamera.Constants.VideoCodec['H264'],
+        codec: Platform.OS === 'ios' && RNCamera.Constants.VideoCodec['H264'],
       })
       .then(data => {
         this.setState({

@@ -200,7 +200,7 @@ class ItemDetailsDialog extends Component {
             quantity: 1,
             currency: 'RON',
             description: '',
-            productImagePath: productImagePath,
+            productImagePath: '',
             showItems: true,
           });
         },
@@ -213,6 +213,7 @@ class ItemDetailsDialog extends Component {
         position: 'bottom',
       });
     }
+    this.setState({uploading: false});
   }
 
   handleChangeCurrency(item) {
@@ -258,8 +259,8 @@ class ItemDetailsDialog extends Component {
     const {setProductImagePath} = this.props;
     if (this.camera) {
       const options = {
-        quality: 0.8,
-        width: 750,
+        quality: 0.7,
+        width: 600,
       };
       const data = await this.camera.takePictureAsync(options);
       this.setState({

@@ -21,7 +21,7 @@ import {InputWithLabel, ButtonWithText, ButtonWithIcon} from '_atoms';
 import FastImage from 'react-native-fast-image';
 import {Constants} from '_styles';
 import {OrderItems, ProductDialog} from '_molecules';
-
+import auth from '@react-native-firebase/auth';
 const windowWidth = Dimensions.get('window').width;
 
 class Profile extends PureComponent {
@@ -124,6 +124,11 @@ class Profile extends PureComponent {
           <View>
             <Text style={Typography.text40}>@{userInfo.username}</Text>
             <Text style={Typography.text70}>{userInfo.type}</Text>
+            <ButtonWithText
+              onPress={() => auth().signOut()}
+              textStyle={Typography.text70}
+              text="sign out"
+            />
           </View>
         </View>
         <View
