@@ -27,7 +27,7 @@ class LiveScreen extends PureComponent {
   async goLive() {
     const {user, eventInfo} = this.props;
     await addLiveURL(user.info, eventInfo);
-    this.camera.startLive();
+    await this.camera.startLive();
     this.setState({isPreview: false});
   }
 

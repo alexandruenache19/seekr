@@ -245,6 +245,7 @@ export const addLiveURL = async (userInfo, eventInfo) => {
   await eventsRef
     .child(`${eventInfo.id}/info/liveURL`)
     .set(userInfo.stream.playbackURL);
+  await eventsRef.child(`${eventInfo.id}/info/status`).set('live');
 };
 
 export const updateOrderStatus = async (eventId, orderId) => {

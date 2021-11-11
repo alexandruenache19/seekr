@@ -34,6 +34,7 @@ class CameraSection extends PureComponent {
       secondsRemaining: 0,
       isPresentingNext: false,
       isFlashEnabled: false,
+      isPresentingNow: false,
     };
 
     this.toggleVideo = this.toggleVideo.bind(this);
@@ -47,7 +48,7 @@ class CameraSection extends PureComponent {
 
   async componentDidMount() {
     const {isPreview, eventInfo, userInfo} = this.props;
-    const {isPresentingNext} = this.state;
+    const {isPresentingNext, isPresentingNow} = this.state;
 
     this.productInfoListener = eventsRef
       .child(`${eventInfo.id}/info/viewers`)
@@ -57,6 +58,20 @@ class CameraSection extends PureComponent {
           this.setState({
             viewers: viewers,
           });
+        }
+      });
+
+    this.currentUserListener = jointEventsRef
+      .child(`joint-event-id/info/currentLiveUserId`)
+      .on('value', async snapshot => {
+        if (snapshot.exists()) {
+          const currentLiveUserId = snapshot.val();
+
+          if (currentLiveUserId === userInfo.uid) {
+            this.setState({isPresentingNow: true});
+          } else {
+            this.setState({isPresentingNow: false});
+          }
         }
       });
 
@@ -144,8 +159,10 @@ class CameraSection extends PureComponent {
       secondsRemaining,
       isPresentingNext,
       isFlashEnabled,
+      isPresentingNow,
     } = this.state;
     const {isPreview, userInfo} = this.props;
+
     if (url === '') {
       return (
         <View
@@ -180,7 +197,11 @@ class CameraSection extends PureComponent {
           }}
           autopreview
         />
-        {!isPreview && isPresentingNext && secondsRemaining > 0 && (
+        {((!isPreview &&
+          isPresentingNext &&
+          secondsRemaining > 0 &&
+          !isPresentingNow) ||
+          !isPresentingNow) && (
           <View
             style={{
               ...styles.absolute,
@@ -189,10 +210,12 @@ class CameraSection extends PureComponent {
               alignItems: 'center',
             }}>
             <Text style={{...Typography.text70, color: '#000'}}>
-              You are presentin in
+              You are presenting
             </Text>
             <Text style={{...Typography.text40, color: '#000', paddingTop: 20}}>
-              {secondsRemaining} seconds
+              {!isPresentingNext
+                ? 'in a few minutes'
+                : `in ${secondsRemaining} seconds`}
             </Text>
           </View>
         )}
