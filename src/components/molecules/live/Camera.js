@@ -98,15 +98,14 @@ class CameraSection extends PureComponent {
     const {isVideoOn} = this.state;
     if (isVideoOn) {
       this.vb.stop();
-      this.setState({isVideoOn: false});
     } else {
       this.vb.start();
-      this.setState({isVideoOn: true});
     }
+    this.setState({isVideoOn: !isVideoOn});
   }
 
-  startLive() {
-    this.vb.start();
+  async startLive() {
+    await this.vb.start();
     this.setState({isVideoOn: true});
   }
 
@@ -181,7 +180,7 @@ class CameraSection extends PureComponent {
           }}
           autopreview
         />
-        {isPresentingNext && (
+        {!isPreview && isPresentingNext && secondsRemaining > 0 && (
           <View
             style={{
               ...styles.absolute,
@@ -189,24 +188,15 @@ class CameraSection extends PureComponent {
               justifyContent: 'center',
               alignItems: 'center',
             }}>
-            <Text style={{fontSize: 22, zIndex: 1, color: '#000'}}>
-              {secondsRemaining}
+            <Text style={{...Typography.text70, color: '#000'}}>
+              You are presentin in
+            </Text>
+            <Text style={{...Typography.text40, color: '#000', paddingTop: 20}}>
+              {secondsRemaining} seconds
             </Text>
           </View>
         )}
-        {!isVideoOn && (
-          <View
-            style={{
-              ...styles.absolute,
-              backgroundColor: 'rgba(255,255,255,0.6)',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <Text style={{fontSize: 22, zIndex: 1, color: '#000'}}>
-              You are offline
-            </Text>
-          </View>
-        )}
+
         <View style={styles.topActionsRow}>
           <View
             style={{
@@ -306,49 +296,48 @@ class CameraSection extends PureComponent {
           <View
             style={{
               flexDirection: 'row',
-              justifyContent: 'space-between',
+              justifyContent: 'flex-end',
               flex: 1,
             }}>
-            <ButtonWithTextIcon
-              iconType="Feather"
-              iconName={isVideoOn ? 'video-off' : 'video'}
+            {/*  <ButtonWithTextIcon
+                iconType="Feather"
+                iconName={isVideoOn ? 'video-off' : 'video'}
+                iconSize={20}
+                iconColor="#000"
+                style={{
+                  ...styles.button,
+                }}
+                textStyle={{paddingRight: 5}}
+                iconAfterText
+                text={isVideoOn ? 'Stop' : 'Start'}
+                onPress={this.toggleVideo}
+              />*/}
+
+            {/*<ButtonWithIcon
+              iconType="MaterialCommunityIcons"
+              iconName={
+                isFlashEnabled ? 'lightbulb-off-outline' : 'lightbulb-outline'
+              }
               iconSize={20}
               iconColor="#000"
               style={{
                 ...styles.button,
+                marginLeft: 10,
               }}
-              textStyle={{paddingRight: 5}}
-              iconAfterText
-              text={isVideoOn ? 'Stop' : 'Start'}
-              onPress={this.toggleVideo}
-            />
+              onPress={this.toggleFlashEnable}
+            />*/}
 
-            <View style={{flexDirection: 'row'}}>
-              <ButtonWithIcon
-                iconType="MaterialCommunityIcons"
-                iconName={
-                  isFlashEnabled ? 'lightbulb-off-outline' : 'lightbulb-outline'
-                }
-                iconSize={20}
-                iconColor="#000"
-                style={{
-                  ...styles.button,
-                  marginLeft: 10,
-                }}
-                onPress={this.toggleFlashEnable}
-              />
-              <ButtonWithIcon
-                iconType="Feather"
-                iconName="repeat"
-                iconSize={20}
-                iconColor="#000"
-                style={{
-                  ...styles.button,
-                  marginLeft: 10,
-                }}
-                onPress={this.switchCamera}
-              />
-            </View>
+            <ButtonWithIcon
+              iconType="Feather"
+              iconName="repeat"
+              iconSize={20}
+              iconColor="#000"
+              style={{
+                ...styles.button,
+                marginLeft: 10,
+              }}
+              onPress={this.switchCamera}
+            />
           </View>
         </View>
         <Dialog
