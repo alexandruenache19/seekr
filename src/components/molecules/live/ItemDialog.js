@@ -132,12 +132,22 @@ class ItemDetailsDialog extends Component {
                 {item.description}
               </Text>
             ) : null}
-            <Text style={{...Typography.text70, color: Colors.black}}>
-              {item.currentStock} in stock
-            </Text>
-            <Text style={{...Typography.text70, color: Colors.black}}>
-              {item.price} {item.currency}
-            </Text>
+            {item.currentStock != 0 ? (
+              <View>
+                <Text style={{...Typography.text70, color: Colors.black}}>
+                  {item.currentStock} in stock
+                </Text>
+                <Text style={{...Typography.text70, color: Colors.black}}>
+                  {item.price} {item.currency}
+                </Text>
+              </View>
+            ) : (
+              <View>
+                <Text style={{...Typography.text70, color: Colors.black}}>
+                  sold
+                </Text>
+              </View>
+            )}
           </View>
           {/*  <ButtonWithTextIcon
               style={{

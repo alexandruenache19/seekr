@@ -30,7 +30,10 @@ class LiveScreen extends PureComponent {
 
     return (
       <SafeAreaView style={{flex: 1}}>
-        <WebView source={{uri: 'https://seekrlive.com/j/joint-event-id'}} />
+        <WebView
+          allowsInlineMediaPlayback={true}
+          source={{uri: 'https://seekrlive.com/j/joint-event-id'}}
+        />
       </SafeAreaView>
     );
   }

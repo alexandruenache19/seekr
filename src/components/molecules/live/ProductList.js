@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react';
 import {
   View,
   Text,
@@ -10,8 +10,8 @@ import {
   Platform,
   KeyboardAvoidingView,
   TextInput,
-  FlatList
-} from 'react-native'
+  FlatList,
+} from 'react-native';
 import {
   Dialog,
   PanningProvider,
@@ -19,30 +19,30 @@ import {
   Typography,
   Colors,
   Incubator,
-  Card
-} from 'react-native-ui-lib'
-import Toast from 'react-native-toast-message'
-import { openSettings } from 'react-native-permissions'
-import ImagePicker from 'react-native-image-crop-picker'
-import FastImage from 'react-native-fast-image'
-import { RNCamera } from 'react-native-camera'
+  Card,
+} from 'react-native-ui-lib';
+import Toast from 'react-native-toast-message';
+import {openSettings} from 'react-native-permissions';
+import ImagePicker from 'react-native-image-crop-picker';
+import FastImage from 'react-native-fast-image';
+import {RNCamera} from 'react-native-camera';
 
-import { ButtonWithText, ButtonWithIcon, Icon, ButtonWithTextIcon } from '_atoms'
-import { Interactions } from '_actions'
-import database from '@react-native-firebase/database'
+import {ButtonWithText, ButtonWithIcon, Icon, ButtonWithTextIcon} from '_atoms';
+import {Interactions} from '_actions';
+import database from '@react-native-firebase/database';
 
-const { addItem } = Interactions
-const { WheelPicker } = Incubator
+const {addItem} = Interactions;
+const {WheelPicker} = Incubator;
 
 const currencyList = [
-  { value: 'RON', label: 'RON' },
-  { value: 'USD', label: 'USD' },
-  { value: 'EUR', label: 'EUR' }
-]
+  {value: 'RON', label: 'RON'},
+  {value: 'USD', label: 'USD'},
+  {value: 'EUR', label: 'EUR'},
+];
 
 class ProductsList extends Component {
-  constructor (props) {
-    super(props)
+  constructor(props) {
+    super(props);
     this.state = {
       price: null,
       quantity: 1,
@@ -55,75 +55,83 @@ class ProductsList extends Component {
       showItems: true,
       showDialog: false,
       products: [],
-      currentProductId: props.eventInfo && props.eventInfo.info && props.eventInfo.info.currentProductId ? props.eventInfo.info.currentProductId : null
-    }
+      currentProductId:
+        props.eventInfo &&
+        props.eventInfo.info &&
+        props.eventInfo.info.currentProductId
+          ? props.eventInfo.info.currentProductId
+          : null,
+    };
 
-    this.showDialog = this.showDialog.bind(this)
-    this.hideDialog = this.hideDialog.bind(this)
-    this.handleAddItem = this.handleAddItem.bind(this)
-    this.renderPrice = this.renderPrice.bind(this)
-    this.handleChangePrice = this.handleChangePrice.bind(this)
-    this.handleChangeQuantity = this.handleChangeQuantity.bind(this)
-    this.handleChangeCurrency = this.handleChangeCurrency.bind(this)
-    this.handleChangeDescription = this.handleChangeDescription.bind(this)
-    this.handleSelectImage = this.handleSelectImage.bind(this)
-    this.takePicture = this.takePicture.bind(this)
-    this.handleDone = this.handleDone.bind(this)
-    this.renderItem = this.renderItem.bind(this)
+    this.showDialog = this.showDialog.bind(this);
+    this.hideDialog = this.hideDialog.bind(this);
+    this.handleAddItem = this.handleAddItem.bind(this);
+    this.renderPrice = this.renderPrice.bind(this);
+    this.handleChangePrice = this.handleChangePrice.bind(this);
+    this.handleChangeQuantity = this.handleChangeQuantity.bind(this);
+    this.handleChangeCurrency = this.handleChangeCurrency.bind(this);
+    this.handleChangeDescription = this.handleChangeDescription.bind(this);
+    this.handleSelectImage = this.handleSelectImage.bind(this);
+    this.takePicture = this.takePicture.bind(this);
+    this.handleDone = this.handleDone.bind(this);
+    this.renderItem = this.renderItem.bind(this);
   }
 
-  componentDidMount () {
-    const { eventInfo } = this.props
+  componentDidMount() {
+    const {eventInfo} = this.props;
 
     try {
       this.productsListener = database()
         .ref(`events/${eventInfo.id}/products`)
         .on('value', async snapshot => {
           if (snapshot.exists()) {
-            const productsObj = snapshot.val()
+            const productsObj = snapshot.val();
             this.setState({
-              products: Object.values(productsObj)
-            })
+              products: Object.values(productsObj),
+            });
           }
-        })
-    } catch (e) { }
+        });
+    } catch (e) {}
   }
 
-  componentWillUnmount () {
-    const { eventInfo } = this.props
-    this.productsListener && database()
-      .ref(`events/${eventInfo.id}/products`)
-      .off('value', this.productsListener)
+  componentWillUnmount() {
+    const {eventInfo} = this.props;
+    this.productsListener &&
+      database()
+        .ref(`events/${eventInfo.id}/products`)
+        .off('value', this.productsListener);
   }
 
-  renderItem ({ item }) {
-    const { eventInfo } = this.props
-    const { currentProductId } = this.state
+  renderItem({item}) {
+    const {eventInfo} = this.props;
+    const {currentProductId} = this.state;
 
     return (
       <Card
         enableShadow={false}
         borderRadius={10}
         backgroundColor={
-          currentProductId &&
-                        item.id === currentProductId ? Colors.grey40
+          currentProductId && item.id === currentProductId
+            ? Colors.grey40
             : Colors.grey60
         }
         activeScale={0.96}
-        height='auto'
+        height="auto"
         style={styles.productContainer}
         onPress={async () => {
-          await database().ref('events')
-            .child(`${eventInfo.id}/info/currentProductId`)
-            .set(item.id)
-          this.setState({
-            currentProductId: item.id
-          })
-          this.hideDialog()
-        }}
-      >
+          if (item.currentStock != 0) {
+            await database()
+              .ref('events')
+              .child(`${eventInfo.id}/info/currentProductId`)
+              .set(item.id);
+            this.setState({
+              currentProductId: item.id,
+            });
+            this.hideDialog();
+          }
+        }}>
         {item.imageURL && (
-          <FastImage style={styles.image} source={{ uri: item.imageURL }} />
+          <FastImage style={styles.image} source={{uri: item.imageURL}} />
         )}
 
         <View
@@ -132,71 +140,68 @@ class ProductsList extends Component {
             justifyContent: 'space-between',
             flex: 1,
             height: '100%',
-            paddingLeft: 10
-          }}
-        >
+            paddingLeft: 10,
+          }}>
           <View>
             {item.description ? (
               <Text
                 numberOfLines={3}
-                ellipsizeMode='tail'
-                style={{ ...Typography.text70BO, lineHeight: 20, marginBottom: 3, color: Colors.black }}
-              >
+                ellipsizeMode="tail"
+                style={{
+                  ...Typography.text70BO,
+                  lineHeight: 20,
+                  marginBottom: 3,
+                  color: Colors.black,
+                }}>
                 {item.description}
               </Text>
             ) : null}
-            <Text style={{ ...Typography.text70, color: Colors.black }}>
-              {item.currentStock} in stock
-            </Text>
-            <Text style={{ ...Typography.text70, color: Colors.black }}>
-              {item.price} {item.currency}
-            </Text>
+            {item.currentStock != 0 ? (
+              <View>
+                <Text style={{...Typography.text70, color: Colors.black}}>
+                  {item.currentStock} in stock
+                </Text>
+                <Text style={{...Typography.text70, color: Colors.black}}>
+                  {item.price} {item.currency}
+                </Text>
+              </View>
+            ) : (
+              <View>
+                <Text style={{...Typography.text70, color: Colors.black}}>
+                  sold
+                </Text>
+              </View>
+            )}
           </View>
-          {/*  <ButtonWithTextIcon
-              style={{
-                padding: 10,
-                backgroundColor: '#FFF',
-                borderRadius: 10,
-                width: '100%',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-              text={check ? 'Packed' : 'Ready to pack'}
-              textStyle={{paddingLeft: 10, ...Typography.text70BL}}
-              iconType="Feather"
-              iconName={check ? 'check-square' : 'square'}
-              iconSize={22}
-              iconColor={'#000'}
-              onPress={this.check}
-            /> */}
         </View>
       </Card>
-    )
+    );
   }
 
-  showDialog () {
-    this.setState({ showDialog: true })
+  showDialog() {
+    this.setState({showDialog: true});
   }
 
-  hideDialog () {
+  hideDialog() {
     this.setState({
       showDialog: false,
-      showItems: true
-    })
+      showItems: true,
+    });
     // this.props.callback && this.props.callback();
   }
 
-  handleDone () {
-    this.hideDialog()
-    this.props.callback && this.props.callback()
+  handleDone() {
+    this.hideDialog();
+    this.props.callback && this.props.callback();
   }
 
-  async handleAddItem () {
-    const { eventInfo } = this.props
-    const { price, quantity, currency, productImagePath, description } = this.state
+  async handleAddItem() {
+    const {eventInfo} = this.props;
+    const {price, quantity, currency, productImagePath, description} =
+      this.state;
 
     if (price && price !== 0 && quantity !== 0 && productImagePath !== null) {
-      this.setState({ uploading: true })
+      this.setState({uploading: true});
       await addItem(
         eventInfo,
         price,
@@ -212,27 +217,27 @@ class ProductsList extends Component {
             currency: 'RON',
             description: '',
             productImagePath: productImagePath,
-            showItems: true
-          })
-        }
-      )
+            showItems: true,
+          });
+        },
+      );
     } else {
       Toast.show({
         type: 'error',
         text1: 'Add price, quantity and a picture',
         text2: 'Price & Quantity cannot be 0',
-        position: 'bottom'
-      })
+        position: 'bottom',
+      });
     }
   }
 
-  handleChangeCurrency (item) {
-    this.setState({ currency: item })
+  handleChangeCurrency(item) {
+    this.setState({currency: item});
   }
 
-  renderPrice (value) {
-    const { price } = this.state
-    const hasValue = price && price.length > 0
+  renderPrice(value) {
+    const {price} = this.state;
+    const hasValue = price && price.length > 0;
 
     return (
       <View
@@ -242,62 +247,60 @@ class ProductsList extends Component {
           justifyContent: 'center',
           borderBottomWidth: 2,
           borderColor: '#000',
-          marginRight: 10
-        }}
-      >
+          marginRight: 10,
+        }}>
         <Text
           style={{
             ...Typography.text50,
             color: hasValue ? '#000' : '#888',
             fontSize: 24,
-            lineHeight: 34
-          }}
-        >
+            lineHeight: 34,
+          }}>
           {hasValue ? price : '00'}
         </Text>
       </View>
-    )
+    );
   }
 
-  handleChangePrice (value) {
-    this.setState({ price: value })
+  handleChangePrice(value) {
+    this.setState({price: value});
   }
 
-  handleChangeQuantity (value) {
-    this.setState({ quantity: value })
+  handleChangeQuantity(value) {
+    this.setState({quantity: value});
   }
 
-  async takePicture () {
-    const { setProductImagePath } = this.props
+  async takePicture() {
+    const {setProductImagePath} = this.props;
     if (this.camera) {
       const options = {
         quality: 0.8,
-        width: 750
-      }
-      const data = await this.camera.takePictureAsync(options)
+        width: 750,
+      };
+      const data = await this.camera.takePictureAsync(options);
       this.setState({
         productImagePath: data.uri,
-        showCamera: false
-      })
+        showCamera: false,
+      });
     }
   }
 
-  handleChangeDescription (val) {
-    this.setState({ description: val })
+  handleChangeDescription(val) {
+    this.setState({description: val});
   }
 
-  async handleSelectImage () {
-    const { setProductImagePath } = this.props
+  async handleSelectImage() {
+    const {setProductImagePath} = this.props;
     ImagePicker.openPicker({
       mediaType: 'photo',
       /* Should be use without cropping, just resizing after selection  */
       compressImageMaxWidth: 700,
       compressImageMaxHeight: 700,
-      compressImageQuality: 0.65 // default 1 (Android) | 0.8 (iOS))
+      compressImageQuality: 0.65, // default 1 (Android) | 0.8 (iOS))
     })
       .then(async image => {
         if (image.path) {
-          this.setState({ productImagePath: image.path, showCamera: false })
+          this.setState({productImagePath: image.path, showCamera: false});
         }
       })
       .catch(error => {
@@ -309,22 +312,22 @@ class ProductsList extends Component {
               {
                 text: 'No',
                 onPress: () => console.log('Cancel Pressed'),
-                style: 'cancel'
+                style: 'cancel',
               },
               {
                 text: 'Yes',
                 onPress: () =>
                   openSettings().catch(() =>
-                    console.warn('cannot open settings')
-                  )
-              }
-            ]
-          )
+                    console.warn('cannot open settings'),
+                  ),
+              },
+            ],
+          );
         }
-      })
+      });
   }
 
-  render () {
+  render() {
     const {
       showDialog,
       price,
@@ -336,16 +339,16 @@ class ProductsList extends Component {
       isFrontCamera,
       showItems,
       products,
-      description
-    } = this.state
+      description,
+    } = this.state;
 
     return (
       <Dialog
         useSafeArea
         ignoreBackgroundPress
-        key='dialog-key'
+        key="dialog-key"
         top
-        height='90%'
+        height="90%"
         panDirection={PanningProvider.Directions.TOP}
         containerStyle={styles.container}
         visible={showDialog}
@@ -358,42 +361,38 @@ class ProductsList extends Component {
                 alignItems: 'center',
                 justifyContent: 'flex-start',
                 marginHorizontal: 20,
-                marginTop: 20
-              }}
-            >
+                marginTop: 20,
+              }}>
               <ButtonWithIcon
-                iconType='Feather'
-                iconName='chevron-down'
-                iconColor='#000'
+                iconType="Feather"
+                iconName="chevron-down"
+                iconColor="#000"
                 iconSize={32}
-                style={{ marginRight: 10 }}
+                style={{marginRight: 10}}
                 onPress={this.hideDialog}
               />
               <Text style={Typography.text50}>Select Product</Text>
             </View>
-          )
-        }}
-      >
+          );
+        }}>
         <View
           style={{
             paddingHorizontal: 20,
             paddingBottom: 20,
             justifyContent: 'space-between',
             alignItems: 'center',
-            flex: 1
-          }}
-        >
+            flex: 1,
+          }}>
           <View
             style={{
               justifyContent: 'space-between',
               alignItems: 'center',
               flex: 1,
-              width: '100%'
-            }}
-          >
+              width: '100%',
+            }}>
             <FlatList
               data={products}
-              style={{ flex: 1, width: '100%', marginTop: 10 }}
+              style={{flex: 1, width: '100%', marginTop: 10}}
               showsVerticalScrollIndicator={false}
               renderItem={this.renderItem}
               keyExtractor={(item, index) => item.imageURL + index}
@@ -401,36 +400,36 @@ class ProductsList extends Component {
           </View>
         </View>
       </Dialog>
-    )
+    );
   }
 }
 
-export default ProductsList
+export default ProductsList;
 
 const styles = StyleSheet.create({
   keyboardContainer: {
-    flex: 1
+    flex: 1,
   },
   image: {
     width: 80,
     minHeight: 80,
     height: '100%',
-    borderRadius: 10
+    borderRadius: 10,
   },
   preview: {
-    flex: 1
+    flex: 1,
   },
   button: {
     padding: 15,
     backgroundColor: '#222',
     borderRadius: 20,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   container: {
     backgroundColor: '#FFF',
     borderRadius: 12,
-    marginTop: 20
+    marginTop: 20,
   },
   captureButton: {
     flex: 0,
@@ -442,7 +441,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
 
     alignSelf: 'center',
-    margin: 20
+    margin: 20,
   },
   productContainer: {
     borderRadius: 12,
@@ -451,11 +450,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginTop: 5,
-    marginBottom: 10
+    marginBottom: 10,
   },
   buttonText: {
     ...Typography.text50,
-    color: '#FFF'
+    color: '#FFF',
   },
   cardContainer: {
     borderRadius: 15,
@@ -463,6 +462,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF'
-  }
-})
+    backgroundColor: '#FFFFFF',
+  },
+});

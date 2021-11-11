@@ -42,9 +42,9 @@ class PreviewActionsSection extends Component {
       case 0:
         this.dialog.showDialog();
         break;
-      case 1:
-        this.shareDialog.showDialog();
-        break;
+      // case 1:
+      //   this.shareDialog.showDialog();
+      //   break;
       case 2:
         this.setState(
           {
@@ -60,7 +60,7 @@ class PreviewActionsSection extends Component {
 
   completeAddItem() {
     const {activeIndex} = this.state;
-    if (activeIndex === 1) {
+    if (activeIndex === 0) {
       this.setState({complete: true, activeIndex: 2});
     } else {
       this.setState({activeIndex: activeIndex + 1});
@@ -82,10 +82,10 @@ class PreviewActionsSection extends Component {
           text = 'Add Your Products';
           iconName = 'plus';
           break;
-        case 1:
-          text = 'Share event';
-          iconName = 'send';
-          break;
+        // case 1:
+        //   text = 'Share event';
+        //   iconName = 'send';
+        //   break;
       }
     }
 
@@ -150,12 +150,11 @@ class PreviewActionsSection extends Component {
             callback={this.completeAddItem}
             ref={r => (this.dialog = r)}
           />
-
-          <ShareDialog
-            eventInfo={eventInfo}
-            callback={this.completeAddItem}
-            ref={r => (this.shareDialog = r)}
-          />
+          {/*  <ShareDialog
+              eventInfo={eventInfo}
+              callback={this.completeAddItem}
+              ref={r => (this.shareDialog = r)}
+            />*/}
         </KeyboardAvoidingView>
 
         {!complete ? (
@@ -180,16 +179,19 @@ class PreviewActionsSection extends Component {
               state={this.getStepState(1)}
               label="What will you sell?"
             />
-            <Wizard.Step
-              circleColor="#FFF"
-              color="#000"
-              circleSize={30}
-              circleBackgroundColor="#FFFFFF"
-              indexLabelStyle={{...Typography.text60, color: '#000'}}
-              labelStyle={{...Typography.text70, color: '#FFF'}}
-              state={this.getStepState(2)}
-              label="Invite others"
-            />
+            {/*
+              <Wizard.Step
+                circleColor="#FFF"
+                color="#000"
+                circleSize={30}
+                circleBackgroundColor="#FFFFFF"
+                indexLabelStyle={{...Typography.text60, color: '#000'}}
+                labelStyle={{...Typography.text70, color: '#FFF'}}
+                state={this.getStepState(2)}
+                label="Invite others"
+              />
+
+              */}
           </Wizard>
         ) : null}
 
