@@ -17,7 +17,12 @@ import {Navigation} from 'react-native-navigation';
 import moment from 'moment';
 import database from '@react-native-firebase/database';
 import {Transitions, Service} from '_nav';
-import {InputWithLabel, ButtonWithText, ButtonWithIcon} from '_atoms';
+import {
+  InputWithLabel,
+  ButtonWithText,
+  ButtonWithIcon,
+  ButtonWithTextIcon,
+} from '_atoms';
 import FastImage from 'react-native-fast-image';
 import {Constants} from '_styles';
 import {OrderItems, ProductDialog} from '_molecules';
@@ -107,10 +112,21 @@ class Profile extends PureComponent {
     const {userInfo, orders} = this.state;
     return (
       <View>
+        <ButtonWithTextIcon
+          style={{alignSelf: 'flex-end'}}
+          iconName="sign-out"
+          iconType="FontAwesome"
+          iconSize={22}
+          iconColor={'#000'}
+          text="sign out"
+          iconAfterText
+          textStyle={{...Typography.text70, paddingRight: 5}}
+          onPress={() => auth().signOut()}
+        />
         <View
           style={{
-            flexDirection: 'row',
-            justifyContent: 'flex-start',
+            // flexDirection: 'row',
+            justifyContent: 'space-between',
             alignItems: 'center',
           }}>
           <FastImage
@@ -121,15 +137,8 @@ class Profile extends PureComponent {
             }}
             source={{uri: userInfo.imageURL}}
           />
-          <View>
-            <Text style={Typography.text40}>@{userInfo.username}</Text>
-            <Text style={Typography.text70}>{userInfo.type}</Text>
-            <ButtonWithText
-              onPress={() => auth().signOut()}
-              textStyle={Typography.text70}
-              text="sign out"
-            />
-          </View>
+
+          <Text style={Typography.text40}>@{userInfo.username}</Text>
         </View>
         <View
           style={{
@@ -138,8 +147,8 @@ class Profile extends PureComponent {
             justifyContent: 'space-between',
             alignItems: 'center',
           }}>
-          <Text style={{...Typography.text40}}>Orders</Text>
-          <ButtonWithText textStyle={Typography.text70} text="view all" />
+          <Text style={{...Typography.text60}}>Orders</Text>
+          {/*  <ButtonWithText textStyle={Typography.text70} text="view all" />*/}
         </View>
 
         <FlatList
@@ -155,7 +164,7 @@ class Profile extends PureComponent {
           renderItem={this.renderOrderItem}
           keyExtractor={(item, index) => item.id + index}
         />
-        <Text style={{...Typography.text40, marginTop: 20}}>Products</Text>
+        <Text style={{...Typography.text60, marginTop: 20}}>Products</Text>
       </View>
     );
   }
