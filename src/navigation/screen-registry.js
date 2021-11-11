@@ -17,6 +17,7 @@ import Orders from '../screens/Orders';
 import TakePic from '../screens/TakePic';
 import AddProduct from '../screens/AddProduct';
 import Profile from '../screens/Profile';
+import Event from '../screens/Event';
 
 export const ReduxProvider = Component => {
   return props => (
@@ -84,5 +85,10 @@ export const registerScreens = () => {
     'Profile',
     () => gestureHandlerRootHOC(ReduxProvider(Profile)),
     () => gestureHandlerRootHOC(Profile),
+  );
+  Navigation.registerComponent(
+    'Event',
+    () => gestureHandlerRootHOC(ReduxProvider(Event)),
+    () => gestureHandlerRootHOC(Event),
   );
 };

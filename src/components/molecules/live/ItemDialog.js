@@ -98,7 +98,6 @@ class ItemDetailsDialog extends Component {
   }
 
   renderItem({item}) {
-    console.log(item);
     return (
       <Card
         enableShadow={false}

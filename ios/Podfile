@@ -20,13 +20,14 @@ target 'Seekr' do
 
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
   pod 'RNFS', :path => '../node_modules/react-native-fs'
+  # pod 'react-native-webview', :path => '../node_modules/react-native-webview'
 
   target 'SeekrTests' do
     inherit! :complete
     # Pods for testing
   end
 
-  
+
 
   # Enables Flipper.
   #

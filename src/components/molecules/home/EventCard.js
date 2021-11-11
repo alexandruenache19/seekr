@@ -1,71 +1,70 @@
-import React, { PureComponent } from 'react'
+import React, {PureComponent} from 'react';
 import {
-  SafeAreaView,
   View,
   Text,
   StyleSheet,
   PermissionsAndroid,
   Platform,
-  Pressable
-} from 'react-native'
-import moment from 'moment'
-import LinearGradient from 'react-native-linear-gradient'
-import Video from 'react-native-video'
-import { Card, Typography, Colors } from 'react-native-ui-lib'
+  Pressable,
+} from 'react-native';
+import moment from 'moment';
+import LinearGradient from 'react-native-linear-gradient';
+import Video from 'react-native-video';
+import {Card, Typography, Colors} from 'react-native-ui-lib';
 
-import { ButtonWithTextIcon, ButtonWithIcon, ButtonWithText, Icon } from '_atoms'
-import { Transitions, Service } from '_nav'
-import { ShareActions, FetchingActions } from '_actions'
+import {ButtonWithTextIcon, ButtonWithIcon, ButtonWithText, Icon} from '_atoms';
+import {Transitions, Service} from '_nav';
+import {ShareActions, FetchingActions} from '_actions';
 
-import Clipboard from '@react-native-community/clipboard'
-import Toast from 'react-native-toast-message'
-import { Firebase } from '../../../config'
+import Clipboard from '@react-native-community/clipboard';
+import Toast from 'react-native-toast-message';
+import {Firebase} from '../../../config';
 
-const { getEvent } = FetchingActions
-const { pushScreen } = Transitions
-const { shareOnFB, share } = ShareActions
+const {getEvent} = FetchingActions;
+const {pushScreen} = Transitions;
+const {shareOnFB, share} = ShareActions;
 
 class EventCard extends PureComponent {
-  constructor (props) {
-    super(props)
+  constructor(props) {
+    super(props);
     this.state = {
       eventInfo: null,
       loading: true,
       currency: '',
-      totalRevenue: 0
-    }
-    this.goToLive = this.goToLive.bind(this)
-    this.goToOrders = this.goToOrders.bind(this)
-    this.shareOnFb = this.shareOnFb.bind(this)
-    this.share = this.share.bind(this)
-    this.copy = this.copy.bind(this)
+      totalRevenue: 0,
+    };
+    this.goToLive = this.goToLive.bind(this);
+    this.goToOrders = this.goToOrders.bind(this);
+    this.shareOnFb = this.shareOnFb.bind(this);
+    this.share = this.share.bind(this);
+    this.copy = this.copy.bind(this);
   }
 
-  async componentDidMount () {
-    const { eventId } = this.props
+  async componentDidMount() {
+    const {eventId} = this.props;
 
-    const eventInfo = await getEvent(eventId)
+    const eventInfo = await getEvent(eventId);
 
     if (eventInfo) {
-      let totalRevenue = 0
-      let currency = ''
+      let totalRevenue = 0;
+      let currency = '';
       /** calculate total revenue */
       if (eventInfo.info.status === 'ended' && eventInfo.orders) {
-        console.log('event', eventInfo.orders)
+        console.log('event', eventInfo.orders);
         for (const orderKey in eventInfo.orders) {
-          const order = eventInfo.orders[orderKey]
-          let revenue = 0
-          const { products } = order
+          const order = eventInfo.orders[orderKey];
+          let revenue = 0;
+          const {products} = order;
 
           for (const key in products) {
-            const product = products[key]
-            revenue += product.priceToPay || 0
-            currency = product.currency
+            const product = products[key];
+            revenue += product.priceToPay || 0;
+            currency = product.currency;
           }
 
-          order.revenue = revenue
-          order.currency = currency
-          totalRevenue += revenue
+          order.revenue = revenue;
+          order.currency = currency;
+          totalRevenue += revenue;
         }
       }
       // console.log('totalRev', totalRevenue)
@@ -73,37 +72,37 @@ class EventCard extends PureComponent {
         totalRevenue: totalRevenue,
         currency: currency,
         loading: false,
-        eventInfo: eventInfo
-      })
+        eventInfo: eventInfo,
+      });
     }
   }
 
-  shareOnFb () {
-    const { eventInfo } = this.state
-    shareOnFB(eventInfo.info)
+  shareOnFb() {
+    const {eventInfo} = this.state;
+    shareOnFB(eventInfo.info);
   }
 
-  share () {
-    const { eventInfo } = this.state
-    share(eventInfo.info)
+  share() {
+    const {eventInfo} = this.state;
+    share(eventInfo.info);
   }
 
-  goToOrders () {
-    const { eventInfo } = this.state
+  goToOrders() {
+    const {eventInfo} = this.state;
 
     pushScreen(Service.instance.getScreenId(), 'Orders', {
-      eventInfo: eventInfo
-    })
+      eventInfo: eventInfo,
+    });
   }
 
-  async goToLive () {
-    const { eventInfo } = this.state
+  async goToLive() {
+    const {eventInfo} = this.state;
     try {
       if (Platform.OS === 'android') {
         const granted = await PermissionsAndroid.requestMultiple(
           [
             PermissionsAndroid.PERMISSIONS.CAMERA,
-            PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
+            PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
           ],
           {
             title: 'Cool Photo App Camera And Microphone Permission',
@@ -112,54 +111,54 @@ class EventCard extends PureComponent {
               'so you can take awesome pictures.',
             buttonNeutral: 'Ask Me Later',
             buttonNegative: 'Cancel',
-            buttonPositive: 'OK'
-          }
-        )
+            buttonPositive: 'OK',
+          },
+        );
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
           pushScreen(Service.instance.getScreenId(), 'Live', {
-            eventInfo: eventInfo
-          })
+            eventInfo: eventInfo,
+          });
         } else {
           pushScreen(Service.instance.getScreenId(), 'Live', {
-            eventInfo: eventInfo
-          })
-          console.log('Camera permission denied')
+            eventInfo: eventInfo,
+          });
+          console.log('Camera permission denied');
         }
       } else {
         pushScreen(Service.instance.getScreenId(), 'Live', {
-          eventInfo: eventInfo
-        })
+          eventInfo: eventInfo,
+        });
       }
     } catch (err) {
-      console.warn(err)
+      console.warn(err);
     }
   }
 
-  async copy () {
-    const { eventInfo } = this.state
+  async copy() {
+    const {eventInfo} = this.state;
     const usernameSnap = await Firebase.usersRef
       .child(eventInfo.info.sellerId)
       .child('info')
       .child('username')
-      .once('value')
-    const username = usernameSnap.val()
+      .once('value');
+    const username = usernameSnap.val();
 
     if (username) {
-      Clipboard.setString(`https://seekrlive.com/${username}`)
+      Clipboard.setString(`https://seekrlive.com/${username}`);
     } else {
-      Clipboard.setString(`https://seekrlive.com/e/${eventInfo.id}`)
+      Clipboard.setString(`https://seekrlive.com/e/${eventInfo.id}`);
     }
 
     Toast.show({
       type: 'success',
       text1: 'Copied',
       text2: 'Coppied to your clipboard',
-      position: 'bottom'
-    })
+      position: 'bottom',
+    });
   }
 
-  render () {
-    const { eventInfo, loading, totalRevenue, currency } = this.state
+  render() {
+    const {eventInfo, loading, totalRevenue, currency} = this.state;
 
     if (!eventInfo || loading) {
       return (
@@ -171,17 +170,16 @@ class EventCard extends PureComponent {
           elevation={20}
           activeScale={0.96}
           backgroundColor={Colors.grey40}
-          style={styles.container}
-        >
+          style={styles.container}>
           <View style={styles.innerContainer} />
         </Card>
-      )
+      );
     }
 
-    const { info } = eventInfo
-    const formatTime = moment(info.timestamp).format('HH:mm A')
-    const day = moment(info.timestamp).format('DD')
-    const month = moment(info.timestamp).format('MMM')
+    const {info} = eventInfo;
+    const formatTime = moment(info.timestamp).format('HH:mm A');
+    const day = moment(info.timestamp).format('DD');
+    const month = moment(info.timestamp).format('MMM');
 
     return (
       <Card
@@ -194,17 +192,16 @@ class EventCard extends PureComponent {
         onPress={info.status !== 'ended' ? this.goToLive : this.goToOrders}
         activeScale={0.96}
         backgroundColor={info.status !== 'ended' ? '#2A9D8F' : '#E76F51'}
-        style={styles.container}
-      >
+        style={styles.container}>
         <View style={styles.innerContainer}>
           {info.videoURL && info.videoURL !== '' ? (
             <Video
               source={{
-                uri: info.videoURL
+                uri: info.videoURL,
               }}
               ref={ref => (this.player = ref)}
               style={styles.video}
-              resizeMode='cover'
+              resizeMode="cover"
               muted
               repeat
             />
@@ -212,17 +209,15 @@ class EventCard extends PureComponent {
           {info.status !== 'ended' ? (
             <LinearGradient
               colors={['rgba(0,0,0,0.5)', 'rgba(0,0,0,0.2)', 'rgba(0,0,0,0)']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 0, y: 1 }}
-              style={styles.gradient}
-            >
+              start={{x: 0, y: 0}}
+              end={{x: 0, y: 1}}
+              style={styles.gradient}>
               <View
                 style={{
                   flexDirection: 'row',
                   justifyContent: 'space-between',
-                  alignItems: 'flex-start'
-                }}
-              >
+                  alignItems: 'flex-start',
+                }}>
                 <View>
                   <Text style={styles.largeText}>{day}</Text>
                   <Text style={styles.mediumText}>{month}</Text>
@@ -231,10 +226,9 @@ class EventCard extends PureComponent {
                   style={{
                     backgroundColor: '#FFF',
                     borderRadius: 10,
-                    padding: 10
-                  }}
-                >
-                  <Text style={{ ...styles.smallText, color: '#000' }}>
+                    padding: 10,
+                  }}>
+                  <Text style={{...styles.smallText, color: '#000'}}>
                     {formatTime}
                   </Text>
                 </View>
@@ -244,28 +238,26 @@ class EventCard extends PureComponent {
           {info.status !== 'ended' ? (
             <LinearGradient
               colors={['rgba(0,0,0,0.5)', 'rgba(0,0,0,0.2)', 'rgba(0,0,0,0)']}
-              start={{ x: 0, y: 1 }}
-              end={{ x: 0, y: 0 }}
-              style={styles.gradient}
-            >
+              start={{x: 0, y: 1}}
+              end={{x: 0, y: 0}}
+              style={styles.gradient}>
               <Text style={styles.mediumText}>{info.title}</Text>
               <View
-                style={{ flexDirection: 'row', justifyContent: 'space-between' }}
-              >
+                style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                 <ButtonWithTextIcon
                   onPress={this.copy}
-                  text='Copy link'
+                  text="Copy link"
                   style={{
                     ...styles.button,
                     flex: 1,
-                    marginRight: 10
+                    marginRight: 10,
                   }}
                   containerStyle={styles.buttonContainer}
                   textStyle={Typography.text80H}
-                  iconType='Feather'
-                  iconName='link'
+                  iconType="Feather"
+                  iconName="link"
                   iconSize={17}
-                  iconColor='#000'
+                  iconColor="#000"
                   iconAfterText
                 />
 
@@ -273,10 +265,10 @@ class EventCard extends PureComponent {
                   onPress={this.share}
                   style={styles.button}
                   containerStyle={styles.buttonContainer}
-                  iconType='Feather'
-                  iconName='send'
+                  iconType="Feather"
+                  iconName="send"
                   iconSize={20}
-                  iconColor='#000'
+                  iconColor="#000"
                 />
               </View>
             </LinearGradient>
@@ -288,9 +280,8 @@ class EventCard extends PureComponent {
                 backgroundColor: 'rgba(0,0,0,0.7)',
                 alignItems: 'flex-start',
                 justifyContent: 'space-between',
-                padding: 20
-              }}
-            >
+                padding: 20,
+              }}>
               {/* <ButtonWithText
                 text='placeholder'
                 onPress={() => null}
@@ -301,40 +292,47 @@ class EventCard extends PureComponent {
                   width: '100%'
                 }}
               /> */}
-              <View style={{ alignItems: 'flex-start' }}>
-                <Text style={{ ...styles.mediumText }}>{info.title}</Text>
+              <View style={{alignItems: 'flex-start'}}>
+                <Text style={{...styles.mediumText}}>{info.title}</Text>
                 <ButtonWithTextIcon
                   text={`Ended ${month}, ${day}`}
                   onPress={this.goToOrders}
-                  style={{ marginTop: 10 }}
-                  textStyle={{ ...Typography.text60L, color: Colors.white, marginLeft: 8 }}
-                  iconType='FontAwesome'
-                  iconName='hourglass-end'
-                  iconColor='#FFF'
+                  style={{marginTop: 10}}
+                  textStyle={{
+                    ...Typography.text60L,
+                    color: Colors.white,
+                    marginLeft: 8,
+                  }}
+                  iconType="FontAwesome"
+                  iconName="hourglass-end"
+                  iconColor="#FFF"
                   iconSize={14}
                 />
                 {totalRevenue && totalRevenue > 0 ? (
-                  <Text style={{ ...styles.mediumText, marginTop: 10 }}>{totalRevenue} {currency}</Text>
+                  <Text style={{...styles.mediumText, marginTop: 10}}>
+                    {totalRevenue} {currency}
+                  </Text>
                 ) : null}
               </View>
-              <Pressable onPress={this.goToOrders} style={{ width: '100%' }}>
+              <Pressable onPress={this.goToOrders} style={{width: '100%'}}>
                 <LinearGradient
                   colors={['#6A4087', '#C94573']}
                   // start={{ x: 0, y: 0 }}
                   // end={{ x: 0, y: 1 }}
                   useAngle
                   angle={270}
-                  angleCenter={{ x: 0.7, y: 0.5 }}
+                  angleCenter={{x: 0.7, y: 0.5}}
                   style={{
                     paddingHorizontal: 12,
                     paddingVertical: 8,
                     backgroundColor: '#FFF',
                     alignItems: 'center',
                     borderRadius: 10,
-                    width: '100%'
-                  }}
-                >
-                  <Text style={{ ...Typography.text60, color: Colors.white }}>View Orders</Text>
+                    width: '100%',
+                  }}>
+                  <Text style={{...Typography.text60, color: Colors.white}}>
+                    View Orders
+                  </Text>
                 </LinearGradient>
               </Pressable>
               {/* {eventInfo && eventInfo.orders ? (
@@ -387,35 +385,35 @@ class EventCard extends PureComponent {
           ) : null}
         </View>
       </Card>
-    )
+    );
   }
 }
 
-export default EventCard
+export default EventCard;
 
 const styles = StyleSheet.create({
   container: {
     overflow: 'hidden',
     height: 400,
-    width: 260
+    width: 260,
   },
   button: {
     padding: 10,
     marginTop: 10,
     backgroundColor: '#FFF',
-    borderRadius: 10
+    borderRadius: 10,
   },
   buttonContainer: {
     justifyContent: 'space-between',
-    alignItems: 'center'
+    alignItems: 'center',
   },
 
   gradient: {
-    padding: 20
+    padding: 20,
   },
   innerContainer: {
     flex: 1,
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
   video: {
     position: 'absolute',
@@ -423,21 +421,21 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    alignItems: 'stretch'
+    alignItems: 'stretch',
   },
   largeText: {
     fontWeight: 'bold',
     fontSize: 30,
-    color: '#FFF'
+    color: '#FFF',
   },
   mediumText: {
     fontWeight: 'bold',
     fontSize: 22,
-    color: '#FFF'
+    color: '#FFF',
   },
   smallText: {
     fontWeight: 'bold',
     fontSize: 16,
-    color: '#000'
-  }
-})
+    color: '#000',
+  },
+});

@@ -12,7 +12,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const {fetchUser} = FetchingActions;
-const selectedColor = '#F5F5F5';
+const selectedColor = '#000000';
 const unSelectedColor = '#ADADAD';
 const iconColor = '#E7E7E7';
 
@@ -41,6 +41,8 @@ export const goToApp = async (passProps = {}) => {
     Feather.getImageSource('plus', 28, selectedColor),
     Entypo.getImageSource('grid', 31, unSelectedColor),
     Entypo.getImageSource('grid', 31, selectedColor),
+    Feather.getImageSource('radio', 31, unSelectedColor),
+    Feather.getImageSource('radio', 31, selectedColor),
   ]).then(
     ([
       homeIcon,
@@ -49,6 +51,8 @@ export const goToApp = async (passProps = {}) => {
       plusIconSelected,
       userIcon,
       userIconSelected,
+      broadcastIcon,
+      broadcastIconSelected,
     ]) => {
       Navigation.setRoot({
         root: {
@@ -69,7 +73,6 @@ export const goToApp = async (passProps = {}) => {
                     bottomTab: {
                       animate: true,
                       icon: homeIcon,
-                      // iconColor: iconColor,
                       selectedIcon: homeIconSelected,
                       titleDisplayMode: 'alwaysHide',
                     },
@@ -78,7 +81,28 @@ export const goToApp = async (passProps = {}) => {
               },
               {
                 stack: {
-                  id: 'HOME_STACK',
+                  id: 'EVENT_STACK',
+                  children: [
+                    {
+                      component: {
+                        id: 'event',
+                        name: 'Event',
+                      },
+                    },
+                  ],
+                  options: {
+                    bottomTab: {
+                      animate: true,
+                      icon: broadcastIcon,
+                      selectedIcon: broadcastIconSelected,
+                      titleDisplayMode: 'alwaysHide',
+                    },
+                  },
+                },
+              },
+              {
+                stack: {
+                  id: 'ADD_STACK',
                   children: [
                     {
                       component: {
@@ -100,7 +124,7 @@ export const goToApp = async (passProps = {}) => {
               },
               {
                 stack: {
-                  id: 'HOME_STACK',
+                  id: 'PROFILE_STACK',
                   children: [
                     {
                       component: {
