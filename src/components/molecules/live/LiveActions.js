@@ -83,26 +83,6 @@ class LiveActionsSection extends Component {
     const { productInfo } = this.state
     let { secondsRemaining } = this.state
 
-    // function pollFunc(fn, timeout, interval) {
-    //   var startTime = (new Date()).getTime()
-    //   interval = interval || 1000
-    //   let canPoll = true;
-
-    //   (function p() {
-    //     canPoll = ((new Date()).getTime() - startTime) <= timeout
-    //     if (fn() && canPoll) { // ensures the function exucutes
-    //       setTimeout(p, interval)
-    //     }
-    //   })()
-    // }
-
-    // eventsRef
-    //   .child(`${eventInfo.id}/products/${productInfo.id}`)
-    //   .update({
-    //     auctionTimeRemaining: this.state.secondsRemaining,
-    //     auctionOngoing: true
-    //   })
-
     clearInterval(this.classInterval)
 
     this.classInterval = setInterval(() => {
