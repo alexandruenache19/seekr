@@ -50,7 +50,8 @@ class LiveActionsSection extends Component {
               if (
                 productInfo.auctionPrice &&
                 productInfo.auctionPrice > this.state.auctionPrice &&
-                productInfo.auctionTimeRemaining <= 10
+                productInfo.auctionTimeRemaining <= 10 &&
+                productInfo.auctionOngoing
               ) {
                 this.setState({
                   productInfo: productInfo,
@@ -205,7 +206,7 @@ class LiveActionsSection extends Component {
               {productInfo.auctionTimeRemaining > 0 && (
                 <Text style={{ color: '#FFF', fontSize: 16 }}>
                   {productInfo.currency}
-                  <Text style={Typography.text50}>
+                  <Text style={Typography.text65BL}>
                     {productInfo.auctionPrice}
                   </Text>
                 </Text>
@@ -299,7 +300,7 @@ class LiveActionsSection extends Component {
                 </Text>
                 {productInfo.isForAuction ? null : (
                   <Text style={{ ...styles.detailsText, paddingLeft: 10 }}>
-                    {' items'}
+                    {'STOCK'}
                     <Text style={Typography.text50}>
                       {productInfo.currentStock}
                     </Text>
@@ -316,7 +317,7 @@ class LiveActionsSection extends Component {
               >
                 <Text style={styles.detailsText}>
                   <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
-                    Stock is 0
+                    All items bought
                   </Text>
                 </Text>
               </View>
