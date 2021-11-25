@@ -1,30 +1,30 @@
-import React, {PureComponent} from 'react';
-import {View, StyleSheet, Text, PermissionsAndroid} from 'react-native';
-import {Navigation} from 'react-native-navigation';
-import {NodeCameraView} from 'react-native-nodemediaclient';
+import React, { PureComponent } from 'react'
+import { View, StyleSheet, Text, PermissionsAndroid } from 'react-native'
+import { Navigation } from 'react-native-navigation'
+import { NodeCameraView } from 'react-native-nodemediaclient'
 
-import LinearGradient from 'react-native-linear-gradient';
-import FastImage from 'react-native-fast-image';
-import {Colors, Typography, Dialog, PanningProvider} from 'react-native-ui-lib';
+import LinearGradient from 'react-native-linear-gradient'
+import FastImage from 'react-native-fast-image'
+import { Colors, Typography, Dialog, PanningProvider } from 'react-native-ui-lib'
 
-import {ButtonWithIcon, ButtonWithTextIcon, ButtonWithText} from '_atoms';
-import {eventsRef, jointEventsRef} from '../../../config/firebase';
+import { ButtonWithIcon, ButtonWithTextIcon, ButtonWithText } from '_atoms'
+import { eventsRef, jointEventsRef } from '../../../config/firebase'
 
-import {Interactions, ShareActions, HelperActions} from '_actions';
+import { Interactions, ShareActions, HelperActions } from '_actions'
 
-const {endEvent} = Interactions;
-const {share} = ShareActions;
-const {nFormatter} = HelperActions;
+const { endEvent } = Interactions
+const { share } = ShareActions
+const { nFormatter } = HelperActions
 
 class CameraSection extends PureComponent {
   constructor(props) {
-    super(props);
+    super(props)
 
-    const {userInfo} = props;
-    let url = '';
+    const { userInfo } = props
+    let url = ''
 
     if (userInfo && userInfo.hasOwnProperty('stream')) {
-      url = userInfo.stream.serverURL + userInfo.stream.streamKey;
+      url = userInfo.stream.serverURL + userInfo.stream.streamKey
     }
 
     this.state = {
@@ -35,124 +35,125 @@ class CameraSection extends PureComponent {
       secondsRemaining: 0,
       isFlashEnabled: false,
       isPresentingNow: false,
-      isPresentingNext: false,
-    };
+      isPresentingNext: false
+    }
 
-    this.toggleVideo = this.toggleVideo.bind(this);
-    this.switchCamera = this.switchCamera.bind(this);
-    this.endLive = this.endLive.bind(this);
-    this.shareLive = this.shareLive.bind(this);
-    this.hideDialog = this.hideDialog.bind(this);
-    this.showDialog = this.showDialog.bind(this);
-    this.toggleFlashEnable = this.toggleFlashEnable.bind(this);
-    this.goBack = this.goBack.bind(this);
+    this.toggleVideo = this.toggleVideo.bind(this)
+    this.switchCamera = this.switchCamera.bind(this)
+    this.endLive = this.endLive.bind(this)
+    this.shareLive = this.shareLive.bind(this)
+    this.hideDialog = this.hideDialog.bind(this)
+    this.showDialog = this.showDialog.bind(this)
+    this.toggleFlashEnable = this.toggleFlashEnable.bind(this)
+    this.goBack = this.goBack.bind(this)
   }
 
   async componentDidMount() {
-    const {isPreview, eventInfo, userInfo} = this.props;
-    const {isPresentingNext, isPresentingNow} = this.state;
+    const { isPreview, eventInfo, userInfo } = this.props
+    const { isPresentingNext, isPresentingNow } = this.state
 
     this.productInfoListener = eventsRef
       .child(`${eventInfo.id}/info/viewers`)
       .on('value', async snapshot => {
         if (snapshot.exists()) {
-          const viewers = snapshot.val();
+          const viewers = snapshot.val()
           this.setState({
-            viewers: viewers,
-          });
+            viewers: viewers
+          })
         }
-      });
+      })
 
     this.currentUserListener = jointEventsRef
       .child(`${userInfo.currentJointEventId}/info/currentLiveUserId`)
       .on('value', async snapshot => {
         if (snapshot.exists()) {
-          const currentLiveUserId = snapshot.val();
+          const currentLiveUserId = snapshot.val()
 
           if (currentLiveUserId === userInfo.uid) {
-            this.setState({isPresentingNow: true});
+            this.setState({ isPresentingNow: true })
           } else {
-            this.setState({isPresentingNow: false});
+            this.setState({ isPresentingNow: false })
           }
         }
-      });
+      })
 
     this.nextUserListener = jointEventsRef
       .child(`${userInfo.currentJointEventId}/info/nextLiveUserId`)
       .on('value', async snapshot => {
         if (snapshot.exists()) {
-          const nextLiveUserId = snapshot.val();
+          const nextLiveUserId = snapshot.val()
           if (nextLiveUserId === userInfo.uid) {
-            this.setState({isPresentingNext: true});
+            this.setState({ isPresentingNext: true })
           } else {
-            this.setState({isPresentingNext: false});
+            this.setState({ isPresentingNext: false })
           }
         }
-      });
+      })
 
     this.secondsListener = jointEventsRef
       .child(`${userInfo.currentJointEventId}/info/secondsRemaining`)
       .on('value', async snapshot => {
         if (snapshot.exists()) {
-          const secondsRemaining = snapshot.val();
+          const secondsRemaining = snapshot.val()
           if (secondsRemaining === 0) {
-            this.setState({isPresentingNext: false});
+            this.setState({ isPresentingNext: false })
           }
-          this.setState({secondsRemaining: secondsRemaining});
+          this.setState({ secondsRemaining: secondsRemaining })
         }
-      });
+      })
   }
 
   hideDialog() {
-    this.setState({showDialog: false});
+    this.setState({ showDialog: false })
   }
 
   showDialog() {
-    this.setState({showDialog: true});
+    this.setState({ showDialog: true })
   }
 
   toggleVideo() {
-    const {isVideoOn} = this.state;
+    const { isVideoOn } = this.state
     if (isVideoOn) {
-      this.vb.stop();
+      this.vb.stop()
     } else {
-      this.vb.start();
+      this.vb.start()
     }
-    this.setState({isVideoOn: !isVideoOn});
+    this.setState({ isVideoOn: !isVideoOn })
   }
 
   async startLive() {
-    await this.vb.start();
-    this.setState({isVideoOn: true});
+    await this.vb.start()
+    this.setState({ isVideoOn: true })
   }
 
   toggleFlashEnable() {
-    const {isFlashEnabled} = this.state;
-    this.vb.flashEnable(!isFlashEnabled);
-    this.setState({isFlashEnabled: !isFlashEnabled});
+    const { isFlashEnabled } = this.state
+    this.vb.flashEnable(!isFlashEnabled)
+    this.setState({ isFlashEnabled: !isFlashEnabled })
   }
 
   switchCamera() {
-    this.vb.switchCamera();
+    this.vb.switchCamera()
   }
 
   async endLive() {
-    const {eventInfo, userInfo} = this.props;
-    this.setState({showDialog: false});
+    const { eventInfo, userInfo } = this.props
+    this.setState({ showDialog: false })
     try {
-      await endEvent(eventInfo, userInfo.uid);
-      Navigation.popToRoot('HOME_STACK');
+      await endEvent(eventInfo, userInfo.uid)
+      Navigation.popToRoot('HOME_STACK')
     } catch (e) {
-      console.log('e', e);
+      console.log('e', e)
     }
   }
+
   goBack() {
-    Navigation.popToRoot('HOME_STACK');
+    Navigation.popToRoot('HOME_STACK')
   }
 
   shareLive() {
-    const {eventInfo} = this.props;
-    share(eventInfo.info);
+    const { eventInfo } = this.props
+    share(eventInfo.info)
   }
 
   render() {
@@ -164,9 +165,9 @@ class CameraSection extends PureComponent {
       secondsRemaining,
       isPresentingNext,
       isFlashEnabled,
-      isPresentingNow,
-    } = this.state;
-    const {isPreview, userInfo} = this.props;
+      isPresentingNow
+    } = this.state
+    const { isPreview, userInfo } = this.props
 
     if (url === '') {
       return (
@@ -174,32 +175,33 @@ class CameraSection extends PureComponent {
           style={{
             ...styles.container,
             justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <Text style={{...Typography.text60}}>
+            alignItems: 'center'
+          }}
+        >
+          <Text style={{ ...Typography.text60 }}>
             Text us on whatsapp to become a seller
           </Text>
-          <Text style={{...Typography.text40}}>+4478567584593</Text>
+          <Text style={{ ...Typography.text40 }}>+4478567584593</Text>
         </View>
-      );
+      )
     }
     if (userInfo) {
       return (
         <View style={styles.container}>
           <NodeCameraView
-            style={{height: '100%'}}
+            style={{ height: '100%' }}
             ref={vb => {
-              this.vb = vb;
+              this.vb = vb
             }}
             outputUrl={url}
-            camera={{cameraId: 1, cameraFrontMirror: false}}
-            audio={{bitrate: 128000, profile: 1, samplerate: 48000}}
+            camera={{ cameraId: 1, cameraFrontMirror: false }}
+            audio={{ bitrate: 128000, profile: 1, samplerate: 48000 }}
             video={{
               preset: 2,
               bitrate: 800000,
               profile: 1,
               fps: 30,
-              videoFrontMirror: false,
+              videoFrontMirror: false
             }}
             autopreview
           />
@@ -208,52 +210,57 @@ class CameraSection extends PureComponent {
             secondsRemaining > 0 &&
             !isPresentingNow) ||
             (!isPresentingNow && !isPreview)) && (
-            <View
-              style={{
-                ...styles.absolute,
-                backgroundColor: 'rgba(255,255,255,0.6)',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <Text style={{...Typography.text70, color: '#000'}}>
-                You are presenting
-              </Text>
-              <Text
-                style={{...Typography.text40, color: '#000', paddingTop: 20}}>
-                {!isPresentingNext
-                  ? 'in a few minutes'
-                  : `in ${secondsRemaining} seconds`}
-              </Text>
-            </View>
-          )}
+              <View
+                style={{
+                  ...styles.absolute,
+                  backgroundColor: 'rgba(255,255,255,0.6)',
+                  justifyContent: 'center',
+                  alignItems: 'center'
+                }}
+              >
+                <Text style={{ ...Typography.text70, color: '#000' }}>
+                  You are presenting
+                </Text>
+                <Text
+                  style={{ ...Typography.text40, color: '#000', paddingTop: 20 }}
+                >
+                  {!isPresentingNext
+                    ? 'in a few minutes'
+                    : `in ${secondsRemaining} seconds`}
+                </Text>
+              </View>
+            )}
 
           <View style={styles.topActionsRow}>
             <View
               style={{
                 flexDirection: 'row',
-                alignItems: 'center',
-              }}>
+                alignItems: 'center'
+              }}
+            >
               <ButtonWithIcon
-                iconType="Feather"
-                iconName="arrow-left"
-                iconSize={30}
-                iconColor="#FFF"
+                iconType='Feather'
+                iconName='arrow-left'
+                iconSize={28}
+                iconColor='#FFF'
                 onPress={this.goBack}
+                style={{ marginRight: 5 }}
               />
-              <View style={styles.imageContainer}>
+              {/* <View style={styles.imageContainer}>
                 <FastImage
-                  source={{uri: userInfo.imageURL}}
+                  source={{ uri: userInfo.imageURL }}
                   style={styles.image}
                   resizeMode={FastImage.resizeMode.cover}
                 />
-              </View>
+              </View> */}
               <View
                 style={{
                   justifyContent: 'space-between',
                   paddingLeft: 10,
-                  alignItems: 'flex-start',
-                }}>
-                <Text style={styles.text}>@{userInfo.username}</Text>
+                  alignItems: 'flex-start'
+                }}
+              >
+                {/* <Text style={styles.text}>@{userInfo.username}</Text> */}
                 <View style={styles.fullRow}>
                   {/* <ButtonWithTextIcon
                     iconType="Feather"
@@ -268,52 +275,69 @@ class CameraSection extends PureComponent {
                     text={'Follow'}
                     textStyle={{...styles.text, color: '#000'}}
                   /> */}
-                  <ButtonWithTextIcon
-                    iconType="Feather"
-                    iconName="send"
+                  {/* <ButtonWithTextIcon
+                    iconType='Feather'
+                    iconName='send'
                     iconSize={16}
-                    iconColor="#000"
+                    iconColor='#000'
                     style={{
                       backgroundColor: '#FFF',
                       borderRadius: 5,
-                      padding: 2,
+                      padding: 2
                     }}
-                    text="Share"
-                    textStyle={{...styles.text, color: '#000', paddingRight: 2}}
+                    text='Share'
+                    textStyle={{ ...styles.text, color: '#000', paddingRight: 2 }}
                     onPress={this.shareLive}
                     iconAfterText
-                  />
+                  /> */}
                 </View>
               </View>
             </View>
 
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <View
                 style={{
                   flexDirection: 'row',
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   marginTop: 2,
-                  height: '100%',
-                }}>
+                  height: '100%'
+                }}
+              >
                 <ButtonWithTextIcon
-                  iconType="Feather"
-                  iconName="eye"
+                  iconType='Feather'
+                  iconName='send'
                   iconSize={16}
-                  iconColor="#FFF"
+                  iconColor='#000'
+                  style={{
+                    backgroundColor: '#FFF',
+                    borderRadius: 10,
+                    padding: 8,
+                    marginRight: 8
+                  }}
+                  text='SHARE'
+                  textStyle={{ paddingLeft: 5, ...styles.text, color: '#000' }}
+                  onPress={this.shareLive}
+                // iconAfterText
+                />
+                <ButtonWithTextIcon
+                  iconType='Feather'
+                  iconName='eye'
+                  iconSize={16}
+                  iconColor='#FFF'
                   style={{
                     backgroundColor:
                       isVideoOn && !isPreview ? '#FC5D83' : Colors.grey40,
                     borderRadius: 10,
                     paddingHorizontal: 8,
-                    paddingVertical: 10,
+                    paddingVertical: 8
                   }}
                   text={
                     isVideoOn && !isPreview
                       ? `${nFormatter(viewers, 1)} ● LIVE`
                       : `${nFormatter(viewers, 1)} PREVIEW `
                   }
-                  textStyle={{paddingLeft: 5, ...styles.text}}
+                  textStyle={{ paddingLeft: 5, ...styles.text }}
                 />
               </View>
             </View>
@@ -323,8 +347,9 @@ class CameraSection extends PureComponent {
               style={{
                 flexDirection: 'row',
                 justifyContent: 'space-between',
-                flex: 1,
-              }}>
+                flex: 1
+              }}
+            >
               {/*  <ButtonWithTextIcon
                   iconType="Feather"
                   iconName={isVideoOn ? 'video-off' : 'video'}
@@ -337,9 +362,9 @@ class CameraSection extends PureComponent {
                   iconAfterText
                   text={isVideoOn ? 'Stop' : 'Start'}
                   onPress={this.toggleVideo}
-                />*/}
+                /> */}
 
-              {/*<ButtonWithIcon
+              {/* <ButtonWithIcon
                 iconType="MaterialCommunityIcons"
                 iconName={
                   isFlashEnabled ? 'lightbulb-off-outline' : 'lightbulb-outline'
@@ -351,21 +376,21 @@ class CameraSection extends PureComponent {
                   marginLeft: 10,
                 }}
                 onPress={this.toggleFlashEnable}
-              />*/}
+              /> */}
               <ButtonWithText
-                text="End Live"
+                text='End Live'
                 textStyle={Typography.text80}
                 style={styles.button}
                 onPress={this.showDialog}
               />
               <ButtonWithIcon
-                iconType="Feather"
-                iconName="repeat"
+                iconType='Feather'
+                iconName='repeat'
                 iconSize={20}
-                iconColor="#000"
+                iconColor='#000'
                 style={{
                   ...styles.button,
-                  marginLeft: 10,
+                  marginLeft: 10
                 }}
                 onPress={this.switchCamera}
               />
@@ -375,7 +400,7 @@ class CameraSection extends PureComponent {
             migrate
             useSafeArea
             ignoreBackgroundPress
-            key="dialog-key"
+            key='dialog-key'
             bottom
             height={200}
             panDirection={PanningProvider.Directions.DOWN}
@@ -384,10 +409,11 @@ class CameraSection extends PureComponent {
               borderRadius: 12,
               marginBottom: 20,
               padding: 20,
-              justifyContent: 'space-between',
+              justifyContent: 'space-between'
             }}
             visible={showDialog}
-            onDismiss={this.hideDialog}>
+            onDismiss={this.hideDialog}
+          >
             <Text style={Typography.text50}>
               Do you want to end this event?
             </Text>
@@ -396,19 +422,20 @@ class CameraSection extends PureComponent {
               style={{
                 flexDirection: 'row',
                 justifyContent: 'space-around',
-                alignItems: 'center',
-              }}>
+                alignItems: 'center'
+              }}
+            >
               <ButtonWithText
                 style={{
                   ...styles.button,
                   backgroundColor: Colors.grey40,
                   width: 70,
                   justifyContent: 'center',
-                  alignItems: 'center',
+                  alignItems: 'center'
                 }}
-                textStyle={{...Typography.text50, color: '#FFF'}}
+                textStyle={{ ...Typography.text50, color: '#FFF' }}
                 onPress={this.endLive}
-                text="Yes"
+                text='Yes'
               />
 
               <ButtonWithText
@@ -417,24 +444,24 @@ class CameraSection extends PureComponent {
                   backgroundColor: Colors.grey40,
                   width: 70,
                   justifyContent: 'center',
-                  alignItems: 'center',
+                  alignItems: 'center'
                 }}
-                textStyle={{...Typography.text50, color: '#FFF'}}
+                textStyle={{ ...Typography.text50, color: '#FFF' }}
                 onPress={this.hideDialog}
-                text="No"
+                text='No'
               />
             </View>
             <View />
           </Dialog>
         </View>
-      );
+      )
     }
 
-    return <View />;
+    return <View />
   }
 }
 
-export default CameraSection;
+export default CameraSection
 
 const styles = StyleSheet.create({
   container: {
@@ -443,7 +470,7 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 15,
     backgroundColor: '#999',
-    overflow: 'hidden',
+    overflow: 'hidden'
   },
   topActionsRow: {
     position: 'absolute',
@@ -453,7 +480,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   statusContainer: {
     backgroundColor: 'rgba(0,0,0,0.5)',
@@ -461,12 +488,12 @@ const styles = StyleSheet.create({
     padding: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 10,
+    borderRadius: 10
   },
   button: {
     padding: 10,
     backgroundColor: '#FFF',
-    borderRadius: 10,
+    borderRadius: 10
   },
   bottomActionsRow: {
     flexDirection: 'row',
@@ -476,12 +503,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     right: 0,
-    padding: 10,
+    padding: 10
   },
   text: {
     fontSize: 14,
     color: '#FFF',
-    fontWeight: 'bold',
+    fontWeight: 'bold'
   },
   absolute: {
     position: 'absolute',
@@ -489,31 +516,31 @@ const styles = StyleSheet.create({
     left: 0,
     bottom: 0,
     right: 0,
-    borderRadius: 10,
+    borderRadius: 10
   },
   itemContainer: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   imageContainer: {
-    height: 40,
-    width: 40,
-    borderRadius: 20,
-    overflow: 'hidden',
+    height: 36,
+    width: 36,
+    borderRadius: 18,
+    overflow: 'hidden'
   },
   image: {
-    ...StyleSheet.absoluteFill,
+    ...StyleSheet.absoluteFill
   },
   endButton: {
     padding: 10,
     backgroundColor: '#FFF',
-    borderRadius: 10,
+    borderRadius: 10
   },
   fullRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    flex: 1,
-  },
-});
+    flex: 1
+  }
+})
