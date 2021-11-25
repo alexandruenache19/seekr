@@ -2,11 +2,14 @@ import React, { Component } from 'react'
 import { View, StyleSheet, Text } from 'react-native'
 
 import { Typography } from 'react-native-ui-lib'
+import { captureScreen } from 'react-native-view-shot'
 import { ButtonWithTextIcon, ButtonWithText } from '_atoms'
 import { ProductListDialog, NewProductDialog } from '_molecules'
 import { eventsRef } from '../../../config/firebase'
-import { Interactions } from '_actions'
-const { getProductInfo } = Interactions
+import { Interactions, HelperActions } from '_actions'
+const { generateId } = HelperActions
+const { uploadImageToS3, getProductInfo } = Interactions
+
 class LiveActionsSection extends Component {
   constructor(props) {
     super(props)
@@ -43,6 +46,21 @@ class LiveActionsSection extends Component {
 
   goToNextItem() {
     this.dialog.showDialog()
+    // captureScreen({
+    //   format: 'jpg',
+    //   quality: 0.8,
+    // }).then(
+    //   async uri => {
+    //     const imageURL = await uploadImageToS3(
+    //       uri,
+    //       'seekr-product-images',
+    //       generateId(6),
+    //       'profile-images',
+    //     );
+    //     console.log('imageURL', imageURL);
+    //   },
+    //   error => console.error('Oops, snapshot failed', error),
+    // )
   }
 
   render() {
@@ -63,12 +81,16 @@ class LiveActionsSection extends Component {
                 {productInfo.currency}
                 <Text style={Typography.text50}>{productInfo.price}</Text>
               </Text>
-              <Text style={{ ...styles.detailsText, paddingLeft: 10 }}>
-                {' items'}
-                <Text style={Typography.text50}>
-                  {productInfo.currentStock}
+              {productInfo.isForAuction ? (
+                null
+              ) : (
+                <Text style={{ ...styles.detailsText, paddingLeft: 10 }}>
+                  {' items'}
+                  <Text style={Typography.text50}>
+                    {productInfo.currentStock}
+                  </Text>
                 </Text>
-              </Text>
+              )}
             </View>
           ) : (
             <View

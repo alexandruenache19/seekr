@@ -15,6 +15,7 @@ import {Interactions, ShareActions, HelperActions} from '_actions';
 const {endEvent} = Interactions;
 const {share} = ShareActions;
 const {nFormatter} = HelperActions;
+
 class CameraSection extends PureComponent {
   constructor(props) {
     super(props);
