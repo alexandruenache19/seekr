@@ -199,12 +199,14 @@ class LiveActionsSection extends Component {
                 justifyContent: 'center',
                 width: '50%',
               }}>
-              <Text style={{color: '#FFF', fontSize: 16}}>
-                {productInfo.currency}
-                <Text style={Typography.text50}>
-                  {productInfo.auctionPrice}
+              {productInfo.auctionTimeRemaining > 0 && (
+                <Text style={{color: '#FFF', fontSize: 16}}>
+                  {productInfo.currency}
+                  <Text style={Typography.text50}>
+                    {productInfo.auctionPrice}
+                  </Text>
                 </Text>
-              </Text>
+              )}
 
               <Text
                 style={{
@@ -215,13 +217,13 @@ class LiveActionsSection extends Component {
                       ? '#FF6666'
                       : '#fff3b0',
                 }}>
-                {productInfo.auctionTimeRemaining === 0
-                  ? 'Finished'
-                  : `00:${
+                {productInfo.auctionTimeRemaining > 0
+                  ? `00:${
                       productInfo.auctionTimeRemaining > 9
                         ? productInfo.auctionTimeRemaining
                         : '0' + productInfo.auctionTimeRemaining
-                    }`}
+                    }`
+                  : 'Auction Ended'}
               </Text>
             </View>
 
