@@ -11,7 +11,8 @@ class LiveScreen extends PureComponent {
   }
 
   render() {
-    const {eventInfo} = this.props;
+    const {user} = this.props;
+    const userInfo = user.info;
 
     if (false) {
       return (
@@ -28,14 +29,20 @@ class LiveScreen extends PureComponent {
       );
     }
 
-    return (
-      <SafeAreaView style={{flex: 1}}>
-        <WebView
-          allowsInlineMediaPlayback={true}
-          source={{uri: 'https://seekrlive.com/j/joint-event-id'}}
-        />
-      </SafeAreaView>
-    );
+    if (user && userInfo) {
+      return (
+        <SafeAreaView style={{flex: 1}}>
+          <WebView
+            allowsInlineMediaPlayback={true}
+            source={{
+              uri: `https://seekrlive.com/j/${userInfo.currentJointEventId}`,
+            }}
+          />
+        </SafeAreaView>
+      );
+    }
+
+    return <SafeAreaView />;
   }
 }
 

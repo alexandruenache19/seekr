@@ -32,9 +32,9 @@ class CameraSection extends PureComponent {
       showDialog: false,
       url: url,
       secondsRemaining: 0,
-      isPresentingNext: false,
       isFlashEnabled: false,
       isPresentingNow: false,
+      isPresentingNext: false,
     };
 
     this.toggleVideo = this.toggleVideo.bind(this);
@@ -44,6 +44,7 @@ class CameraSection extends PureComponent {
     this.hideDialog = this.hideDialog.bind(this);
     this.showDialog = this.showDialog.bind(this);
     this.toggleFlashEnable = this.toggleFlashEnable.bind(this);
+    this.goBack = this.goBack.bind(this);
   }
 
   async componentDidMount() {
@@ -62,7 +63,7 @@ class CameraSection extends PureComponent {
       });
 
     this.currentUserListener = jointEventsRef
-      .child(`joint-event-id/info/currentLiveUserId`)
+      .child(`${userInfo.currentJointEventId}/info/currentLiveUserId`)
       .on('value', async snapshot => {
         if (snapshot.exists()) {
           const currentLiveUserId = snapshot.val();
@@ -76,7 +77,7 @@ class CameraSection extends PureComponent {
       });
 
     this.nextUserListener = jointEventsRef
-      .child(`joint-event-id/info/nextLiveUserId`)
+      .child(`${userInfo.currentJointEventId}/info/nextLiveUserId`)
       .on('value', async snapshot => {
         if (snapshot.exists()) {
           const nextLiveUserId = snapshot.val();
@@ -89,7 +90,7 @@ class CameraSection extends PureComponent {
       });
 
     this.secondsListener = jointEventsRef
-      .child(`joint-event-id/info/secondsRemaining`)
+      .child(`${userInfo.currentJointEventId}/info/secondsRemaining`)
       .on('value', async snapshot => {
         if (snapshot.exists()) {
           const secondsRemaining = snapshot.val();
@@ -144,6 +145,9 @@ class CameraSection extends PureComponent {
       console.log('e', e);
     }
   }
+  goBack() {
+    Navigation.popToRoot('HOME_STACK');
+  }
 
   shareLive() {
     const {eventInfo} = this.props;
@@ -178,246 +182,254 @@ class CameraSection extends PureComponent {
         </View>
       );
     }
-    return (
-      <View style={styles.container}>
-        <NodeCameraView
-          style={{height: '100%'}}
-          ref={vb => {
-            this.vb = vb;
-          }}
-          outputUrl={url}
-          camera={{cameraId: 1, cameraFrontMirror: false}}
-          audio={{bitrate: 128000, profile: 1, samplerate: 48000}}
-          video={{
-            preset: 2,
-            bitrate: 800000,
-            profile: 1,
-            fps: 30,
-            videoFrontMirror: false,
-          }}
-          autopreview
-        />
-        {((!isPreview &&
-          isPresentingNext &&
-          secondsRemaining > 0 &&
-          !isPresentingNow) ||
-          !isPresentingNow) && (
-          <View
-            style={{
-              ...styles.absolute,
-              backgroundColor: 'rgba(255,255,255,0.6)',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <Text style={{...Typography.text70, color: '#000'}}>
-              You are presenting
-            </Text>
-            <Text style={{...Typography.text40, color: '#000', paddingTop: 20}}>
-              {!isPresentingNext
-                ? 'in a few minutes'
-                : `in ${secondsRemaining} seconds`}
-            </Text>
-          </View>
-        )}
-
-        <View style={styles.topActionsRow}>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}>
-            <View style={styles.imageContainer}>
-              <FastImage
-                source={{uri: userInfo.imageURL}}
-                style={styles.image}
-                resizeMode={FastImage.resizeMode.cover}
-              />
-            </View>
+    if (userInfo) {
+      return (
+        <View style={styles.container}>
+          <NodeCameraView
+            style={{height: '100%'}}
+            ref={vb => {
+              this.vb = vb;
+            }}
+            outputUrl={url}
+            camera={{cameraId: 1, cameraFrontMirror: false}}
+            audio={{bitrate: 128000, profile: 1, samplerate: 48000}}
+            video={{
+              preset: 2,
+              bitrate: 800000,
+              profile: 1,
+              fps: 30,
+              videoFrontMirror: false,
+            }}
+            autopreview
+          />
+          {((!isPreview &&
+            isPresentingNext &&
+            secondsRemaining > 0 &&
+            !isPresentingNow) ||
+            (!isPresentingNow && !isPreview)) && (
             <View
               style={{
-                justifyContent: 'space-between',
-                paddingLeft: 10,
-                alignItems: 'flex-start',
+                ...styles.absolute,
+                backgroundColor: 'rgba(255,255,255,0.6)',
+                justifyContent: 'center',
+                alignItems: 'center',
               }}>
-              <Text style={styles.text}>@{userInfo.username}</Text>
-              <View style={styles.fullRow}>
-                {/* <ButtonWithTextIcon
-                  iconType="Feather"
-                  iconName="plus"
-                  iconSize={16}
-                  iconColor="#000"
-                  style={{
-                    backgroundColor: '#FFF',
-                    borderRadius: 5,
-                    padding: 3,
-                  }}
-                  text={'Follow'}
-                  textStyle={{...styles.text, color: '#000'}}
-                /> */}
+              <Text style={{...Typography.text70, color: '#000'}}>
+                You are presenting
+              </Text>
+              <Text
+                style={{...Typography.text40, color: '#000', paddingTop: 20}}>
+                {!isPresentingNext
+                  ? 'in a few minutes'
+                  : `in ${secondsRemaining} seconds`}
+              </Text>
+            </View>
+          )}
+
+          <View style={styles.topActionsRow}>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
+              <ButtonWithIcon
+                iconType="Feather"
+                iconName="arrow-left"
+                iconSize={30}
+                iconColor="#FFF"
+                onPress={this.goBack}
+              />
+              <View style={styles.imageContainer}>
+                <FastImage
+                  source={{uri: userInfo.imageURL}}
+                  style={styles.image}
+                  resizeMode={FastImage.resizeMode.cover}
+                />
+              </View>
+              <View
+                style={{
+                  justifyContent: 'space-between',
+                  paddingLeft: 10,
+                  alignItems: 'flex-start',
+                }}>
+                <Text style={styles.text}>@{userInfo.username}</Text>
+                <View style={styles.fullRow}>
+                  {/* <ButtonWithTextIcon
+                    iconType="Feather"
+                    iconName="plus"
+                    iconSize={16}
+                    iconColor="#000"
+                    style={{
+                      backgroundColor: '#FFF',
+                      borderRadius: 5,
+                      padding: 3,
+                    }}
+                    text={'Follow'}
+                    textStyle={{...styles.text, color: '#000'}}
+                  /> */}
+                  <ButtonWithTextIcon
+                    iconType="Feather"
+                    iconName="send"
+                    iconSize={16}
+                    iconColor="#000"
+                    style={{
+                      backgroundColor: '#FFF',
+                      borderRadius: 5,
+                      padding: 2,
+                    }}
+                    text="Share"
+                    textStyle={{...styles.text, color: '#000', paddingRight: 2}}
+                    onPress={this.shareLive}
+                    iconAfterText
+                  />
+                </View>
+              </View>
+            </View>
+
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginTop: 2,
+                  height: '100%',
+                }}>
                 <ButtonWithTextIcon
                   iconType="Feather"
-                  iconName="send"
+                  iconName="eye"
                   iconSize={16}
-                  iconColor="#000"
+                  iconColor="#FFF"
                   style={{
-                    backgroundColor: '#FFF',
-                    borderRadius: 5,
-                    padding: 2,
+                    backgroundColor:
+                      isVideoOn && !isPreview ? '#FC5D83' : Colors.grey40,
+                    borderRadius: 10,
+                    paddingHorizontal: 8,
+                    paddingVertical: 10,
                   }}
-                  text="Share"
-                  textStyle={{...styles.text, color: '#000', paddingRight: 2}}
-                  onPress={this.shareLive}
-                  iconAfterText
+                  text={
+                    isVideoOn && !isPreview
+                      ? `${nFormatter(viewers, 1)} ● LIVE`
+                      : `${nFormatter(viewers, 1)} PREVIEW `
+                  }
+                  textStyle={{paddingLeft: 5, ...styles.text}}
                 />
               </View>
             </View>
           </View>
-
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <View style={styles.bottomActionsRow}>
             <View
               style={{
                 flexDirection: 'row',
                 justifyContent: 'space-between',
-                alignItems: 'center',
-                marginTop: 2,
-                height: '100%',
+                flex: 1,
               }}>
-              <ButtonWithTextIcon
-                iconType="Feather"
-                iconName="eye"
-                iconSize={16}
-                iconColor="#FFF"
-                style={{
-                  backgroundColor:
-                    isVideoOn && !isPreview ? '#FC5D83' : Colors.grey40,
-                  borderRadius: 10,
-                  paddingHorizontal: 8,
-                  paddingVertical: 10,
-                }}
-                text={
-                  isVideoOn && !isPreview
-                    ? `${nFormatter(viewers, 1)} ● LIVE`
-                    : `${nFormatter(viewers, 1)} PREVIEW `
+              {/*  <ButtonWithTextIcon
+                  iconType="Feather"
+                  iconName={isVideoOn ? 'video-off' : 'video'}
+                  iconSize={20}
+                  iconColor="#000"
+                  style={{
+                    ...styles.button,
+                  }}
+                  textStyle={{paddingRight: 5}}
+                  iconAfterText
+                  text={isVideoOn ? 'Stop' : 'Start'}
+                  onPress={this.toggleVideo}
+                />*/}
+
+              {/*<ButtonWithIcon
+                iconType="MaterialCommunityIcons"
+                iconName={
+                  isFlashEnabled ? 'lightbulb-off-outline' : 'lightbulb-outline'
                 }
-                textStyle={{paddingLeft: 5, ...styles.text}}
-              />
-            </View>
-            <ButtonWithIcon
-              iconType="Feather"
-              iconName="x"
-              iconSize={30}
-              iconColor="#FFF"
-              style={{
-                // ...styles.button,
-                marginLeft: 10,
-              }}
-              onPress={this.showDialog}
-            />
-          </View>
-        </View>
-        <View style={styles.bottomActionsRow}>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'flex-end',
-              flex: 1,
-            }}>
-            {/*  <ButtonWithTextIcon
-                iconType="Feather"
-                iconName={isVideoOn ? 'video-off' : 'video'}
                 iconSize={20}
                 iconColor="#000"
                 style={{
                   ...styles.button,
+                  marginLeft: 10,
                 }}
-                textStyle={{paddingRight: 5}}
-                iconAfterText
-                text={isVideoOn ? 'Stop' : 'Start'}
-                onPress={this.toggleVideo}
+                onPress={this.toggleFlashEnable}
               />*/}
-
-            {/*<ButtonWithIcon
-              iconType="MaterialCommunityIcons"
-              iconName={
-                isFlashEnabled ? 'lightbulb-off-outline' : 'lightbulb-outline'
-              }
-              iconSize={20}
-              iconColor="#000"
-              style={{
-                ...styles.button,
-                marginLeft: 10,
-              }}
-              onPress={this.toggleFlashEnable}
-            />*/}
-
-            <ButtonWithIcon
-              iconType="Feather"
-              iconName="repeat"
-              iconSize={20}
-              iconColor="#000"
-              style={{
-                ...styles.button,
-                marginLeft: 10,
-              }}
-              onPress={this.switchCamera}
-            />
+              <ButtonWithText
+                text="End Live"
+                textStyle={Typography.text80}
+                style={styles.button}
+                onPress={this.showDialog}
+              />
+              <ButtonWithIcon
+                iconType="Feather"
+                iconName="repeat"
+                iconSize={20}
+                iconColor="#000"
+                style={{
+                  ...styles.button,
+                  marginLeft: 10,
+                }}
+                onPress={this.switchCamera}
+              />
+            </View>
           </View>
+          <Dialog
+            migrate
+            useSafeArea
+            ignoreBackgroundPress
+            key="dialog-key"
+            bottom
+            height={200}
+            panDirection={PanningProvider.Directions.DOWN}
+            containerStyle={{
+              backgroundColor: '#FFF',
+              borderRadius: 12,
+              marginBottom: 20,
+              padding: 20,
+              justifyContent: 'space-between',
+            }}
+            visible={showDialog}
+            onDismiss={this.hideDialog}>
+            <Text style={Typography.text50}>
+              Do you want to end this event?
+            </Text>
+
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-around',
+                alignItems: 'center',
+              }}>
+              <ButtonWithText
+                style={{
+                  ...styles.button,
+                  backgroundColor: Colors.grey40,
+                  width: 70,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+                textStyle={{...Typography.text50, color: '#FFF'}}
+                onPress={this.endLive}
+                text="Yes"
+              />
+
+              <ButtonWithText
+                style={{
+                  ...styles.button,
+                  backgroundColor: Colors.grey40,
+                  width: 70,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+                textStyle={{...Typography.text50, color: '#FFF'}}
+                onPress={this.hideDialog}
+                text="No"
+              />
+            </View>
+            <View />
+          </Dialog>
         </View>
-        <Dialog
-          migrate
-          useSafeArea
-          ignoreBackgroundPress
-          key="dialog-key"
-          bottom
-          height={200}
-          panDirection={PanningProvider.Directions.DOWN}
-          containerStyle={{
-            backgroundColor: '#FFF',
-            borderRadius: 12,
-            marginBottom: 20,
-            padding: 20,
-            justifyContent: 'space-between',
-          }}
-          visible={showDialog}
-          onDismiss={this.hideDialog}>
-          <Text style={Typography.text50}>Do you want to end this event?</Text>
+      );
+    }
 
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-around',
-              alignItems: 'center',
-            }}>
-            <ButtonWithText
-              style={{
-                ...styles.button,
-                backgroundColor: Colors.grey40,
-                width: 70,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-              textStyle={{...Typography.text50, color: '#FFF'}}
-              onPress={this.endLive}
-              text="Yes"
-            />
-
-            <ButtonWithText
-              style={{
-                ...styles.button,
-                backgroundColor: Colors.grey40,
-                width: 70,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-              textStyle={{...Typography.text50, color: '#FFF'}}
-              onPress={this.hideDialog}
-              text="No"
-            />
-          </View>
-          <View />
-        </Dialog>
-      </View>
-    );
+    return <View />;
   }
 }
 
