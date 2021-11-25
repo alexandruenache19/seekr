@@ -37,11 +37,20 @@ class CommentsSection extends PureComponent {
       })
   }
 
+  componentWillUnmount() {
+    const { eventInfo } = this.props
+    eventsRef
+      .child(`${eventInfo.id}/comments`)
+      .orderByChild('timestamp')
+      .limitToLast(20)
+      .off('value', this.commentsListener)
+  }
+
   renderItem({ item }) {
     return (
       <View style={styles.itemContainer}>
-        <Avatar
-          style={styles.image}
+        {/* <Avatar
+          style={{...styles.image, marginRight: 10}}
           source={{ uri: item.imageURL }}
           label={
             item.username
@@ -50,14 +59,14 @@ class CommentsSection extends PureComponent {
               : ''
           }
           backgroundColor={Colors.red60}
-        />
+        /> */}
 
-        <View style={{ flexDirection: 'column', marginLeft: 10 }}>
-          <Text style={{ ...Typography.text70BL }}>
+        <Text>
+          <Text style={{ ...Typography.text70, fontSize: 16, color: 'rgba(0,0,0,0.6)' }}>
             @{item.username}
           </Text>
-          <Text style={{ ...Typography.text70, lineHeight: 20 }}>{item.text}</Text>
-        </View>
+          <Text style={{ ...Typography.text70, fontSize: 16 }}>{` ${item.text}`}</Text>
+        </Text>
       </View>
     )
   }
@@ -103,8 +112,8 @@ const styles = StyleSheet.create({
     // backgroundColor: '#282B28',
     width: '100%',
     borderRadius: 10,
-    paddingHorizontal: 5,
-    paddingVertical: 5
+    paddingHorizontal: 3,
+    paddingVertical: 8
     // justifyContent: 'center',
     // alignItems: 'center',
   },
@@ -112,8 +121,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
-    marginTop: 5,
-    marginBottom: 10
+    marginTop: 3,
+    marginBottom: 3
   },
   image: {
     height: 24,

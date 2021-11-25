@@ -36,7 +36,7 @@ class LiveActionsSection extends Component {
         const productId = snapshot.val()
         // const productInfo = await getProductInfo(eventInfo, productId);
 
-        eventsRef
+        this.currentProductListener = eventsRef
           .child(`${eventInfo.id}/products/${productId}`)
           .on('value', async snapshot => {
             const productInfo = snapshot.val()
@@ -63,6 +63,13 @@ class LiveActionsSection extends Component {
         //   productId: productId,
         // });
       })
+  }
+
+  componentWillUnmount () {
+    const { eventInfo } = this.props
+    eventsRef
+      .child(`${eventInfo.id}/info/currentProductId`)
+      .off('value', this.productInfoListener)
   }
 
   goToNextItem () {
@@ -131,139 +138,152 @@ class LiveActionsSection extends Component {
   render () {
     const { eventInfo } = this.props
     const { productInfo } = this.state
+    if (!productInfo) return null
     return (
-      <View style={{ width: '100%', height: '12%', minHeight: 90 }}>
+      <View style={{
+        width: '100%',
+        height: '10%',
+        // minHeight: 90,
+        backgroundColor: '#282B28',
+        borderRadius: 15
+      }}
+      >
         {productInfo && productInfo.isForAuction ? (
-          <View style={{
-            width: '100%',
-            alignItems: 'center',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginBottom: 4
-          }}
-          >
-            <Text style={Typography.text70}>
-              {productInfo.auctionTimeRemaining === 0 ? (
-                'Final Price: '
-              ) : 'Current Price: '}
-              <Text style={{ fontWeight: 'bold' }}>{`${productInfo.auctionPrice}${productInfo.currency}`}</Text>
-            </Text>
-            <Text style={{ ...Typography.text70, color: productInfo.auctionTimeRemaining <= 15 ? 'red' : '#000' }}>
-              {`00:${productInfo.auctionTimeRemaining > 9
-                ? productInfo.auctionTimeRemaining
-                : '0' + productInfo.auctionTimeRemaining
-                }`}
-            </Text>
+          <View style={{ ...styles.container, flex: 1 }}>
+            <View style={{
+              // width: '100%',
+              alignItems: 'flex-start',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              marginRight: 10
+            }}
+            >
+              <Text style={{ ...Typography.text70, color: '#FFFFFF' }}>
+                {productInfo.auctionTimeRemaining === 0 ? (
+                  'Final Price: '
+                ) : 'Current Price: '}
+                <Text style={{ fontWeight: 'bold', color: '#FFFFFF' }}>{`${productInfo.auctionPrice}${productInfo.currency}`}</Text>
+              </Text>
+              <Text style={{ ...Typography.text70, color: productInfo.auctionTimeRemaining <= 15 ? 'red' : '#FFFFFF' }}>
+                {productInfo.auctionTimeRemaining === 0 ? 'Auction has ended' : `Time left: 00:${productInfo.auctionTimeRemaining > 9
+                  ? productInfo.auctionTimeRemaining
+                  : '0' + productInfo.auctionTimeRemaining
+                  }`}
+              </Text>
+            </View>
+            {productInfo.auctionOngoing ? (
+              <TouchableOpacity
+                activeOpacity={0.9}
+                style={{
+                  ...styles.nextButton,
+                  flex: 1
+                }}
+                onPress={this.handleAdd10s}
+              >
+                <Text style={{
+                  ...styles.text,
+                  textAlign: 'center'
+                }}
+                >
+                  {'Add 10s'}
+                </Text>
+              </TouchableOpacity>
+            ) : (
+              productInfo.auctionTimeRemaining <= 0 ? (
+                <ButtonWithText
+                  style={{ ...styles.nextButton, flex: 1, marginLeft: 10 }}
+                  textStyle={{
+                    ...styles.text,
+                    textAlign: 'center'
+                  }}
+                  iconType='Feather'
+                  iconName='arrow-right'
+                  iconSize={24}
+                  iconColor='#000'
+                  iconAfterText
+                  onPress={this.goToNextItem}
+                  text='Next Product'
+                />
+              ) : (
+                <TouchableOpacity
+                  activeOpacity={0.9}
+                  style={{
+                    ...styles.nextButton,
+                    flex: 1
+                  }}
+                  onPress={this.handleStartAuction}
+                >
+                  <Text style={{
+                    ...styles.text,
+                    textAlign: 'center'
+                  }}
+                  >
+                    {'Start auction'}
+                  </Text>
+                </TouchableOpacity>
+              )
+            )}
           </View>
-        ) : null}
-        <View style={{ ...styles.container, flex: 1 }}>
-          {productInfo ? (
-            productInfo.isForAuction ? (
-              productInfo.auctionTimeRemaining === 0 ? (
+        ) : (
+          <View style={{ ...styles.container, flex: 1 }}>
+            {productInfo.currentStock !== 0 ? (
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  alignItems: 'flex-end'
+                }}
+              >
+                <Text style={styles.detailsText}>
+                  {productInfo.currency}
+                  <Text style={Typography.text50}>{productInfo.price}</Text>
+                </Text>
+                {productInfo.isForAuction ? (
+                  null
+                ) : (
+                  <Text style={{ ...styles.detailsText, paddingLeft: 10 }}>
+                    {' items'}
+                    <Text style={Typography.text50}>
+                      {productInfo.currentStock}
+                    </Text>
+                  </Text>
+                )}
+              </View>
+            ) : (
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  alignItems: 'flex-end'
+                }}
+              >
                 <Text style={styles.detailsText}>
                   <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
-                    Auction has ended
+                    Stock is 0
                   </Text>
                 </Text>
-              ) : (
-                productInfo.auctionOngoing ? (
-                  <TouchableOpacity
-                    activeOpacity={0.9}
-                    style={{
-                      ...styles.nextButton,
-                      flex: 1
-                    }}
-                    onPress={this.handleAdd10s}
-                  >
-                    <Text style={{
-                      ...styles.text,
-                      textAlign: 'center'
-                    }}
-                    >
-                      {'Add 10s'}
-                    </Text>
-                  </TouchableOpacity>
-                ) : (
-                  <TouchableOpacity
-                    activeOpacity={0.9}
-                    style={{
-                      ...styles.nextButton,
-                      flex: 1
-                    }}
-                    onPress={this.handleStartAuction}
-                  >
-                    <Text style={{
-                      ...styles.text,
-                      textAlign: 'center'
-                    }}
-                    >
-                      {'Start auction'}
-                    </Text>
-                  </TouchableOpacity>
-                )
-              )
-            ) : (
-              productInfo.currentStock !== 0 ? (
-                <View
-                  style={{
-                    flex: 1,
-                    flexDirection: 'row',
-                    alignItems: 'flex-end'
-                  }}
-                >
-                  <Text style={styles.detailsText}>
-                    {productInfo.currency}
-                    <Text style={Typography.text50}>{productInfo.price}</Text>
-                  </Text>
-                  {productInfo.isForAuction ? (
-                    null
-                  ) : (
-                    <Text style={{ ...styles.detailsText, paddingLeft: 10 }}>
-                      {' items'}
-                      <Text style={Typography.text50}>
-                        {productInfo.currentStock}
-                      </Text>
-                    </Text>
-                  )}
-                </View>
-              ) : (
-                <View
-                  style={{
-                    flex: 1,
-                    flexDirection: 'row',
-                    alignItems: 'flex-end'
-                  }}
-                >
-                  <Text style={styles.detailsText}>
-                    <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
-                      Stock is 0
-                    </Text>
-                  </Text>
-                </View>
-              )
-            )
-          ) : (
-            null
-          )}
+              </View>
+            )}
 
-          <ButtonWithText
-            style={{ ...styles.nextButton, flex: 1, marginLeft: 10 }}
-            textStyle={{
-              ...styles.text,
-              textAlign: 'center'
-            }}
-            iconType='Feather'
-            iconName='arrow-right'
-            iconSize={24}
-            iconColor='#000'
-            iconAfterText
-            onPress={this.goToNextItem}
-            text='Next Product'
-          />
+            <ButtonWithText
+              style={{ ...styles.nextButton, flex: 1, marginLeft: 10 }}
+              textStyle={{
+                ...styles.text,
+                textAlign: 'center'
+              }}
+              iconType='Feather'
+              iconName='arrow-right'
+              iconSize={24}
+              iconColor='#000'
+              iconAfterText
+              onPress={this.goToNextItem}
+              text='Next Product'
+            />
 
-          {/* <ProductListDialog eventInfo={eventInfo} ref={r => (this.dialog = r)} /> */}
-          <NewProductDialog eventInfo={eventInfo} ref={r => (this.dialog = r)} />
-        </View>
+            {/* <ProductListDialog eventInfo={eventInfo} ref={r => (this.dialog = r)} /> */}
+          </View>
+        )}
+        <NewProductDialog eventInfo={eventInfo} ref={r => (this.dialog = r)} />
       </View>
     )
   }
