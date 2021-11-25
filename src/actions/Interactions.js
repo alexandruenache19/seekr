@@ -1,25 +1,25 @@
-import {Firebase} from '../config';
-import {Image, Platform} from 'react-native';
-import ImageResizer from 'react-native-image-resizer';
-import axios from 'axios';
-const {eventsRef, usersRef} = Firebase;
-import database from '@react-native-firebase/database';
+import { Firebase } from '../config'
+import { Image, Platform } from 'react-native'
+import ImageResizer from 'react-native-image-resizer'
+import axios from 'axios'
+import database from '@react-native-firebase/database'
+const { eventsRef, usersRef } = Firebase
 
 const getImageSize = async uri =>
   new Promise(resolve => {
     Image.getSize(uri, (width, height) => {
       resolve({
         width: width,
-        height: height,
-      });
-    });
-  });
+        height: height
+      })
+    })
+  })
 
 export const uploadImageToS3 = async (
   filePath,
   bucket,
   objectId,
-  keyPrefix = null,
+  keyPrefix = null
 ) => {
   // let resizedImage
   // try {
@@ -38,50 +38,50 @@ export const uploadImageToS3 = async (
   //   resizedImage = { path: filePath }
   // }
 
-  const resizedImage = {path: filePath};
+  const resizedImage = { path: filePath }
 
   // console.log('resizedImage', resizedImage)
 
-  const AWS = require('aws-sdk');
-  let key;
+  const AWS = require('aws-sdk')
+  let key
   if (keyPrefix) {
-    key = `${keyPrefix}/${objectId}`;
+    key = `${keyPrefix}/${objectId}`
   } else {
-    key = `${objectId}`;
+    key = `${objectId}`
   }
   const s3 = new AWS.S3({
     region: 'us-east-1',
     accessKeyId: 'AKIAZRH5PIV3MO5V4TBE',
-    secretAccessKey: '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',
-  });
+    secretAccessKey: 'AUv55Aj+Z5XKgJ51DeT/l/3NfUGnvKoCeFpkZunU'
+  })
 
   const resp = await fetch(
     Platform.OS === 'android'
       ? 'file://' + resizedImage.path
-      : resizedImage.path,
-  );
-  const imageBody = await resp.blob();
+      : resizedImage.path
+  )
+  const imageBody = await resp.blob()
 
   const params = {
     Bucket: bucket,
     Body: imageBody,
     Key: key,
-    ACL: 'public-read-write',
-  };
-  await s3.putObject(params).promise();
+    ACL: 'public-read-write'
+  }
+  await s3.putObject(params).promise()
 
-  console.log(`https://s3.amazonaws.com/${bucket}/` + key);
-  return `https://s3.amazonaws.com/${bucket}/` + key;
-};
+  console.log(`https://s3.amazonaws.com/${bucket}/` + key)
+  return `https://s3.amazonaws.com/${bucket}/` + key
+}
 
 export const createEvent = async (
   title,
   date,
   videoURL,
   uid,
-  status = 'scheduled',
+  status = 'scheduled'
 ) => {
-  const newRef = eventsRef.push();
+  const newRef = eventsRef.push()
 
   const eventInfo = {
     id: newRef.key,
@@ -91,29 +91,29 @@ export const createEvent = async (
       title: title,
       sellerId: uid,
       videoURL: videoURL,
-      status: status,
-    },
-  };
+      status: status
+    }
+  }
 
-  newRef.set(eventInfo);
-  usersRef.child(`${uid}/events/current`).set(eventInfo.id);
-  usersRef.child(`${uid}/events/live/${newRef.key}`).set(eventInfo);
+  newRef.set(eventInfo)
+  usersRef.child(`${uid}/events/current`).set(eventInfo.id)
+  usersRef.child(`${uid}/events/live/${newRef.key}`).set(eventInfo)
 
-  return eventInfo;
-};
+  return eventInfo
+}
 
 export const endEvent = async (eventInfo, uid) => {
   try {
-    eventsRef.child(`${eventInfo.id}/info/status`).set('ended');
+    eventsRef.child(`${eventInfo.id}/info/status`).set('ended')
     usersRef
       .child(`${uid}/events/past/${eventInfo.id}`)
-      .set(eventInfo.info.timestamp);
-    usersRef.child(`${uid}/events/live/${eventInfo.id}`).remove();
-    usersRef.child(`${uid}/events/current`).remove();
+      .set(eventInfo.info.timestamp)
+    usersRef.child(`${uid}/events/live/${eventInfo.id}`).remove()
+    usersRef.child(`${uid}/events/current`).remove()
   } catch (e) {
-    console.log('e', e);
+    console.log('e', e)
   }
-};
+}
 
 export const addProduct = async (
   uid,
@@ -123,16 +123,16 @@ export const addProduct = async (
   currency,
   description,
   productImagePath = null,
-  callback = () => null,
+  callback = () => null
 ) => {
-  let imageUrl = null;
+  let imageUrl = null
   if (productImagePath) {
     imageUrl = await uploadImageToS3(
       productImagePath,
       'seekr-product-images',
       productId,
-      null,
-    );
+      null
+    )
   }
 
   // const req = await axios.post('https://seekrlive.com/api/checkout', {
@@ -154,8 +154,8 @@ export const addProduct = async (
       quantity: parseFloat(quantity),
       // paymentUrl: paymentUrl,
       uid: uid,
-      timestamp: +new Date(),
-    });
+      timestamp: +new Date()
+    })
 
   await database()
     .ref(`users/${uid}/shop/products/${productId}`)
@@ -167,100 +167,93 @@ export const addProduct = async (
       price: parseFloat(price),
       imageUrl: imageUrl,
       quantity: parseFloat(quantity),
-      timestamp: +new Date(),
-    });
-  callback && callback();
-};
+      timestamp: +new Date()
+    })
+  callback && callback()
+}
 
 export const addItem = async (
   eventInfo,
-  price,
-  quantity,
-  currency,
-  description,
-  productImagePath = null,
-  callback = () => null,
+  productInfo,
+  // price,
+  // quantity,
+  // currency,
+  // description,
+  // productImagePath = null,
+  // isForAuction = false,
+  callback = () => null
 ) => {
-  const productRef = await eventsRef.child(`${eventInfo.id}/products/`).push();
+  const productRef = await eventsRef.child(`${eventInfo.id}/products/`).push()
 
   /** upload image to s3 */
-  let imageURL = null;
-  if (productImagePath) {
+  let imageURL = null
+  if (productInfo.productImagePath) {
     imageURL = await uploadImageToS3(
-      productImagePath,
+      productInfo.productImagePath,
       'seekr-product-images',
       productRef.key,
-      null,
-    );
+      null
+    )
   }
 
   await eventsRef.child(`${eventInfo.id}/products/${productRef.key}`).set({
     id: productRef.key,
-    price: price,
-    currentStock: quantity,
-    currency: currency,
-    imageURL: imageURL,
-    description: description || null,
-  });
+    ...productInfo,
+    imageURL: imageURL
+  })
 
   await eventsRef
     .child(`${eventInfo.id}/info/currentProductId`)
-    .set(productRef.key);
+    .set(productRef.key)
 
   await database()
     .ref(`products/${productRef.key}`)
     .update({
       id: productRef.key,
-      name: description,
-      price: parseFloat(price),
-      imageUrl: imageURL,
-      quantity: parseFloat(quantity),
+      ...productInfo,
+      imageURL: imageURL,
       uid: eventInfo.info.sellerId,
-      timestamp: +new Date(),
-    });
+      timestamp: +new Date()
+    })
 
   await database()
     .ref(`users/${eventInfo.info.sellerId}/shop/products/${productRef.key}`)
     .update({
-      uid: eventInfo.info.sellerId,
       id: productRef.key,
-      name: description,
-      price: parseFloat(price),
-      imageUrl: imageURL,
-      quantity: parseFloat(quantity),
-      timestamp: +new Date(),
-    });
+      ...productInfo,
+      imageURL: imageURL
+    })
 
-  callback(productRef.key);
-};
+  callback(productRef.key)
+}
 
 export const getProductInfo = async (eventInfo, productId) => {
   const snap = await eventsRef
     .child(`${eventInfo.id}/products/${productId}`)
-    .once('value');
-  return snap.val();
-};
+    .once('value')
+  return snap.val()
+}
 
 export const addLiveURL = async (userInfo, eventInfo) => {
   await eventsRef
     .child(`${eventInfo.id}/info/liveURL`)
-    .set(userInfo.stream.playbackURL);
-  await eventsRef.child(`${eventInfo.id}/info/status`).set('live');
-};
+    .set(userInfo.stream.playbackURL)
+  await eventsRef.child(`${eventInfo.id}/info/status`).set('live')
+}
 
 export const updateOrderStatus = async (eventId, orderId) => {
   await eventsRef
     .child(`${eventId}/orders/${orderId}/info/status`)
-    .set('complete');
-};
+    .set('complete')
+}
 
 export const updateOrderProductStatus = async (
   eventId,
   orderId,
   orderProductId,
-  status,
+  status
 ) => {
   await eventsRef
     .child(`${eventId}/orders/${orderId}/products/${orderProductId}/isPacked`)
-    .set(status);
-};
+    .set(status)
+}
