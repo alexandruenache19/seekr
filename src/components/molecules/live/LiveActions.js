@@ -2,11 +2,18 @@ import React, {Component} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 
 import {Typography} from 'react-native-ui-lib';
+import {captureScreen} from 'react-native-view-shot';
+
 import {ButtonWithTextIcon, ButtonWithText} from '_atoms';
 import {ProductListDialog} from '_molecules';
+
 import {eventsRef} from '../../../config/firebase';
-import {Interactions} from '_actions';
-const {getProductInfo} = Interactions;
+
+import {Interactions, HelperActions} from '_actions';
+
+const {uploadImageToS3, getProductInfo} = Interactions;
+const {generateId} = HelperActions;
+
 class LiveActionsSection extends Component {
   constructor(props) {
     super(props);
@@ -42,7 +49,22 @@ class LiveActionsSection extends Component {
   }
 
   goToNextItem() {
-    this.dialog.showDialog();
+    // this.dialog.showDialog();
+    captureScreen({
+      format: 'jpg',
+      quality: 0.8,
+    }).then(
+      async uri => {
+        const imageURL = await uploadImageToS3(
+          uri,
+          'seekr-product-images',
+          generateId(6),
+          'profile-images',
+        );
+        console.log('imageURL', imageURL);
+      },
+      error => console.error('Oops, snapshot failed', error),
+    );
   }
 
   render() {
