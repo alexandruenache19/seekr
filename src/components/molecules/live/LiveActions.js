@@ -20,7 +20,7 @@ class LiveActionsSection extends Component {
     this.state = {
       productInfo: null,
       productId: null,
-      secondsRemaining: 30
+      auctionPrice: 0
     }
     this.goToNextItem = this.goToNextItem.bind(this)
     this.handleStartAuction = this.handleStartAuction.bind(this)
@@ -41,9 +41,23 @@ class LiveActionsSection extends Component {
           .on('value', async snapshot => {
             const productInfo = snapshot.val()
 
-            this.setState({
-              productInfo: productInfo
-            })
+            if (
+              productInfo.auctionPrice &&
+              productInfo.auctionPrice > this.state.auctionPrice &&
+              productInfo.auctionTimeRemaining <= 10
+            ) {
+              console.log('productInfo.auctionPrice', productInfo.auctionPrice, this.state.auctionPrice)
+              this.setState({
+                productInfo: productInfo,
+                auctionPrice: productInfo.auctionPrice
+              })
+              this.handleAdd10s()
+            } else {
+              this.setState({
+                productInfo: productInfo,
+                auctionPrice: productInfo.auctionPrice
+              })
+            }
           })
         // this.setState({
         //   productId: productId,
@@ -70,51 +84,48 @@ class LiveActionsSection extends Component {
     // )
   }
 
-  handleAdd10s () {
-    this.setState({
-      secondsRemaining: this.state.secondsRemaining + 10
-    }, () => {
+  async handleAdd10s () {
+    const { eventInfo } = this.props
+    const { productInfo } = this.state
+
+    if (productInfo) {
+      const timeRemainingSn = await eventsRef.child(`${eventInfo.id}/products/${productInfo.id}/auctionTimeRemaining`).once('value')
+      const auctionTimeRemaining = timeRemainingSn.val()
+
+      eventsRef
+        .child(`${eventInfo.id}/products/${productInfo.id}`)
+        .update({
+          auctionTimeRemaining: auctionTimeRemaining + 10,
+          auctionOngoing: true
+        })
+
       this.handleStartAuction()
-    })
+    }
   }
 
   async handleStartAuction () {
     const { eventInfo } = this.props
     const { productInfo } = this.state
-    let { secondsRemaining } = this.state
 
     clearInterval(this.classInterval)
 
-    this.classInterval = setInterval(() => {
-      console.log('this.state.added', this.state.secondsRemaining)
-      secondsRemaining -= 1
+    this.classInterval = setInterval(async () => {
+      const timeRemainingSn = await eventsRef.child(`${eventInfo.id}/products/${productInfo.id}/auctionTimeRemaining`).once('value')
+      let auctionTimeRemaining = timeRemainingSn.val()
+      console.log('auctionTimeRemaining', auctionTimeRemaining)
+
+      auctionTimeRemaining -= 1
       eventsRef
         .child(`${eventInfo.id}/products/${productInfo.id}`)
         .update({
-          auctionTimeRemaining: secondsRemaining,
-          auctionOngoing: secondsRemaining >= 0
+          auctionTimeRemaining: auctionTimeRemaining,
+          auctionOngoing: auctionTimeRemaining > 0
         })
-      this.setState({
-        secondsRemaining: secondsRemaining
-      })
-      if (secondsRemaining <= 0) {
+
+      if (auctionTimeRemaining <= 0) {
         clearInterval(this.classInterval)
       }
     }, 1000)
-
-    // pollFunc(async () => {
-    //   eventsRef
-    //     .child(`${eventInfo.id}/products/${productInfo.id}`)
-    //     .update({
-    //       auctionTimeRemaining: secondsRemaining
-    //     })
-    //   secondsRemaining -= 1
-    //   this.setState({
-    //     secondsRemaining: secondsRemaining,
-    //   })
-    // }, secondsRemaining * 1000, 1000)
-
-    // await sleep(secondsRemaining * 1000)
   }
 
   render () {
@@ -137,8 +148,8 @@ class LiveActionsSection extends Component {
               ) : 'Current Price: '}
               <Text style={{ fontWeight: 'bold' }}>{`${productInfo.auctionPrice}${productInfo.currency}`}</Text>
             </Text>
-            <Text style={Typography.text70}>
-              {`00:${productInfo.auctionTimeRemaining > 0
+            <Text style={{ ...Typography.text70, color: productInfo.auctionTimeRemaining <= 15 ? 'red' : '#000' }}>
+              {`00:${productInfo.auctionTimeRemaining > 9
                 ? productInfo.auctionTimeRemaining
                 : '0' + productInfo.auctionTimeRemaining
                 }`}
