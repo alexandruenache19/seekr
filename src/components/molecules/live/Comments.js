@@ -11,18 +11,18 @@ import { ButtonWithTextIcon } from '_atoms'
 import { eventsRef } from '../../../config/firebase'
 
 class CommentsSection extends PureComponent {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = { loading: true, comments: [] }
     this.renderItem = this.renderItem.bind(this)
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const { eventInfo } = this.props
     this.commentsListener = eventsRef
       .child(`${eventInfo.id}/comments`)
       .orderByChild('timestamp')
-      .limitToLast(20)
+      .limitToLast(40)
       .on('value', snapshot => {
         const comments = []
         snapshot.forEach(commentSnapshot => {
@@ -37,16 +37,16 @@ class CommentsSection extends PureComponent {
       })
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     const { eventInfo } = this.props
     eventsRef
       .child(`${eventInfo.id}/comments`)
       .orderByChild('timestamp')
-      .limitToLast(20)
+      .limitToLast(40)
       .off('value', this.commentsListener)
   }
 
-  renderItem({ item }) {
+  renderItem ({ item }) {
     return (
       <View style={styles.itemContainer}>
         {/* <Avatar
@@ -62,16 +62,16 @@ class CommentsSection extends PureComponent {
         /> */}
 
         <Text>
-          <Text style={{ ...Typography.text70, fontSize: 16, color: 'rgba(0,0,0,0.6)' }}>
+          <Text style={{ ...Typography.text70, fontSize: 15, color: 'rgba(0,0,0,0.6)' }}>
             @{item.username}
           </Text>
-          <Text style={{ ...Typography.text70, fontSize: 16 }}>{` ${item.text}`}</Text>
+          <Text style={{ ...Typography.text70, fontSize: 15 }}>{` ${item.text}`}</Text>
         </Text>
       </View>
     )
   }
 
-  render() {
+  render () {
     const { comments, loading } = this.state
     return (
       <View style={styles.container}>
@@ -120,9 +120,9 @@ const styles = StyleSheet.create({
   itemContainer: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
-    alignItems: 'flex-start',
-    marginTop: 3,
-    marginBottom: 3
+    alignItems: 'flex-start'
+    // marginTop: 3,
+    // marginBottom: 3
   },
   image: {
     height: 24,

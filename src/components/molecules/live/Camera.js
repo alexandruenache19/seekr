@@ -17,7 +17,7 @@ const { share } = ShareActions
 const { nFormatter } = HelperActions
 
 class CameraSection extends PureComponent {
-  constructor(props) {
+  constructor (props) {
     super(props)
 
     const { userInfo } = props
@@ -48,7 +48,7 @@ class CameraSection extends PureComponent {
     this.goBack = this.goBack.bind(this)
   }
 
-  async componentDidMount() {
+  async componentDidMount () {
     const { isPreview, eventInfo, userInfo } = this.props
     const { isPresentingNext, isPresentingNow } = this.state
 
@@ -103,15 +103,15 @@ class CameraSection extends PureComponent {
       })
   }
 
-  hideDialog() {
+  hideDialog () {
     this.setState({ showDialog: false })
   }
 
-  showDialog() {
+  showDialog () {
     this.setState({ showDialog: true })
   }
 
-  toggleVideo() {
+  toggleVideo () {
     const { isVideoOn } = this.state
     if (isVideoOn) {
       this.vb.stop()
@@ -121,22 +121,22 @@ class CameraSection extends PureComponent {
     this.setState({ isVideoOn: !isVideoOn })
   }
 
-  async startLive() {
+  async startLive () {
     await this.vb.start()
     this.setState({ isVideoOn: true })
   }
 
-  toggleFlashEnable() {
+  toggleFlashEnable () {
     const { isFlashEnabled } = this.state
     this.vb.flashEnable(!isFlashEnabled)
     this.setState({ isFlashEnabled: !isFlashEnabled })
   }
 
-  switchCamera() {
+  switchCamera () {
     this.vb.switchCamera()
   }
 
-  async endLive() {
+  async endLive () {
     const { eventInfo, userInfo } = this.props
     this.setState({ showDialog: false })
     try {
@@ -147,16 +147,16 @@ class CameraSection extends PureComponent {
     }
   }
 
-  goBack() {
+  goBack () {
     Navigation.popToRoot('HOME_STACK')
   }
 
-  shareLive() {
+  shareLive () {
     const { eventInfo } = this.props
     share(eventInfo.info)
   }
 
-  render() {
+  render () {
     const {
       isVideoOn,
       viewers,
@@ -210,26 +210,26 @@ class CameraSection extends PureComponent {
             secondsRemaining > 0 &&
             !isPresentingNow) ||
             (!isPresentingNow && !isPreview)) && (
-              <View
-                style={{
-                  ...styles.absolute,
-                  backgroundColor: 'rgba(255,255,255,0.6)',
-                  justifyContent: 'center',
-                  alignItems: 'center'
-                }}
-              >
-                <Text style={{ ...Typography.text70, color: '#000' }}>
+            <View
+              style={{
+                ...styles.absolute,
+                backgroundColor: 'rgba(255,255,255,0.6)',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+            >
+              <Text style={{ ...Typography.text70, color: '#000' }}>
                   You are presenting
-                </Text>
-                <Text
-                  style={{ ...Typography.text40, color: '#000', paddingTop: 20 }}
-                >
-                  {!isPresentingNext
-                    ? 'in a few minutes'
-                    : `in ${secondsRemaining} seconds`}
-                </Text>
-              </View>
-            )}
+              </Text>
+              <Text
+                style={{ ...Typography.text40, color: '#000', paddingTop: 20 }}
+              >
+                {!isPresentingNext
+                  ? 'in a few minutes'
+                  : `in ${secondsRemaining} seconds`}
+              </Text>
+            </View>
+          )}
 
           <View style={styles.topActionsRow}>
             <View
@@ -334,8 +334,8 @@ class CameraSection extends PureComponent {
                   }}
                   text={
                     isVideoOn && !isPreview
-                      ? `${nFormatter(viewers, 1)} ● LIVE`
-                      : `${nFormatter(viewers, 1)} PREVIEW `
+                      ? `${viewers > 200 ? '200+' : nFormatter(viewers, 1)} ● LIVE`
+                      : `${viewers > 200 ? '200+' : nFormatter(viewers, 1)} PREVIEW `
                   }
                   textStyle={{ paddingLeft: 5, ...styles.text }}
                 />
@@ -377,12 +377,21 @@ class CameraSection extends PureComponent {
                 }}
                 onPress={this.toggleFlashEnable}
               /> */}
-              <ButtonWithText
-                text='End Live'
-                textStyle={Typography.text80}
-                style={styles.button}
-                onPress={this.showDialog}
-              />
+              {isVideoOn && !isPreview ? (
+                <ButtonWithText
+                  text='End Live'
+                  textStyle={{ ...Typography.text80, fontWeight: 'bold' }}
+                  style={styles.button}
+                  onPress={this.showDialog}
+                />
+              ) : (
+                <ButtonWithText
+                  text=''
+                  textStyle={{ ...Typography.text80, fontWeight: 'bold' }}
+                  style={{ backgroundColor: 'transparent' }}
+                  onPress={() => null}
+                />
+              )}
               <ButtonWithIcon
                 iconType='Feather'
                 iconName='repeat'

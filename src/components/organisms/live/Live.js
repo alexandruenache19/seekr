@@ -3,7 +3,7 @@ import { View, SafeAreaView, StyleSheet } from 'react-native'
 import { CommentsSection, CameraSection, LiveActionsSection } from '_molecules'
 
 class LiveScreen extends PureComponent {
-  render() {
+  render () {
     const { userInfo, eventInfo } = this.props
     return (
       <SafeAreaView style={styles.safeContainer}>
@@ -28,6 +28,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingBottom: 10,
-    paddingHorizontal: 10
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: 'red'
   }
 })
