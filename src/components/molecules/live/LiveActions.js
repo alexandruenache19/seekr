@@ -74,6 +74,8 @@ class LiveActionsSection extends Component {
     eventsRef
       .child(`${eventInfo.id}/info/currentProductId`)
       .off('value', this.productInfoListener)
+
+    clearInterval(this.classInterval)
   }
 
   goToNextItem () {
