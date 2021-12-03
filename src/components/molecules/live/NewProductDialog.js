@@ -66,10 +66,6 @@ class NewProductDialog extends Component {
     this.handleChangeDescription = this.handleChangeDescription.bind(this);
   }
 
-  componentDidMount() {}
-
-  componentWillUnmount() {}
-
   showDialog() {
     this.setState({showDialog: true});
   }
@@ -91,7 +87,7 @@ class NewProductDialog extends Component {
         eventInfo,
         {
           price: parseFloat(price),
-          currentStock: parseFloat(quantity),
+          currentStock: parseFloat(quantity || 0),
           currency: currency,
           description: description || null,
           isForAuction: isForAuction,
@@ -99,7 +95,6 @@ class NewProductDialog extends Component {
           auctionPrice: isForAuction ? parseFloat(price) : null,
         },
         productId => {
-          console.log('productId', productId);
           this.setState({
             uploading: false,
             price: null,
