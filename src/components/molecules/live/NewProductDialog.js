@@ -172,7 +172,7 @@ class NewProductDialog extends Component {
       <Dialog
         useSafeArea
         ignoreBackgroundPress
-        key="dialog-key"
+        key="dialog-key-22"
         center
         height="50%"
         panDirection={PanningProvider.Directions.TOP}
@@ -212,6 +212,24 @@ class NewProductDialog extends Component {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             keyboardVerticalOffset={Platform.OS === 'ios' ? 20 : 0}
             style={{flex: 1}}>
+            <TextInput
+              ref={r => (this.priceInput = r)}
+              placeholderTextColor="#888"
+              returnKeyType="done"
+              clearButtonMode="never"
+              keyboardAppearance="dark"
+              returnKeyLabel="Done"
+              //   multiline
+              placeholder="(Optional) Add a short description..."
+              onChangeText={this.handleChangeDescription}
+              value={description}
+              style={{
+                ...Typography.text70,
+                borderBottomColor: 'rgba(0,0,0,0.2)',
+                paddingBottom: 10,
+                borderBottomWidth: 1,
+              }}
+            />
             <View
               style={{
                 flexDirection: 'row',
