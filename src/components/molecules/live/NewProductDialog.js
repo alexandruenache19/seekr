@@ -66,10 +66,6 @@ class NewProductDialog extends Component {
     this.handleChangeDescription = this.handleChangeDescription.bind(this);
   }
 
-  componentDidMount() {}
-
-  componentWillUnmount() {}
-
   showDialog() {
     this.setState({showDialog: true});
   }
@@ -91,7 +87,7 @@ class NewProductDialog extends Component {
         eventInfo,
         {
           price: parseFloat(price),
-          currentStock: parseFloat(quantity),
+          currentStock: parseFloat(quantity || 0),
           currency: currency,
           description: description || null,
           isForAuction: isForAuction,
@@ -99,7 +95,6 @@ class NewProductDialog extends Component {
           auctionPrice: isForAuction ? parseFloat(price) : null,
         },
         productId => {
-          console.log('productId', productId);
           this.setState({
             uploading: false,
             price: null,
@@ -172,7 +167,7 @@ class NewProductDialog extends Component {
       <Dialog
         useSafeArea
         ignoreBackgroundPress
-        key="dialog-key"
+        key="dialog-key-22"
         center
         height="50%"
         panDirection={PanningProvider.Directions.TOP}
@@ -212,6 +207,24 @@ class NewProductDialog extends Component {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             keyboardVerticalOffset={Platform.OS === 'ios' ? 20 : 0}
             style={{flex: 1}}>
+            <TextInput
+              ref={r => (this.priceInput = r)}
+              placeholderTextColor="#888"
+              returnKeyType="done"
+              clearButtonMode="never"
+              keyboardAppearance="dark"
+              returnKeyLabel="Done"
+              //   multiline
+              placeholder="(Optional) Add a short description..."
+              onChangeText={this.handleChangeDescription}
+              value={description}
+              style={{
+                ...Typography.text70,
+                borderBottomColor: 'rgba(0,0,0,0.2)',
+                paddingBottom: 10,
+                borderBottomWidth: 1,
+              }}
+            />
             <View
               style={{
                 flexDirection: 'row',

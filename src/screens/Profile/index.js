@@ -1,5 +1,5 @@
-import React, { PureComponent } from 'react';
-import { connect } from 'react-redux';
+import React, {PureComponent} from 'react';
+import {connect} from 'react-redux';
 import {
   SafeAreaView,
   View,
@@ -11,12 +11,12 @@ import {
   FlatList,
   Dimensions,
 } from 'react-native';
-import { Keyboard, Typography, Colors } from 'react-native-ui-lib';
+import {Keyboard, Typography, Colors} from 'react-native-ui-lib';
 import Video from 'react-native-video';
-import { Navigation } from 'react-native-navigation';
+import {Navigation} from 'react-native-navigation';
 import moment from 'moment';
 import database from '@react-native-firebase/database';
-import { Transitions, Service } from '_nav';
+import {Transitions, Service} from '_nav';
 import {
   InputWithLabel,
   ButtonWithText,
@@ -24,8 +24,8 @@ import {
   ButtonWithTextIcon,
 } from '_atoms';
 import FastImage from 'react-native-fast-image';
-import { Constants } from '_styles';
-import { OrderItems, ProductDialog } from '_molecules';
+import {Constants} from '_styles';
+import {OrderItems, ProductDialog} from '_molecules';
 import auth from '@react-native-firebase/auth';
 const windowWidth = Dimensions.get('window').width;
 
@@ -44,7 +44,7 @@ class Profile extends PureComponent {
   }
 
   componentDidMount() {
-    const { user } = this.props;
+    const {user} = this.props;
 
     this.currentEventListener = database()
       .ref(`users/${user.uid}/shop`)
@@ -66,11 +66,11 @@ class Profile extends PureComponent {
       .ref(`users/${user.uid}/info`)
       .on('value', async snap => {
         var userInfo = snap.val();
-        this.setState({ userInfo: userInfo });
+        this.setState({userInfo: userInfo});
       });
   }
 
-  renderItem({ item }) {
+  renderItem({item}) {
     return (
       <TouchableOpacity
         style={{
@@ -85,13 +85,13 @@ class Profile extends PureComponent {
             width: '100%',
             borderRadius: 10,
           }}
-          source={{ uri: item.imageUrl }}
+          source={{uri: item.imageUrl}}
         />
       </TouchableOpacity>
     );
   }
 
-  renderOrderItem({ item }) {
+  renderOrderItem({item}) {
     return (
       <TouchableOpacity
         style={{
@@ -101,7 +101,7 @@ class Profile extends PureComponent {
           borderRadius: 10,
         }}
         onPress={() => this.dialog.showDialog(item)}>
-        <Text style={{ ...Typography.text70BO, color: '#FFF' }}>
+        <Text style={{...Typography.text70BO, color: '#FFF'}}>
           {item.info.name}
         </Text>
       </TouchableOpacity>
@@ -109,18 +109,18 @@ class Profile extends PureComponent {
   }
 
   renderHeader() {
-    const { userInfo, orders } = this.state
+    const {userInfo, orders} = this.state;
     return (
       <View>
         <ButtonWithTextIcon
-          style={{ alignSelf: 'flex-end' }}
+          style={{alignSelf: 'flex-end'}}
           iconName="sign-out"
           iconType="FontAwesome"
           iconSize={22}
           iconColor={'#000'}
           text="sign out"
           iconAfterText
-          textStyle={{ ...Typography.text70, paddingRight: 5 }}
+          textStyle={{...Typography.text70, paddingRight: 5}}
           onPress={() => auth().signOut()}
         />
         <View
@@ -135,7 +135,9 @@ class Profile extends PureComponent {
               width: 100,
               borderRadius: 50,
             }}
-            source={{ uri: userInfo && userInfo.imageURL ? userInfo.imageURL : null }}
+            source={{
+              uri: userInfo && userInfo.imageURL ? userInfo.imageURL : null,
+            }}
           />
 
           <Text style={Typography.text40}>@{userInfo.username}</Text>
@@ -147,13 +149,13 @@ class Profile extends PureComponent {
             justifyContent: 'space-between',
             alignItems: 'center',
           }}>
-          <Text style={{ ...Typography.text60 }}>Orders</Text>
+          <Text style={{...Typography.text60}}>Orders</Text>
           {/*  <ButtonWithText textStyle={Typography.text70} text="view all" />*/}
         </View>
 
         <FlatList
           data={orders}
-          style={{ flex: 1, width: '100%' }}
+          style={{flex: 1, width: '100%'}}
           numColumns={2}
           columnWrapperStyle={{
             flex: 1,
@@ -162,25 +164,25 @@ class Profile extends PureComponent {
           }}
           showsVerticalScrollIndicator={false}
           renderItem={this.renderOrderItem}
-          keyExtractor={(item, index) => item.id + index}
+          keyExtractor={(item, index) => index}
         />
-        <Text style={{ ...Typography.text60, marginTop: 20 }}>Products</Text>
+        <Text style={{...Typography.text60, marginTop: 20}}>Products</Text>
       </View>
     );
   }
 
   render() {
-    const { products, orders } = this.state;
+    const {products, orders} = this.state;
     return (
       <SafeAreaView style={styles.safeContainer}>
-        <View style={{ flex: 1, padding: 10 }}>
+        <View style={{flex: 1, padding: 10}}>
           <ProductDialog ref={ref => (this.productDialog = ref)} />
           <OrderItems ref={ref => (this.dialog = ref)} />
 
           <FlatList
             data={products}
             ListHeaderComponent={this.renderHeader}
-            style={{ flex: 1, width: '100%' }}
+            style={{flex: 1, width: '100%'}}
             numColumns={3}
             columnWrapperStyle={{
               flex: 1,
